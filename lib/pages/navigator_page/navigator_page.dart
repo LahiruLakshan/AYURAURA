@@ -1,4 +1,5 @@
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
+import 'package:colorgame/pages/main_pages/mandala_page/mandala_page.dart';
 import 'package:colorgame/pages/main_pages/settings_page/settings_page.dart';
 import 'package:colorgame/providers/main_provider.dart';
 import 'package:colorgame/widgets/my_app_bar/my_app_bar.dart';
@@ -18,7 +19,7 @@ class _HomeNavigatorState extends State<HomeNavigator> {
   int _currentIndex = 0;
   late PageController _pageController;
 
-  List<String> titles = ["Home","Colored Images","Settings"];
+  List<String> titles = ["Mandala Arts","Colored Images History"];
 
   @override
   void initState() {
@@ -43,9 +44,8 @@ class _HomeNavigatorState extends State<HomeNavigator> {
             setState(() => _currentIndex = index);
           },
           children: <Widget>[
-            HomePage(),
+            MandalaPage(),
             SavedImagePage(),
-            SettingsPage(),
           ],
         ),
       ),
@@ -59,19 +59,14 @@ class _HomeNavigatorState extends State<HomeNavigator> {
         }),
         items: [
           BottomNavyBarItem(
-            icon: Icon(Icons.home),
-            title: Text('Home', style: TextStyle(fontFamily: 'McLaren')),
-            activeColor: Colors.red,
+            icon: Icon(Icons.art_track),
+            title: Text('Arts'),
+            activeColor: Colors.green,
           ),
           BottomNavyBarItem(
-              icon: Icon(Icons.apps),
-              title: Text('Colored', style: TextStyle(fontFamily: 'McLaren')),
-              activeColor: Colors.purpleAccent
-          ),
-          BottomNavyBarItem(
-              icon: Icon(Icons.settings),
-              title: Text('Settings', style: TextStyle(fontFamily: 'McLaren')),
-              activeColor: Colors.purpleAccent
+              icon: Icon(Icons.history),
+              title: Text('History'),
+              activeColor: Colors.green
           ),
           // BottomNavyBarItem(
           //     icon: Icon(Icons.message),

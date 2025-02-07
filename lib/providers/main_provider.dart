@@ -15,6 +15,9 @@ class MainProvider extends ChangeNotifier {
   List<ImageModelData> flowersList = [];
   List<ImageModelData> mattersList = [];
   List<ImageModelData> plantsList = [];
+  List<ImageModelData> simpleList = [];
+  List<ImageModelData> mediumList = [];
+  List<ImageModelData> complexList = [];
 
   List<ImageModelData> savedImageList = [];
   ImageModel? imageModel;
@@ -23,18 +26,16 @@ class MainProvider extends ChangeNotifier {
   final LocalStorage storage = LocalStorage('coloring_app');
 
   Future<void> loadData() async {
-    AssetsConst.animals.asMap().forEach((key, value) {
-      animalList.add(ImageModelData(path: value));
+    AssetsConst.simple.asMap().forEach((key, value) {
+      simpleList.add(ImageModelData(path: value));
     });
-    AssetsConst.flowers.asMap().forEach((key, value) {
-      flowersList.add(ImageModelData(path: value));
+    AssetsConst.medium.asMap().forEach((key, value) {
+      mediumList.add(ImageModelData(path: value));
     });
-    AssetsConst.matters.asMap().forEach((key, value) {
-      mattersList.add(ImageModelData(path: value));
+    AssetsConst.complex.asMap().forEach((key, value) {
+      complexList.add(ImageModelData(path: value));
     });
-    AssetsConst.plants.asMap().forEach((key, value) {
-      plantsList.add(ImageModelData(path: value));
-    });
+
     notifyListeners();
   }
 

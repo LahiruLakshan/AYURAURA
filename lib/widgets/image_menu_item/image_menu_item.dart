@@ -30,7 +30,7 @@ class ImageMenuItem extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title,style: TextStyle(fontFamily: 'McLaren'),),
+            Text(title),
             Flexible(
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,

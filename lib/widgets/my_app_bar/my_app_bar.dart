@@ -12,7 +12,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       title: Text(
         title ?? "App",
-        style: TextStyle(fontFamily: 'McLaren', fontSize: fontSize ?? 18),
+        style: TextStyle(fontSize: fontSize ?? 18),
       ),
       elevation: 0,
       actions: onPressed == null
@@ -21,7 +21,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
         TextButton(
           onPressed: onPressed,
           child: Text( buttonText??"Save",
-              style: TextStyle(fontFamily: 'McLaren', fontSize: 18, color: Colors.black)),
+              style: TextStyle(fontSize: 18, color: Colors.black)),
         )
       ],
       backgroundColor: Colors.transparent,

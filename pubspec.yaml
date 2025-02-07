@@ -43,6 +43,8 @@ dependencies:
   image: ^3.0.1
   path_provider: ^2.0.11
   localstorage: ^4.0.0+1
+  file: ^6.1.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -71,10 +73,10 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/
-    - assets/animals/
-    - assets/flowers/
-    - assets/matters/
-    - assets/plants/
+    - assets/simple/
+    - assets/medium/
+    - assets/complex/
+    - assets/logo.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 
