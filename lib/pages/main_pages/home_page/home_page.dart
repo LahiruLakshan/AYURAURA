@@ -1,11 +1,12 @@
-import 'package:colorgame/pages/image_list_page/image_grid_list_page.dart';
-import 'package:colorgame/pages/navigator_page/navigator_page.dart';
-import 'package:colorgame/providers/main_provider.dart';
-import 'package:colorgame/widgets/image_menu_item/image_menu_item.dart';
+import 'package:stress_management/pages/image_list_page/image_grid_list_page.dart';
+import 'package:stress_management/pages/navigator_page/navigator_page.dart';
+import 'package:stress_management/providers/main_provider.dart';
+import 'package:stress_management/widgets/image_menu_item/image_menu_item.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../mandala_page/mandala_page.dart';
+import '../quiz_page/quiz_home_screen.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -52,7 +53,7 @@ class _HomePageState extends State<HomePage> {
             mainAxisSpacing: 16.0,
             children: [
               _buildMenuButton(context, 'Mandala Arts', HomeNavigator()),
-              _buildMenuButton(context, 'Go to Second Page', HomeNavigator()),
+              _buildMenuButton(context, 'Quiz Page', QuizHomeScreen()),
               _buildMenuButton(context, 'Go to Third Page', HomeNavigator()),
               _buildMenuButton(context, 'Go to Fourth Page', HomeNavigator()),
             ],

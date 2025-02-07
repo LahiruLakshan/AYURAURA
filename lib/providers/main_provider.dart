@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:colorgame/assets_const.dart';
+import 'package:stress_management/assets_const.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 import 'package:localstorage/localstorage.dart';

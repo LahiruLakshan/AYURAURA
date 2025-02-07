@@ -1,6 +1,6 @@
-import 'package:colorgame/pages/navigator_page/navigator_page.dart';
-import 'package:colorgame/pages/splash_screen/splash_screen.dart';
-import 'package:colorgame/providers/main_provider.dart';
+import 'package:stress_management/pages/navigator_page/navigator_page.dart';
+import 'package:stress_management/pages/splash_screen/splash_screen.dart';
+import 'package:stress_management/providers/main_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:provider/provider.dart';

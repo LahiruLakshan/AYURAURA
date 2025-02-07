@@ -1,8 +1,8 @@
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
-import 'package:colorgame/pages/main_pages/mandala_page/mandala_page.dart';
-import 'package:colorgame/pages/main_pages/settings_page/settings_page.dart';
-import 'package:colorgame/providers/main_provider.dart';
-import 'package:colorgame/widgets/my_app_bar/my_app_bar.dart';
+import 'package:stress_management/pages/main_pages/mandala_page/mandala_page.dart';
+import 'package:stress_management/pages/main_pages/settings_page/settings_page.dart';
+import 'package:stress_management/providers/main_provider.dart';
+import 'package:stress_management/widgets/my_app_bar/my_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../main_pages/home_page/home_page.dart';

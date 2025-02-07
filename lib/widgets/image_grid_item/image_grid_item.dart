@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:colorgame/pages/image_color_page/image_color_page.dart';
-import 'package:colorgame/providers/main_provider.dart';
+import 'package:stress_management/pages/image_color_page/image_color_page.dart';
+import 'package:stress_management/providers/main_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 import 'package:provider/provider.dart';

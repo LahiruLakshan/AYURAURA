@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:colorgame/values/icons/eraser_icon_icons.dart';
-import 'package:colorgame/widgets/palette_widget/palette_item.dart';
+import 'package:stress_management/values/icons/eraser_icon_icons.dart';
+import 'package:stress_management/widgets/palette_widget/palette_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:get/route_manager.dart';

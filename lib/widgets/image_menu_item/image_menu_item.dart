@@ -1,4 +1,4 @@
-import 'package:colorgame/models/image_model/image_model.dart';
+import 'package:stress_management/models/image_model/image_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

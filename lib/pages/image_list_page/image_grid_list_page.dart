@@ -1,4 +1,4 @@
-import 'package:colorgame/widgets/image_grid_item/image_grid_item.dart';
+import 'package:stress_management/widgets/image_grid_item/image_grid_item.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/image_model/image_model.dart';
