@@ -5,6 +5,8 @@ import 'package:stress_management/widgets/image_menu_item/image_menu_item.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../behaviors/behaviors_quiz_home_page.dart';
+import '../eye_analysis/eye_analysis_home_screen.dart';
 import '../mandala_page/mandala_page.dart';
 import '../quiz_page/quiz_home_screen.dart';
 
@@ -54,8 +56,8 @@ class _HomePageState extends State<HomePage> {
             children: [
               _buildMenuButton(context, 'Mandala Arts', HomeNavigator()),
               _buildMenuButton(context, 'Quiz Page', QuizHomeScreen()),
-              _buildMenuButton(context, 'Go to Third Page', HomeNavigator()),
-              _buildMenuButton(context, 'Go to Fourth Page', HomeNavigator()),
+              _buildMenuButton(context, 'Eye Analysis', EyeAnalysisHomeScreen()),
+              _buildMenuButton(context, 'Behaviors Quiz', BehaviorsQuizHomePage()),
             ],
           ),
         ),

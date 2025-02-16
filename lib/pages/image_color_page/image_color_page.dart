@@ -16,6 +16,7 @@ class ImageColorPage extends StatefulWidget {
   final String? path;
   final int? index;
   final File? file;
+
   const ImageColorPage({Key? key, this.title, this.path, this.file, this.index})
       : super(key: key);
 
@@ -29,10 +30,12 @@ class _ImageColorPageState extends State<ImageColorPage> {
   int index = 0;
   double h = 600;
   double w = 600;
+
   // create some values
   Color pickerColor = Color(0xffffffff);
   double _currentSliderValue = 20;
   late final ImageProvider imageProvider;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -78,6 +81,115 @@ class _ImageColorPageState extends State<ImageColorPage> {
     );
   }
 
+  int _currentPaletteIndex = 0;
+
+  // Define multiple color palettes
+  final List<List<Color>> _colorPalettes = [
+    [
+      Colors.white,
+      Colors.red,
+      Colors.green,
+      Colors.blue,
+      Colors.yellow,
+      Colors.orange,
+      Colors.pink,
+      Colors.purple,
+      Colors.brown,
+    ],
+    [
+      Colors.black,
+      Colors.cyan,
+      Colors.amber,
+      Colors.deepOrange,
+      Colors.lightGreen,
+      Colors.indigo,
+      Colors.lime,
+      Colors.teal,
+      Colors.grey,
+    ],
+    [
+      Colors.blueGrey,
+      Colors.lightBlue,
+      Colors.deepPurple,
+      Colors.redAccent,
+      Colors.greenAccent,
+      Colors.orangeAccent,
+      Colors.yellowAccent,
+      Colors.pinkAccent,
+      Colors.purpleAccent,
+    ],
+    [
+      Colors.lightGreenAccent,
+      Colors.tealAccent,
+      Colors.indigoAccent,
+      Colors.cyanAccent,
+      Colors.amberAccent,
+      Colors.deepOrangeAccent,
+      Colors.limeAccent,
+      Colors.brown,
+      Colors.black,
+    ],
+    [
+      Colors.white70,
+      Colors.black87,
+      Colors.grey,
+      Colors.blueAccent,
+      Colors.deepPurpleAccent,
+      Colors.redAccent,
+      Colors.greenAccent,
+      Colors.pinkAccent,
+      Colors.yellowAccent,
+    ],
+  ];
+
+
+  void _changeColorPalette(int index) {
+    setState(() {
+      _currentPaletteIndex = index;
+    });
+  }
+
+  Future<void> _showPaletteSelectionDialog() async {
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Select a Color Palette'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: List.generate(_colorPalettes.length, (index) {
+                return GestureDetector(
+                  onTap: () {
+                    _changeColorPalette(index);
+                    Navigator.of(context).pop();
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: _colorPalettes[index]
+                          .map((color) => Container(
+                        width: 15,
+                        height: 30,
+                        margin: const EdgeInsets.symmetric(horizontal: 5),
+                        decoration: BoxDecoration(
+                          color: color,
+                          shape: BoxShape.circle,
+                        ),
+                      ))
+                          .toList(),
+                    ),
+                  ),
+                );
+              }),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -122,7 +234,7 @@ class _ImageColorPageState extends State<ImageColorPage> {
                 ),
               ),
               Spacer(),
-              buildSingleChildScrollView()
+              selectedColorPalette()
             ],
           ),
         ),
@@ -164,84 +276,20 @@ class _ImageColorPageState extends State<ImageColorPage> {
     );
   }
 
-  SingleChildScrollView buildSingleChildScrollView() {
+  SingleChildScrollView selectedColorPalette() {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
-        children: [
-          PaletteItem(
+        children: _colorPalettes[_currentPaletteIndex].map((color) {
+          return PaletteItem(
             onTap: () {
               setState(() {
-                _fillColor = Colors.white;
+                _fillColor = color;
               });
             },
-            color: Colors.white,
-          ),
-          PaletteItem(
-            onTap: () {
-              setState(() {
-                _fillColor = Colors.red;
-              });
-            },
-            color: Colors.red,
-          ),
-          PaletteItem(
-            onTap: () {
-              setState(() {
-                _fillColor = Colors.green;
-              });
-            },
-            color: Colors.green,
-          ),
-          PaletteItem(
-            onTap: () {
-              setState(() {
-                _fillColor = Colors.blue;
-              });
-            },
-            color: Colors.blue,
-          ),
-          PaletteItem(
-            onTap: () {
-              setState(() {
-                _fillColor = Colors.yellow;
-              });
-            },
-            color: Colors.yellow,
-          ),
-          PaletteItem(
-            onTap: () {
-              setState(() {
-                _fillColor = Colors.pink;
-              });
-            },
-            color: Colors.pink,
-          ),
-          PaletteItem(
-            onTap: () {
-              setState(() {
-                _fillColor = Colors.purple;
-              });
-            },
-            color: Colors.purple,
-          ),
-          PaletteItem(
-            onTap: () {
-              setState(() {
-                _fillColor = Colors.brown;
-              });
-            },
-            color: Colors.brown,
-          ),
-          PaletteItem(
-            onTap: () {
-              setState(() {
-                _fillColor = Colors.orange;
-              });
-            },
-            color: Colors.orange,
-          ),
-        ],
+            color: color,
+          );
+        }).toList(),
       ),
     );
   }
@@ -250,42 +298,18 @@ class _ImageColorPageState extends State<ImageColorPage> {
     return Row(
       children: [
         IconButton(
-            onPressed: () {
-              setState(() {
-                _fillColor = Colors.white;
-              });
-            },
-            icon: Icon(EraserIcon.icon_eraser)),
-        Spacer(),
-        PaletteItem(
-          color: _colorize,
+          onPressed: () {
+            setState(() {
+              _fillColor = Colors.white;
+            });
+          },
+          icon: Icon(EraserIcon.icon_eraser),
         ),
-        IconButton(
-            onPressed: () {
-              _showMyDialog();
-            },
-            icon: Icon(
-              Icons.colorize,
-              color: Colors.black,
-              size: 25,
-            )),
-        // TextButton(
-        //     onPressed: () {
-        //       context.read<MainProvider>().saveImage();
-        //     },
-        //     child: Text(
-        //       "Save",
-        //       style: TextStyle(fontFamily: 'McLaren'),
-        //     ))
-        // IconButton(
-        //     onPressed: () {
-        //       setState(() {
-        //         h -= 50;
-        //         w -= 50;
-        //       });
-        //     },
-        //     icon: Icon(Icons.zoom_out, color: Colors.blue)),
+        Spacer(),
+        TextButton(
+          onPressed: _showPaletteSelectionDialog,
+          child: const Text("Change Palette"),
+        ),
       ],
     );
-  }
-}
+  }}
