@@ -24,10 +24,8 @@ if (flutterVersionName == null) {
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
-apply plugin: 'com.google.gms.google-services' // Applied Google Services plugin
 
 android {
-    namespace "com.tcorp.stress_management"
     compileSdkVersion 34
 
     compileOptions {
@@ -39,10 +37,9 @@ android {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.tcorp.stress_management"
         minSdkVersion 21
-        targetSdkVersion 34
+        targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
-        multiDexEnabled true // Enable MultiDex
     }
 
     buildTypes {
@@ -56,9 +53,4 @@ android {
 
 flutter {
     source '../..'
-}
-
-dependencies {
-    implementation platform('com.google.firebase:firebase-bom:32.7.2') // Firebase BoM
-    implementation 'androidx.multidex:multidex:2.0.1' // MultiDex support
 }
