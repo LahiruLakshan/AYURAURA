@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "606584540933",
+    "project_id": "ayuraura-44b00",
+    "storage_bucket": "ayuraura-44b00.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:606584540933:android:6c2806a9c0a072f0a5b16c",
+        "android_client_info": {
+          "package_name": "com.tcorp.stress_management"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAPyRhyJ725sESlgGmBt7Ga9JHa2Bey5bQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

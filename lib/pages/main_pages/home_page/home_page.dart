@@ -5,6 +5,7 @@ import 'package:stress_management/widgets/image_menu_item/image_menu_item.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../auth/profile_page.dart';
 import '../behaviors/behaviors_quiz_home_page.dart';
 import '../eye_analysis/eye_analysis_home_screen.dart';
 import '../mandala_page/mandala_page.dart';
@@ -24,6 +25,7 @@ class _HomePageState extends State<HomePage> {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(150.0),
         child: AppBar(
+          automaticallyImplyLeading: false, // This hides the back button
           backgroundColor: Color(0xFF2E7D32),
           flexibleSpace: Container(
             padding: EdgeInsets.fromLTRB(16.0, 60.0, 16.0, 16.0),
@@ -37,13 +39,16 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
-          elevation: 10,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(24.0),
-              bottomRight: Radius.circular(24.0),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.account_circle, size: 32),
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProfilePage()),
+              ),
             ),
-          ),
+          ],
+          // ... rest of your existing AppBar code
         ),
       ),
       body: Padding(

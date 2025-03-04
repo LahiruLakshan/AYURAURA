@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:stress_management/assets_const.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
@@ -10,6 +11,22 @@ import 'dart:ui' as ui;
 import '../models/image_model/image_model.dart';
 
 class MainProvider extends ChangeNotifier {
+
+  User? _user;
+
+  User? get user => _user;
+
+  void clearUserData() {
+    _user = null;
+    notifyListeners();
+  }
+
+  MainProvider() {
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      _user = user;
+      notifyListeners();
+    });
+  }
 
   List<ImageModelData> animalList = [];
   List<ImageModelData> flowersList = [];
