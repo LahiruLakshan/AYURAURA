@@ -8,6 +8,11 @@ class AppColors {
   static const Color textPrimary = Color(0xFF000000); // Black
   static const Color textSecondary = Colors.black54; // Grey
 
+  static const Color stress = Color(0xFF2E5266);
+  static const Color happiness = Color(0xFFFF6B6B);
+  static const Color calmness = Color(0xFF4A7C59);
+  static const Color energy = Color(0xFF6EC6CA);
+
 }
 
 List<Color> progressStrokeColor = const [

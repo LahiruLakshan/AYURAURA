@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:stress_management/pages/main_pages/eye_analysis/stress_scale_quiz.dart';
 import 'package:stress_management/pages/main_pages/quiz_page/quiz_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -62,6 +63,29 @@ class EyeAnalysisHomeScreen extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 40),
+
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => StressScaleQuiz(),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  primary: AppColors.secondary,
+                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+                child: Text(
+                  'Open Quiz',
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
+              SizedBox(height: 40),
+
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(

@@ -3,6 +3,7 @@ import 'package:stress_management/pages/main_pages/quiz_page/quiz_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../../../constants/colors.dart';
+import 'chat_screen.dart';
 
 
 class BehaviorsQuizHomePage extends StatelessWidget {
@@ -71,6 +72,28 @@ class BehaviorsQuizHomePage extends StatelessWidget {
               ),
               child: Text(
                 'Log My Behaviors',
+                style: TextStyle(fontSize: 18),
+              ),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChatScreen(),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                primary: AppColors.secondary,
+                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
+              child: Text(
+                'Chatbot',
                 style: TextStyle(fontSize: 18),
               ),
             ),
