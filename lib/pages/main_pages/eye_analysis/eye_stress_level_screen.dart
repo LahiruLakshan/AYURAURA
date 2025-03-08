@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 
 class EyeStressLevelScreen extends StatefulWidget {
-  const EyeStressLevelScreen({Key? key}) : super(key: key);
+  const EyeStressLevelScreen({Key? key, required String responseData}) : super(key: key);
 
   @override
   State<EyeStressLevelScreen> createState() => _EyeStressLevelScreenState();

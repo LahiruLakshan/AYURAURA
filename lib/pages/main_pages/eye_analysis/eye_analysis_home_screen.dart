@@ -84,29 +84,7 @@ class EyeAnalysisHomeScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 18),
                 ),
               ),
-              SizedBox(height: 40),
 
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => QuizScreen(),
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: AppColors.secondary,
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-                child: Text(
-                  'Test Your Stress',
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
             ],
           ),
         ),
