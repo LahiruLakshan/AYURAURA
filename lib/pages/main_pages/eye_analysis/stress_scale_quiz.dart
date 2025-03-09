@@ -1,11 +1,23 @@
+import 'package:path/path.dart';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:stress_management/constants/constants.dart';
+
+import '../../../constants/colors.dart';
+import 'eye_stress_level_screen.dart';
 
 class StressScaleQuiz extends StatefulWidget {
+  final File videoFile;
+  const StressScaleQuiz({super.key, required this.videoFile});
+
   @override
   _StressScaleQuizState createState() => _StressScaleQuizState();
 }
 
 class _StressScaleQuizState extends State<StressScaleQuiz> {
+  bool _isLoading = false;
   final List<String> questions = [
     "In the last month, how often have you been upset because of something that happened unexpectedly?",
     "In the last month, how often have you felt that you were unable to control the important things in your life?",
@@ -18,6 +30,18 @@ class _StressScaleQuizState extends State<StressScaleQuiz> {
     "In the last month, how often have you been angered because of things that happened that were outside of your control?",
     "In the last month, how often have you felt difficulties were piling up so high that you could not overcome them?",
   ];
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context as BuildContext).showSnackBar( // Fixed Context to context
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+
+
+
 
   List<int?> answers = List.filled(10, null);
   int _currentQuestionIndex = 0;
@@ -105,7 +129,45 @@ class _StressScaleQuizState extends State<StressScaleQuiz> {
     );
   }
 
-  Widget _buildResults() {
+  Widget _buildResults(BuildContext context) {
+
+    Future<void> _analyzeStress() async {
+      setState(() => _isLoading = true);
+
+      try {
+        final request = http.MultipartRequest(
+          'POST',
+          Uri.parse('${AppConstants.BASE_URL_EYE_ANALYSIS}predict'),
+        );
+
+        final videoFile = await http.MultipartFile.fromPath(
+          'video',
+          widget.videoFile.path,
+        );
+        request.files.add(videoFile);
+
+        final response = await request.send();
+        final responseBody = await response.stream.bytesToString();
+
+        print("-----------------" + responseBody);
+
+        if (response.statusCode == 200) {
+          Navigator.push(
+            context, // Correct context here
+            MaterialPageRoute(
+              builder: (context) => EyeStressLevelScreen(responseData: responseBody),
+            ),
+          );
+        } else {
+          _showError('Analysis failed: ${response.reasonPhrase}');
+        }
+      } catch (e) {
+        _showError('Connection error: $e');
+      } finally {
+        setState(() => _isLoading = false);
+      }
+    }
+
     return Column(
       children: [
         Text(
@@ -139,6 +201,24 @@ class _StressScaleQuizState extends State<StressScaleQuiz> {
           style: TextStyle(fontStyle: FontStyle.italic),
           textAlign: TextAlign.center,
         ),
+        SizedBox(height: 30),
+        ElevatedButton.icon(
+          icon: _isLoading
+              ? const SizedBox.shrink()
+              : const Icon(Icons.analytics, size: 24),
+          label: _isLoading
+              ? const CircularProgressIndicator()
+              : const Text('Analyze Stress Level'),
+          onPressed: _isLoading ? null : _analyzeStress,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.secondary,
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+            // shape: RoundedRectangleBorder(
+            //   borderRadius: BorderRadius.circular(30),
+            // ),
+          ),
+        ),
+
       ],
     );
   }
@@ -153,7 +233,7 @@ class _StressScaleQuizState extends State<StressScaleQuiz> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: _showResults
-            ? _buildResults()
+            ? _buildResults(context)
             : Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

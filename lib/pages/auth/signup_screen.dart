@@ -13,7 +13,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _ageController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
+  String? _selectedGender;
+  final FocusNode _genderFocusNode = FocusNode();
   final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _ageFocusNode = FocusNode();
   final FocusNode _emailFocusNode = FocusNode();
@@ -31,6 +32,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     // Validate fields
     if (_nameController.text.isEmpty ||
         _ageController.text.isEmpty ||
+        _selectedGender == null ||
         _emailController.text.isEmpty ||
         _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -47,8 +49,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
       );
 
       // Create user
-      UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
+      UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
@@ -61,6 +63,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         'name': _nameController.text.trim(),
         'birth_date': _selectedDate!, // Store actual date
         'age': _calculateAge(_selectedDate!), // Store calculated age
+        'gender': _selectedGender,
         'email': _emailController.text.trim(),
         'createdAt': Timestamp.now(),
       });
@@ -130,7 +133,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   border: OutlineInputBorder(),
                 ),
                 textInputAction: TextInputAction.next,
-                onSubmitted: (_) => FocusScope.of(context).requestFocus(_ageFocusNode),
+                onSubmitted: (_) =>
+                    FocusScope.of(context).requestFocus(_ageFocusNode),
               ),
               const SizedBox(height: 16),
 
@@ -149,7 +153,32 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 readOnly: true,
                 onTap: () => _selectDate(context),
                 textInputAction: TextInputAction.next,
-                onSubmitted: (_) => FocusScope.of(context).requestFocus(_emailFocusNode),
+                onSubmitted: (_) => FocusScope.of(context).requestFocus(_genderFocusNode),
+              ),
+              const SizedBox(height: 16),
+
+              // Gender Dropdown
+              DropdownButtonFormField<String>(
+                focusNode: _genderFocusNode,
+                decoration: const InputDecoration(
+                  labelText: 'Gender',
+                  border: OutlineInputBorder(),
+                ),
+                value: _selectedGender,
+                hint: const Text('Select Gender'),
+                items: const ['Male', 'Female']
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedGender = newValue;
+                  });
+                  FocusScope.of(context).requestFocus(_emailFocusNode);
+                },
               ),
               const SizedBox(height: 16),
 
@@ -163,7 +192,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
                 keyboardType: TextInputType.emailAddress,
                 textInputAction: TextInputAction.next,
-                onSubmitted: (_) => FocusScope.of(context).requestFocus(_passwordFocusNode),
+                onSubmitted: (_) =>
+                    FocusScope.of(context).requestFocus(_passwordFocusNode),
               ),
               const SizedBox(height: 16),
 
@@ -207,6 +237,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _ageController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _genderFocusNode.dispose();
     super.dispose();
   }
 }

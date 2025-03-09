@@ -53,9 +53,9 @@ class EyeAnalysisHomeScreen extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   primary: AppColors.secondary,
                   padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
+                  // shape: RoundedRectangleBorder(
+                  //   borderRadius: BorderRadius.circular(30),
+                  // ),
                 ),
                 child: Text(
                   'Open Camera',
@@ -66,21 +66,21 @@ class EyeAnalysisHomeScreen extends StatelessWidget {
 
               ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => StressScaleQuiz(),
-                    ),
-                  );
+                  // Navigator.of(context).push(
+                  //   MaterialPageRoute(
+                  //     builder: (context) => StressScaleQuiz(),
+                  //   ),
+                  // );
                 },
                 style: ElevatedButton.styleFrom(
                   primary: AppColors.secondary,
                   padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
+                  // shape: RoundedRectangleBorder(
+                  //   borderRadius: BorderRadius.circular(30),
+                  // ),
                 ),
-                child: Text(
-                  'Open Quiz',
+                child: const Text(
+                  'User Guideline',
                   style: TextStyle(fontSize: 18),
                 ),
               ),

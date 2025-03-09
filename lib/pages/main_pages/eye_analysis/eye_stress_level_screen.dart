@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../constants/colors.dart';
+
 
 class EyeStressLevelScreen extends StatefulWidget {
   const EyeStressLevelScreen({Key? key, required String responseData}) : super(key: key);
@@ -62,6 +64,21 @@ class _EyeStressLevelScreenState extends State<EyeStressLevelScreen> {
                       ),
                     ],
                   ),
+                ),
+              ),
+              SizedBox(height: 32),
+              ElevatedButton(
+                onPressed: () {
+                  // Navigate back to the main page
+                  Navigator.popUntil(context, (route) => route.isFirst);
+                },
+                child: const Text('Return to Main Page'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.secondary,
+                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                  // shape: RoundedRectangleBorder(
+                  //   borderRadius: BorderRadius.circular(30),
+                  // ),
                 ),
               ),
             ],
