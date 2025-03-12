@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../../constants/colors.dart';
 import '../../providers/main_provider.dart';
 import '../main_pages/home_page/home_page.dart';
-import '../navigator_page/navigator_page.dart';
+import '../navigator_page/mandala_navigator_page.dart';
 
 
 class SplashScreen extends StatefulWidget {

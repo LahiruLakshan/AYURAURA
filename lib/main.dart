@@ -1,7 +1,7 @@
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:stress_management/pages/auth/profile_page.dart';
 import 'package:stress_management/pages/main_pages/home_page/home_page.dart';
-import 'package:stress_management/pages/navigator_page/navigator_page.dart';
+import 'package:stress_management/pages/navigator_page/mandala_navigator_page.dart';
 import 'package:stress_management/pages/splash_screen/splash_screen.dart';
 import 'package:stress_management/providers/main_provider.dart';
 import 'package:flutter/material.dart';

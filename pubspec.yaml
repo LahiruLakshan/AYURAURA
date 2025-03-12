@@ -57,6 +57,12 @@ dependencies:
   firebase_auth: ^4.16.0
   firebase_app_check: ^0.2.1+8
   http: ^1.1.0
+  just_audio: ^0.9.37
+  cloudinary: ^1.2.0
+  intl: ^0.17.0
+  rxdart: ^0.27.7
+  just_waveform: ^0.0.6
+
 
 
 dev_dependencies:

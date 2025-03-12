@@ -8,14 +8,14 @@ import 'package:provider/provider.dart';
 import '../main_pages/home_page/home_page.dart';
 import '../main_pages/saved_image_list/saved_image_page.dart';
 
-class HomeNavigator extends StatefulWidget {
-  const HomeNavigator({Key? key}) : super(key: key);
+class MandalaNavigator extends StatefulWidget {
+  const MandalaNavigator({Key? key}) : super(key: key);
 
   @override
-  State<HomeNavigator> createState() => _HomeNavigatorState();
+  State<MandalaNavigator> createState() => _MandalaNavigatorState();
 }
 
-class _HomeNavigatorState extends State<HomeNavigator> {
+class _MandalaNavigatorState extends State<MandalaNavigator> {
   int _currentIndex = 0;
   late PageController _pageController;
 

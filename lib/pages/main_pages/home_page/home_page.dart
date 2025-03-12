@@ -1,5 +1,6 @@
 import 'package:stress_management/pages/image_list_page/image_grid_list_page.dart';
-import 'package:stress_management/pages/navigator_page/navigator_page.dart';
+import 'package:stress_management/pages/main_pages/mandala_page/mandala_music_home_screen.dart';
+import 'package:stress_management/pages/navigator_page/mandala_navigator_page.dart';
 import 'package:stress_management/providers/main_provider.dart';
 import 'package:stress_management/widgets/image_menu_item/image_menu_item.dart';
 import 'package:flutter/material.dart';
@@ -59,7 +60,7 @@ class _HomePageState extends State<HomePage> {
             crossAxisSpacing: 16.0,
             mainAxisSpacing: 16.0,
             children: [
-              _buildMenuButton(context, 'Mandala Arts', HomeNavigator()),
+              _buildMenuButton(context, 'Mandala Arts & Music', MandalaMusicHomeScreen()),
               _buildMenuButton(context, 'Quiz Page', QuizHomeScreen()),
               _buildMenuButton(context, 'Eye Analysis', EyeAnalysisHomeScreen()),
               _buildMenuButton(context, 'Behaviors Quiz', BehaviorsQuizHomePage()),
