@@ -59,6 +59,11 @@ class _PredictionAndHistoryState extends State<PredictionAndHistory> {
         setState(() {
           stressLevel = data["Stress Level"];
         });
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => PredictionStressMandalaAndMusic(stressLevel: data["Stress Level"]),
+          ),
+        );
       }
     } catch (e) {
       print("Error predicting stress: $e");
