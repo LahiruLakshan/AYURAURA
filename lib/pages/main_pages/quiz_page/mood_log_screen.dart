@@ -64,7 +64,7 @@ class _MoodLogScreenState extends State<MoodLogScreen> {
                 ],
               ),
               child: Text(
-                '🗓 \"It will take approximately 7 days to feel completely stress-free.\"',
+                '🗓 \"It will take approximately ${widget.predictedDays} days to feel completely stress-free.\"',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 18, color: AppColors.primary),
               ),

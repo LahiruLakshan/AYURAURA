@@ -40,7 +40,7 @@ class _PredictionAndHistoryState extends State<PredictionAndHistory> {
       final payload = {
         "Age": 25,
         "Gender": "Male",
-        "Mandala Design Pattern": coloringData['pattern'],
+        "Mandala Design Pattern": coloringData['color_palette_id'],
         "Mandala Colors Used": coloringData['colors_used'],
         "Mandala Time Spent": coloringData['color_duration'],
         "Music Type": listeningData['music_type'],
