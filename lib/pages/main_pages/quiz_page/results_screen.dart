@@ -6,6 +6,7 @@ import 'package:stress_management/pages/main_pages/quiz_page/quiz_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../../../constants/colors.dart';
+import '../../../constants/constants.dart';
 import 'mood_log_screen.dart';
 
 class ResultsScreen extends StatefulWidget {
@@ -18,7 +19,7 @@ class ResultsScreen extends StatefulWidget {
 }
 
 class _ResultsScreenState extends State<ResultsScreen> {
-  int stressLevel = 0;
+  double stressLevel = 0;
   int daysSinceRegistration = 0;
   Map<String, dynamic> data = <String, dynamic>{};
 
@@ -70,41 +71,6 @@ class _ResultsScreenState extends State<ResultsScreen> {
     }
   }
 
-  int getComplexityValue(String type) {
-    switch (type.toLowerCase()) {
-      case 'simple':
-        return 3;
-      case 'medium':
-        return 2;
-      case 'complex':
-        return 1;
-      default:
-        return 1;
-    }
-  }
-
-  int getMusicTypeValue(String type) {
-    switch (type.toLowerCase()) {
-      case 'Deep':
-        return 1;
-      case 'Gregorian':
-        return 2;
-      case 'Tibetan':
-        return 3;
-      case 'Ambient':
-        return 4;
-      case 'Soft':
-        return 5;
-      case 'Alpha':
-        return 6;
-      case 'Nature':
-        return 7;
-      case 'LoFI':
-        return 8;
-      default:
-        return 1;
-    }
-  }
   @override
   void initState() {
     super.initState();
@@ -146,11 +112,11 @@ class _ResultsScreenState extends State<ResultsScreen> {
         var coloringData =
         coloringSnapshot.docs.first.data() as Map<String, dynamic>;
 
-        final url = Uri.parse("http://127.0.0.1:5000/predict_stress");
+        final url = Uri.parse("${AppConstants.BASE_URL_QUIZ}predict_recovery_time");
 
         final payload = {
           "Age": data["age"],
-          "Gender": data["gender"],
+          "Gender": data["gender"] == "Male" ? 0:1,
           "Days": daysSinceRegistration,
           "DailyStressLevel": answerNumbers[0],
           "DailyEnergyLevel": answerNumbers[1],
@@ -167,12 +133,13 @@ class _ResultsScreenState extends State<ResultsScreen> {
 
         if (response.statusCode == 200) {
           final data = jsonDecode(response.body);
+          print("data : $data");
           setState(() {
-            stressLevel = data["Stress Level"];
+            stressLevel = data["predicted_recovery_Days"];
           });
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => MoodLogScreen(predictedDays: 8),
+              builder: (context) => MoodLogScreen(predictedDays: data["predicted_recovery_Days"].round()),
             ),
           );
         }
@@ -226,14 +193,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
                 );
               }).toList(),
               ElevatedButton(
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => MoodLogScreen(predictedDays: 8),
-                    ),
-                  );
-                },
+                onPressed: () => predictStress(),
                 style: ElevatedButton.styleFrom(
                   primary: AppColors.white,
                   padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
