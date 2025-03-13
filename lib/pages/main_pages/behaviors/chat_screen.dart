@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -10,6 +11,18 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+    dotenv.load().then((_) {
+      // Now you can access environment variables
+      final token = dotenv.env['HUGGING_FACE_TOKEN'];
+      print("Token loaded: $token");
+    }).catchError((error) {
+      print("Error loading .env file: $error");
+    });
+  }
   List<Map<String, dynamic>> messages = [
     {"text": "Hello! How are you feeling today?", "options": [
       "I'm feeling great!",
@@ -60,6 +73,14 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> _sendMessageToAPI(String message) async {
+    await dotenv.load(); // Ensure the .env file is loaded
+    final token = dotenv.env['HUGGING_FACE_TOKEN'];
+
+    if (token == null) {
+      print("Hugging Face token not found in .env file");
+      return;
+    }
+
     setState(() {
       messages.add({"text": message, "isUser": true});
       isLoading = true;
@@ -84,7 +105,7 @@ class _ChatScreenState extends State<ChatScreen> {
       Uri.parse(apiUrl),
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer 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", // Your Hugging Face token
+        "Authorization": "Bearer $token",
       },
       body: jsonEncode(payload),
     );

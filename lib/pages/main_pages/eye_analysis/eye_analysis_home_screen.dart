@@ -15,77 +15,86 @@ class EyeAnalysisHomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 80.0, horizontal: 20),
-        child: Center(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Eye Analysis',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.secondary,
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            opacity: 0.1,
+            image: AssetImage("assets/bg_logo.png"), // Path to your image
+            fit: BoxFit.contain, // Cover the entire screen
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 80.0, horizontal: 20),
+          child: Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Eye Analysis',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.secondary,
+                  ),
                 ),
-              ),
 
 
-              SizedBox(height: 40),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => BlocProvider(
-                        create: (context) {
-                          return CameraBloc(
-                            cameraUtils: CameraUtils(),
-                            permissionUtils: PermissionUtils(),
-                          )..add(const CameraInitialize(recordingLimit: 15));
-                        },
-                        child: const CameraPage(),
+                SizedBox(height: 40),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => BlocProvider(
+                          create: (context) {
+                            return CameraBloc(
+                              cameraUtils: CameraUtils(),
+                              permissionUtils: PermissionUtils(),
+                            )..add(const CameraInitialize(recordingLimit: 15));
+                          },
+                          child: const CameraPage(),
+                        ),
                       ),
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: AppColors.secondary,
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                  // shape: RoundedRectangleBorder(
-                  //   borderRadius: BorderRadius.circular(30),
-                  // ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: AppColors.secondary,
+                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                    // shape: RoundedRectangleBorder(
+                    //   borderRadius: BorderRadius.circular(30),
+                    // ),
+                  ),
+                  child: Text(
+                    'Open Camera',
+                    style: TextStyle(fontSize: 18),
+                  ),
                 ),
-                child: Text(
-                  'Open Camera',
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
-              SizedBox(height: 40),
+                SizedBox(height: 40),
 
-              ElevatedButton(
-                onPressed: () {
-                  // Navigator.of(context).push(
-                  //   MaterialPageRoute(
-                  //     builder: (context) => StressScaleQuiz(),
-                  //   ),
-                  // );
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: AppColors.secondary,
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                  // shape: RoundedRectangleBorder(
-                  //   borderRadius: BorderRadius.circular(30),
-                  // ),
+                ElevatedButton(
+                  onPressed: () {
+                    // Navigator.of(context).push(
+                    //   MaterialPageRoute(
+                    //     builder: (context) => StressScaleQuiz(),
+                    //   ),
+                    // );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: AppColors.secondary,
+                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                    // shape: RoundedRectangleBorder(
+                    //   borderRadius: BorderRadius.circular(30),
+                    // ),
+                  ),
+                  child: const Text(
+                    'User Guideline',
+                    style: TextStyle(fontSize: 18),
+                  ),
                 ),
-                child: const Text(
-                  'User Guideline',
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
 
-            ],
+              ],
+            ),
           ),
         ),
       ),

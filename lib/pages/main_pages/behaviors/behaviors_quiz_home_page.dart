@@ -84,27 +84,27 @@ class BehaviorsQuizHomePage extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ChatScreen(),
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: AppColors.secondary,
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-                child: Text(
-                  'Chatbot',
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
+              // ElevatedButton(
+              //   onPressed: () {
+              //     Navigator.push(
+              //       context,
+              //       MaterialPageRoute(
+              //         builder: (context) => ChatScreen(),
+              //       ),
+              //     );
+              //   },
+              //   style: ElevatedButton.styleFrom(
+              //     primary: AppColors.secondary,
+              //     padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+              //     shape: RoundedRectangleBorder(
+              //       borderRadius: BorderRadius.circular(30),
+              //     ),
+              //   ),
+              //   child: Text(
+              //     'Chatbot',
+              //     style: TextStyle(fontSize: 18),
+              //   ),
+              // ),
             ],
           ),
         ),
