@@ -50,7 +50,7 @@ class _PredictionStressMandalaAndMusicState
                 StressMeter(stressLevel: widget.stressLevel), // Use the state variable
                 const SizedBox(height: 40),
                 Text(
-                  widget.stressLevel < 1 ? "LOW LEVEL" : "HIGH LEVEL", // Example logic
+                  widget.stressLevel < 2 ? "(${widget.stressLevel}) LOW LEVEL " : "(${widget.stressLevel}) HIGH LEVEL ", // Example logic
                   style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
