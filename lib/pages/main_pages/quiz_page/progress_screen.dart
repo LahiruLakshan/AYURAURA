@@ -103,73 +103,6 @@ class ProgressScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLineChartCard() {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            const Text(
-              'Weekly Mood Trends',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              height: 300,
-              child: charts.LineChart(
-                _createLineChartSeries().cast<charts.Series<dynamic, num>>(),
-                animate: true,
-                defaultRenderer: charts.LineRendererConfig(
-                  includeArea: false,
-                  includePoints: true,
-                ),
-                domainAxis: const charts.OrdinalAxisSpec(
-                  renderSpec: charts.SmallTickRendererSpec(
-                    labelRotation: 45,
-                    labelStyle: charts.TextStyleSpec(
-                      fontSize: 10,
-                      color: charts.MaterialPalette.black,
-                    ),
-                  ),
-                ),
-                primaryMeasureAxis: const charts.NumericAxisSpec(
-                  tickProviderSpec: charts.StaticNumericTickProviderSpec(
-                    [
-                      charts.TickSpec(0, label: '0'),
-                      charts.TickSpec(1),
-                      charts.TickSpec(2),
-                      charts.TickSpec(3),
-                      charts.TickSpec(4),
-                      charts.TickSpec(5, label: '5'),
-                    ],
-                  ),
-                ),
-                behaviors: [
-                  charts.ChartTitle('Days',
-                      titleStyleSpec: const charts.TextStyleSpec(fontSize: 14),
-                      behaviorPosition: charts.BehaviorPosition.bottom),
-                  charts.ChartTitle('Level',
-                      titleStyleSpec: const charts.TextStyleSpec(fontSize: 14),
-                      behaviorPosition: charts.BehaviorPosition.start),
-                  charts.SeriesLegend(
-                    position: charts.BehaviorPosition.top,
-                    desiredMaxColumns: 2,
-                    entryTextStyle: charts.TextStyleSpec(
-                      fontSize: 12,
-                      color: charts.MaterialPalette.black,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   List<charts.Series<DailyMetrics, String>> _createBarChartSeries() {
     return [
       charts.Series<DailyMetrics, String>(
@@ -244,14 +177,17 @@ class ProgressScreen extends StatelessWidget {
   }
 
   static List<DailyMetrics> _createBarChartData() {
-    return List.generate(7, (index) => DailyMetrics(
-      day: 'Day ${index + 1}',
-      stress: (5 * (index % 3) / 2).round().toDouble(),
-      happiness: (5 * (index % 4) / 3).round().toDouble(),
-      calmness: (5 * (index % 5) / 4).round().toDouble(),
-      energy: (5 * (index % 2) / 1).round().toDouble(),
-    ));
+    return [
+      DailyMetrics(day: 'Monday', stress: 2, happiness: 4, calmness: 3, energy: 5),
+      DailyMetrics(day: 'Tuesday', stress: 3, happiness: 3, calmness: 4, energy: 4),
+      DailyMetrics(day: 'Wednesday', stress: 4, happiness: 2, calmness: 3, energy: 3),
+      DailyMetrics(day: 'Thursday', stress: 1, happiness: 5, calmness: 4, energy: 4),
+      DailyMetrics(day: 'Friday', stress: 2, happiness: 4, calmness: 5, energy: 3),
+      DailyMetrics(day: 'Saturday', stress: 3, happiness: 3, calmness: 3, energy: 5),
+      DailyMetrics(day: 'Sunday', stress: 4, happiness: 2, calmness: 2, energy: 4),
+    ];
   }
+
 
   static List<DayMetrics> _createLineChartData() {
     return List.generate(7, (index) => DayMetrics(
