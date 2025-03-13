@@ -74,7 +74,7 @@ class AssetsConst {
     "p5.jpg",
     "p6.jpg",
     "p7.jpg",
-    "p8.jpg",
+    // "p8.jpg",
     "p9.jpg",
   ];
   static const List<String> medium = [
@@ -85,7 +85,7 @@ class AssetsConst {
     "m5.jpg",
     "m6.jpg",
     "m7.jpg",
-    "m8.jpg",
+    // "m8.jpg",
     "m9.jpg",
   ];
   static const List<String> complex = [

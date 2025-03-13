@@ -1,5 +1,8 @@
+import 'dart:async';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:stress_management/values/icons/eraser_icon_icons.dart';
 import 'package:stress_management/widgets/palette_widget/palette_item.dart';
 import 'package:flutter/material.dart';
@@ -14,10 +17,11 @@ import '../../providers/main_provider.dart';
 class ImageColorPage extends StatefulWidget {
   final String? title;
   final String? path;
+  final String? asset;
   final int? index;
   final File? file;
 
-  const ImageColorPage({Key? key, this.title, this.path, this.file, this.index})
+  const ImageColorPage({Key? key, this.title, this.path, this.file, this.index, this.asset,})
       : super(key: key);
 
   @override
@@ -34,17 +38,29 @@ class _ImageColorPageState extends State<ImageColorPage> {
   // create some values
   Color pickerColor = Color(0xffffffff);
   double _currentSliderValue = 20;
+  int _currentPaletteIndex = 0;
+
   late final ImageProvider imageProvider;
+  late Stopwatch _stopwatch;
+  late Timer _timer;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    _stopwatch = Stopwatch()..start();
+    _timer = Timer.periodic(Duration(seconds: 1), (_) {});
     if (widget.path != null) {
       imageProvider = AssetImage(widget.path!);
     } else {
       imageProvider = FileImage(widget.file!);
     }
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
   }
 
   void changeColor(Color color) {
@@ -81,7 +97,6 @@ class _ImageColorPageState extends State<ImageColorPage> {
     );
   }
 
-  int _currentPaletteIndex = 0;
 
   // Define multiple color palettes
   final List<List<Color>> _colorPalettes = [
@@ -147,6 +162,26 @@ class _ImageColorPageState extends State<ImageColorPage> {
     setState(() {
       _currentPaletteIndex = index;
     });
+  }
+  Future<void> _submitColoring() async {
+    _stopwatch.stop();
+    int colorDuration = _stopwatch.elapsed.inSeconds;
+    String userId = FirebaseAuth.instance.currentUser?.uid ?? "Unknown";
+    String imageName = widget.path?.split('/').last ?? widget.file?.path.split('/').last ?? "Unknown";
+    String? imageType = widget.asset;
+
+    await FirebaseFirestore.instance.collection('coloring_logs').add({
+      'user_id': userId,
+      'image_name': imageName,
+      'color_duration': colorDuration,
+      'color_palette_id': _currentPaletteIndex,
+      'image_type': imageType,
+      'timestamp': Timestamp.now(),
+    });
+
+    Get.snackbar("Success", "Coloring saved successfully!");
+    Get.back();
+    Navigator.pop(context);
   }
 
   Future<void> _showPaletteSelectionDialog() async {
@@ -306,6 +341,10 @@ class _ImageColorPageState extends State<ImageColorPage> {
           icon: Icon(EraserIcon.icon_eraser),
         ),
         Spacer(),
+        ElevatedButton(
+          onPressed: _submitColoring,
+          child: Text("Submit"),
+        ),
         TextButton(
           onPressed: _showPaletteSelectionDialog,
           child: const Text("Change Palette"),

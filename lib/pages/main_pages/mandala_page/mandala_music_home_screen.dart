@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stress_management/pages/main_pages/eye_analysis/stress_scale_quiz.dart';
+import 'package:stress_management/pages/main_pages/mandala_page/prediction_and_history.dart';
 import 'package:stress_management/pages/main_pages/music_page/categories_screen.dart';
 import 'package:stress_management/pages/main_pages/quiz_page/quiz_screen.dart';
 import 'package:flutter/material.dart';
@@ -75,6 +76,29 @@ class MandalaMusicHomeScreen extends StatelessWidget {
                 ),
                 child: const Text(
                   'Music Listening',
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
+
+              SizedBox(height: 40),
+
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => PredictionAndHistory(),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  primary: AppColors.secondary,
+                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                  // shape: RoundedRectangleBorder(
+                  //   borderRadius: BorderRadius.circular(30),
+                  // ),
+                ),
+                child: const Text(
+                  'Prediction And History',
                   style: TextStyle(fontSize: 18),
                 ),
               ),

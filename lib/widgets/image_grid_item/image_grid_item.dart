@@ -27,6 +27,7 @@ class _ImageGridItemState extends State<ImageGridItem> {
         onTap: () {
           if (widget.asset != null && widget.path != null) {
             Get.to(() => ImageColorPage(
+              asset: widget.asset,
                   path: "assets/${widget.asset}/${widget.path}",
                 ));
           } else {

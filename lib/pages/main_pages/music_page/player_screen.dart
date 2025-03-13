@@ -1,10 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
 class PlayerScreen extends StatefulWidget {
-  final String trackName;
+  final Map<String, String> track;
 
-  PlayerScreen({required this.trackName});
+  PlayerScreen({required this.track});
 
   @override
   _PlayerScreenState createState() => _PlayerScreenState();
@@ -13,19 +15,23 @@ class PlayerScreen extends StatefulWidget {
 class _PlayerScreenState extends State<PlayerScreen> {
   final AudioPlayer _audioPlayer = AudioPlayer();
   bool isPlaying = false;
-  List<double> waveData = [];
-
-  final Map<String, String> trackUrls = {
-    'Track 1': 'https://res.cloudinary.com/dl3mpo0w3/video/upload/v1741783864/Music%20Tracks/Type%201%20-%20Deep%20Sleep%20Music%20%28Delta%20Waves%29/xdqs0agovocen6j76lwy.mp3',
-    'Track 2': 'https://res.cloudinary.com/dl3mpo0w3/video/upload/v1741783864/Music%20Tracks/Type%201%20-%20Deep%20Sleep%20Music%20%28Delta%20Waves%29/xdqs0agovocen6j76lwy.mp3',
-    'Track 3': 'https://res.cloudinary.com/YOUR_CLOUD_NAME/video/upload/v1234567890/track3.mpeg',
-    'Track 4': 'https://res.cloudinary.com/YOUR_CLOUD_NAME/video/upload/v1234567890/track4.mpeg',
-  };
+  Duration? totalDuration;
+  Duration listenedDuration = Duration.zero;
+  DateTime? startTime;
 
   @override
   void initState() {
     super.initState();
-    _audioPlayer.setUrl(trackUrls[widget.trackName]!);
+    _audioPlayer.setUrl(widget.track['url']!).then((_) {
+      setState(() {
+        totalDuration = _audioPlayer.duration;
+      });
+    });
+    _audioPlayer.positionStream.listen((position) {
+      setState(() {
+        listenedDuration = position;
+      });
+    });
   }
 
   void _togglePlayPause() async {
@@ -33,16 +39,39 @@ class _PlayerScreenState extends State<PlayerScreen> {
       setState(() {
         isPlaying = false;
       });
+
       await _audioPlayer.pause();
     } else {
       setState(() {
         isPlaying = true;
       });
+      startTime = DateTime.now();
       await _audioPlayer.play();
     }
     setState(() {
       isPlaying = !isPlaying;
     });
+  }
+
+  void _submitListeningData() async {
+    if (startTime == null || totalDuration == null) return;
+    final percentageListened = (listenedDuration.inSeconds / totalDuration!.inSeconds) * 100;
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      FirebaseFirestore.instance.collection('listening_logs').add({
+        'user_id': user.uid,
+        'track_title': widget.track['title'],
+        'date_time_listened': startTime,
+        'time_listened': listenedDuration.inSeconds,
+        'percentage_listened': percentageListened,
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Listening data submitted!')),
+      );
+      Navigator.pop(context);
+    }
   }
 
   @override
@@ -54,21 +83,22 @@ class _PlayerScreenState extends State<PlayerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.trackName)),
+      appBar: AppBar(title: Text(widget.track['title']!)),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Playing ${widget.trackName}', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            Text('Playing ${widget.track['title']}', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
             SizedBox(height: 20),
             StreamBuilder<Duration?> (
               stream: _audioPlayer.positionStream,
               builder: (context, snapshot) {
+                final duration = _audioPlayer.duration?.inSeconds ?? 1;
                 return Column(
                   children: [
                     LinearProgressIndicator(
-                      value: snapshot.hasData ? snapshot.data!.inSeconds / (_audioPlayer.duration?.inSeconds ?? 1) : 0.0,
+                      value: snapshot.hasData && duration > 0 ? snapshot.data!.inSeconds / duration : 0.0,
                       backgroundColor: Colors.grey,
                       color: Colors.blue,
                     ),
@@ -87,9 +117,15 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 padding: EdgeInsets.all(20),
               ),
             ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _submitListeningData,
+              child: Text("Submit Listening Data"),
+            ),
           ],
         ),
       ),
     );
   }
 }
+
