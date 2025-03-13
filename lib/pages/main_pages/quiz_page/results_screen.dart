@@ -8,10 +8,16 @@ import 'mood_log_screen.dart';
 class ResultsScreen extends StatelessWidget {
   final List<String> selectedAnswers;
 
+
   ResultsScreen({required this.selectedAnswers});
 
   @override
   Widget build(BuildContext context) {
+    List<String> answerNumbers = selectedAnswers.map((answer) {
+      return answer[0]; // Get the first character
+    }).toList();
+
+    print(answerNumbers);
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -61,7 +67,7 @@ class ResultsScreen extends StatelessWidget {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => MoodLogScreen(),
+                      builder: (context) => MoodLogScreen(predictedDays: 8),
                     ),
                   );
                 },
@@ -73,7 +79,7 @@ class ResultsScreen extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  'Save My Mood Log 💾',
+                  'Predict & Save My Mood Log 💾',
                   style: TextStyle(fontSize: 18, color: AppColors.secondary,),
                 ),
               ),

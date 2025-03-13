@@ -7,7 +7,8 @@ import 'daily_reminder_screen.dart';
 
 
 class MoodLogScreen extends StatefulWidget {
-  const MoodLogScreen({Key? key}) : super(key: key);
+  final int predictedDays;
+  const MoodLogScreen({Key? key, required this.predictedDays}) : super(key: key);
 
   @override
   State<MoodLogScreen> createState() => _MoodLogScreenState();
@@ -24,6 +25,18 @@ class _MoodLogScreenState extends State<MoodLogScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Text(
+              'Predicted Recovery Days',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.green),
+            ),
+            SizedBox(height: 20),
+            Text(
+              "${widget.predictedDays}",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 60, fontWeight: FontWeight.bold, color: Colors.black),
+            ),
+            SizedBox(height: 20),
             Text(
               '🌟 \"Your Personalized Stress-Free Plan\"',
               textAlign: TextAlign.center,
