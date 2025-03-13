@@ -65,16 +65,48 @@ class _ChatScreenState extends State<ChatScreen> {
       isLoading = true;
     });
 
+    // Hugging Face API endpoint
+    final apiUrl = "https://api-inference.huggingface.co/models/deepseek-ai/DeepSeek-R1-Distill-Qwen-32B";
+
+    // Prepare the payload
+    final payload = {
+      "inputs": "You are a friendly chatbot created by AYURAURA. Provide clear, accurate, and brief answers. Keep responses polite, engaging, and to the point. If unsure, politely suggest alternatives.\n\nUser: ${message}\nAssistant:",
+      "parameters": {
+        "max_new_tokens": 100, // Adjust as needed
+        "temperature": 0.3,     // Adjust as needed
+        "top_p": 0.6,           // Adjust as needed
+        "return_full_text": false
+      }
+    };
+
+    // Send the request
     final response = await http.post(
-      Uri.parse("https://5cd4-34-143-131-3.ngrok-free.app/"),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode({"input": message}),
+      Uri.parse(apiUrl),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer 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", // Your Hugging Face token
+      },
+      body: jsonEncode(payload),
     );
 
+    // Handle the response
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
+      if (data is List && data.isNotEmpty && data[0].containsKey("generated_text")) {
+        final assistantResponse = data[0]["generated_text"].trim();
+        setState(() {
+          messages.add({"text": assistantResponse, "isUser": false});
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          messages.add({"text": "Error: Unexpected response format", "isUser": false});
+          isLoading = false;
+        });
+      }
+    } else {
       setState(() {
-        messages.add({"text": data["output"], "isUser": false});
+        messages.add({"text": "Error: Failed to fetch response (Status Code: ${response.statusCode})", "isUser": false});
         isLoading = false;
       });
     }
