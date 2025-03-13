@@ -250,10 +250,10 @@ class _ImageColorPageState extends State<ImageColorPage> {
               buildRow(),
               Container(
                 width: w,
-                height: h,
+                height: MediaQuery.of(context).size.height - 200,
                 child: Zoom(
-                  maxZoomHeight: 600,
-                  maxZoomWidth: 600,
+                  maxZoomHeight: 5000,
+                  maxZoomWidth: 5000,
                   initZoom: 0,
                   child: Center(
                     child: FloodFillImage(
@@ -277,39 +277,6 @@ class _ImageColorPageState extends State<ImageColorPage> {
     );
   }
 
-  Future<void> _showSaveDialog() async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Save Coloring'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: const <Widget>[
-                // Text('Save Coloring'),
-                Text('Do you want to save the coloring?'),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () async {
-                Get.back();
-              },
-            ),
-            TextButton(
-              child: const Text('Save'),
-              onPressed: () async {
-                // await context.read<MainProvider>().saveImage();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   SingleChildScrollView selectedColorPalette() {
     return SingleChildScrollView(
