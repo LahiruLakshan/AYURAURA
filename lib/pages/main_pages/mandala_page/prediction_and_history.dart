@@ -73,117 +73,126 @@ class _PredictionAndHistoryState extends State<PredictionAndHistory> {
   Widget build(BuildContext context) {
     return Scaffold(
       // backgroundColor: Colors.black,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 80.0, horizontal: 20),
-        child: Center(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Prediction Stress and History',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.green),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => CategoriesScreen(),
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: AppColors.secondary,
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                  // shape: RoundedRectangleBorder(
-                  //   borderRadius: BorderRadius.circular(30),
-                  // ),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            opacity: 0.3,
+            image: AssetImage("assets/bg_logo.png"), // Path to your image
+            fit: BoxFit.contain, // Cover the entire screen
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 80.0, horizontal: 20),
+          child: Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Prediction Stress and History',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.green),
                 ),
-                child: const Text(
-                  'Mandala Arts History',
-                  style: TextStyle(fontSize: 18),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => CategoriesScreen(),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: AppColors.secondary,
+                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                    // shape: RoundedRectangleBorder(
+                    //   borderRadius: BorderRadius.circular(30),
+                    // ),
+                  ),
+                  child: const Text(
+                    'Mandala Arts History',
+                    style: TextStyle(fontSize: 18),
+                  ),
                 ),
-              ),
 
-              SizedBox(height: 40),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => ListeningHistoryScreen(),
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: AppColors.secondary,
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                  // shape: RoundedRectangleBorder(
-                  //   borderRadius: BorderRadius.circular(30),
-                  // ),
+                SizedBox(height: 40),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ListeningHistoryScreen(),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: AppColors.secondary,
+                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                    // shape: RoundedRectangleBorder(
+                    //   borderRadius: BorderRadius.circular(30),
+                    // ),
+                  ),
+                  child: Text(
+                    'Listening History',
+                    style: TextStyle(fontSize: 18),
+                  ),
                 ),
-                child: Text(
-                  'Listening History',
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
-              SizedBox(height: 40),
+                SizedBox(height: 40),
 
-              ElevatedButton(
-                onPressed: () {
-                  predictStress();
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: AppColors.secondary,
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                  // shape: RoundedRectangleBorder(
-                  //   borderRadius: BorderRadius.circular(30),
-                  // ),
+                ElevatedButton(
+                  onPressed: () {
+                    predictStress();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: AppColors.secondary,
+                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                    // shape: RoundedRectangleBorder(
+                    //   borderRadius: BorderRadius.circular(30),
+                    // ),
+                  ),
+                  child: const Text(
+                    'Predict Stress',
+                    style: TextStyle(fontSize: 18),
+                  ),
                 ),
-                child: const Text(
-                  'Predict Stress',
-                  style: TextStyle(fontSize: 18),
+                SizedBox(height: 40),
+                FutureBuilder<QuerySnapshot>(
+                  future: FirebaseFirestore.instance.collection('listening_logs')
+                      .orderBy('time_listened', descending: true)
+                      .limit(1)
+                      .get(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) return CircularProgressIndicator();
+                    if (snapshot.data!.docs.isEmpty) return Text("No most played track.");
+                    var track = snapshot.data!.docs.first.data() as Map<String, dynamic>;
+                    return Card(
+                      color: Colors.blueGrey,
+                      child: ListTile(
+                        title: Text(track['track_title'], style: TextStyle(color: Colors.white)),
+                        subtitle: Text("Listened for ${track['time_listened']} seconds", style: TextStyle(color: Colors.white70)),
+                      ),
+                    );
+                  },
                 ),
-              ),
-              SizedBox(height: 40),
-              FutureBuilder<QuerySnapshot>(
-                future: FirebaseFirestore.instance.collection('listening_logs')
-                    .orderBy('time_listened', descending: true)
-                    .limit(1)
-                    .get(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) return CircularProgressIndicator();
-                  if (snapshot.data!.docs.isEmpty) return Text("No most played track.");
-                  var track = snapshot.data!.docs.first.data() as Map<String, dynamic>;
-                  return Card(
-                    color: Colors.blueGrey,
-                    child: ListTile(
-                      title: Text(track['track_title'], style: TextStyle(color: Colors.white)),
-                      subtitle: Text("Listened for ${track['time_listened']} seconds", style: TextStyle(color: Colors.white70)),
-                    ),
-                  );
-                },
-              ),
-              SizedBox(height: 40),
-              FutureBuilder<QuerySnapshot>(
-                future: FirebaseFirestore.instance.collection('coloring_logs')
-                    .orderBy('timestamp', descending: true)
-                    .limit(1)
-                    .get(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) return CircularProgressIndicator();
-                  if (snapshot.data!.docs.isEmpty) return Text("No coloring logs.");
-                  var coloringLog = snapshot.data!.docs.first.data() as Map<String, dynamic>;
-                  return Card(
-                    color: Colors.deepPurple,
-                    child: ListTile(
-                      title: Text(coloringLog['image_name'], style: TextStyle(color: Colors.white)),
-                      subtitle: Text("Colored for ${coloringLog['color_duration']} seconds", style: TextStyle(color: Colors.white70)),
-                    ),
-                  );
-                },
-              ),
-            ],
+                SizedBox(height: 40),
+                FutureBuilder<QuerySnapshot>(
+                  future: FirebaseFirestore.instance.collection('coloring_logs')
+                      .orderBy('timestamp', descending: true)
+                      .limit(1)
+                      .get(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) return CircularProgressIndicator();
+                    if (snapshot.data!.docs.isEmpty) return Text("No coloring logs.");
+                    var coloringLog = snapshot.data!.docs.first.data() as Map<String, dynamic>;
+                    return Card(
+                      color: Colors.deepPurple,
+                      child: ListTile(
+                        title: Text(coloringLog['image_name'], style: TextStyle(color: Colors.white)),
+                        subtitle: Text("Colored for ${coloringLog['color_duration']} seconds", style: TextStyle(color: Colors.white70)),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

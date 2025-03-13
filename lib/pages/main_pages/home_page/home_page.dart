@@ -1,3 +1,4 @@
+import 'package:stress_management/constants/colors.dart';
 import 'package:stress_management/pages/image_list_page/image_grid_list_page.dart';
 import 'package:stress_management/pages/main_pages/mandala_page/mandala_music_home_screen.dart';
 import 'package:stress_management/pages/navigator_page/mandala_navigator_page.dart';
@@ -24,17 +25,26 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(150.0),
+        preferredSize: Size.fromHeight(100.0),
         child: AppBar(
           automaticallyImplyLeading: false, // This hides the back button
-          backgroundColor: Color(0xFF2E7D32),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
           flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF4CAF50), Color(0xFF2D7231)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
             padding: EdgeInsets.fromLTRB(16.0, 60.0, 16.0, 16.0),
-            alignment: Alignment.bottomLeft,
+            alignment: Alignment.center,
             child: Text(
-              'Stress Management',
+              'AYURAURA',
               style: TextStyle(
-                fontSize: 28.0,
+                fontFamily: 'Chocolate',
+                fontSize: 50.0,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
@@ -42,54 +52,96 @@ class _HomePageState extends State<HomePage> {
           ),
           actions: [
             IconButton(
-              icon: Icon(Icons.account_circle, size: 32),
+              icon: Icon(Icons.account_circle, size: 32, color: Colors.white),
               onPressed: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => ProfilePage()),
               ),
             ),
           ],
-          // ... rest of your existing AppBar code
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Center(
-          child: GridView.count(
-            crossAxisCount: 2,
-            crossAxisSpacing: 16.0,
-            mainAxisSpacing: 16.0,
-            children: [
-              _buildMenuButton(context, 'Mandala Arts & Music', MandalaMusicHomeScreen()),
-              _buildMenuButton(context, 'Quiz Page', QuizHomeScreen()),
-              _buildMenuButton(context, 'Eye Analysis', EyeAnalysisHomeScreen()),
-              _buildMenuButton(context, 'Behaviors Quiz', BehaviorsQuizHomePage()),
-            ],
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            opacity: 0.3,
+            image: AssetImage("assets/bg_logo.png"), // Path to your image
+            fit: BoxFit.contain, // Cover the entire screen
           ),
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Center(
+                  child: GridView.count(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16.0,
+                    mainAxisSpacing: 16.0,
+                    children: [
+                      _buildMenuButton(context, 'Mandala Arts\n &\n Music', Icons.color_lens, MandalaMusicHomeScreen()),
+                      _buildMenuButton(context, 'Quiz Page', Icons.quiz, QuizHomeScreen()),
+                      _buildMenuButton(context, 'Eye Analysis', Icons.remove_red_eye, EyeAnalysisHomeScreen()),
+                      _buildMenuButton(context, 'Behaviors Quiz', Icons.psychology, BehaviorsQuizHomePage()),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: Text(
+                'Powered by Team AYURAURA',
+                style: TextStyle(
+                  fontSize: 14.0,
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildMenuButton(BuildContext context, String title, Widget page) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        padding: EdgeInsets.all(24.0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.0),
-        ),
-        backgroundColor: Colors.green,
+  Widget _buildMenuButton(BuildContext context, String title, IconData icon, Widget page) {
+    return Card(
+      elevation: 8,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16.0),
       ),
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => page),
-        );
-      },
-      child: Text(
-        title,
-        textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 18.0, color: Colors.white),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16.0),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => page),
+          );
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16.0),
+            gradient: LinearGradient(
+              colors: [Color(0xFF4CAF50), Color(0xFF2D7231)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 48, color: Colors.white),
+              SizedBox(height: 8),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 18.0, color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

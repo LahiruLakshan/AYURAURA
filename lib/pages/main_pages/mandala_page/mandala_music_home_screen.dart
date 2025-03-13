@@ -18,92 +18,101 @@ class MandalaMusicHomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 80.0, horizontal: 20),
-        child: Center(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Mandala Arts & Music',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.secondary,
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            opacity: 0.1,
+            image: AssetImage("assets/bg_logo.png"), // Path to your image
+            fit: BoxFit.contain, // Cover the entire screen
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 80.0, horizontal: 20),
+          child: Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Mandala Arts & Music',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.secondary,
+                  ),
                 ),
-              ),
 
 
-              SizedBox(height: 40),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => MandalaNavigator(),
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: AppColors.secondary,
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                  // shape: RoundedRectangleBorder(
-                  //   borderRadius: BorderRadius.circular(30),
-                  // ),
+                SizedBox(height: 40),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => MandalaNavigator(),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: AppColors.secondary,
+                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                    // shape: RoundedRectangleBorder(
+                    //   borderRadius: BorderRadius.circular(30),
+                    // ),
+                  ),
+                  child: Text(
+                    'Mandala Arts',
+                    style: TextStyle(fontSize: 18),
+                  ),
                 ),
-                child: Text(
-                  'Mandala Arts',
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
-              SizedBox(height: 40),
+                SizedBox(height: 40),
 
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => CategoriesScreen(),
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: AppColors.secondary,
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                  // shape: RoundedRectangleBorder(
-                  //   borderRadius: BorderRadius.circular(30),
-                  // ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => CategoriesScreen(),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: AppColors.secondary,
+                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                    // shape: RoundedRectangleBorder(
+                    //   borderRadius: BorderRadius.circular(30),
+                    // ),
+                  ),
+                  child: const Text(
+                    'Music Listening',
+                    style: TextStyle(fontSize: 18),
+                  ),
                 ),
-                child: const Text(
-                  'Music Listening',
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
 
-              SizedBox(height: 40),
+                SizedBox(height: 40),
 
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => PredictionAndHistory(),
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: AppColors.secondary,
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                  // shape: RoundedRectangleBorder(
-                  //   borderRadius: BorderRadius.circular(30),
-                  // ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => PredictionAndHistory(),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: AppColors.secondary,
+                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                    // shape: RoundedRectangleBorder(
+                    //   borderRadius: BorderRadius.circular(30),
+                    // ),
+                  ),
+                  child: const Text(
+                    'Prediction And History',
+                    style: TextStyle(fontSize: 18),
+                  ),
                 ),
-                child: const Text(
-                  'Prediction And History',
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
 
-            ],
+              ],
+            ),
           ),
         ),
       ),

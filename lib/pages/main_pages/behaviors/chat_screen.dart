@@ -2,225 +2,200 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:stress_management/constants/colors.dart';
+
 class ChatScreen extends StatefulWidget {
   @override
   _ChatScreenState createState() => _ChatScreenState();
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final TextEditingController _controller = TextEditingController();
-  final List<MessageBubble> _messages = [];
-  final String _apiUrl = "http://127.0.0.1:5000/api/chat";
-  bool _isBotThinking = false;
-  bool _isOpenAIMode = false;
+  List<Map<String, dynamic>> messages = [
+    {"text": "Hello! How are you feeling today?", "options": [
+      "I'm feeling great!",
+      "I'm feeling okay, just neutral.",
+      "I'm feeling a little stressed today."
+    ]}
+  ];
+  bool enableTextField = false;
+  bool isLoading = false;
+  TextEditingController _controller = TextEditingController();
 
-  void _sendMessage([String? quickReply]) async {
-    String message = quickReply ?? _controller.text.trim();
-    if (message.isEmpty) return;
-
+  void _handleResponse(String response) {
     setState(() {
-      _messages.add(MessageBubble(text: message, isUser: true, onOptionSelected: (String ) {  },));
-      _isBotThinking = true;
-    });
+      messages.add({"text": response, "isUser": true});
 
-    if (quickReply == null) {
-      _controller.clear();
-    }
+      if (response == "I'm feeling great!") {
+        messages.add({
+          "text": "That's wonderful to hear! Keep up the positive energy!\n\nIs there anything else you'd like to talk about, or shall we wrap up?",
+          "options": [
+            "Yes, let's wrap it up. Thank you!",
+            "No, I still have something to talk about."
+          ]
+        });
 
-    try {
-      final response = await http.post(
-        Uri.parse(_apiUrl),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({'message': message}),
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        _handleBotResponse(data);
+      } else if (response == "I'm feeling okay, just neutral.") {
+        messages.add({
+          "text": "Neutral can be peaceful. Is there anything I can do to help make your day even better?\n\nIf you'd like to chat more, I'm here! Otherwise, we can wrap up.",
+          "options": [
+            "Yes, let's wrap it up. Thank you!",
+            "No, I still have something to talk about."
+          ]
+        });
+      } else if (response == "I'm feeling a little stressed today.") {
+        messages.add({
+          "text": "I hear you. Stress can sneak up on us sometimes. Would you like to talk about it?",
+          "options": [
+            "No, I think I’m good for now.",
+            "Yes, I’d like to talk about it."
+          ]
+        });
+      } else if (response == "Yes, I’d like to talk about it." || response == "No, I still have something to talk about.") {
+        messages.add({
+          "text": "Sure! What's been on your mind?",
+        });
+        enableTextField = true;
       }
-    } catch (e) {
-      _showError('Connection error: $e');
-    } finally {
-      setState(() => _isBotThinking = false);
-    }
-  }
-
-  void _handleBotResponse(Map<String, dynamic> data) {
-    final type = data['type'];
-    final response = data['response'];
-
-    setState(() {
-      _messages.add(MessageBubble(
-        text: response,
-        isUser: false,
-        type: type,
-        options: data['options'] != null
-            ? List<String>.from(data['options'])
-            : null,
-        onOptionSelected: (option) => _sendMessage(option),
-      ));
-
-      if (type == 'openai') _isOpenAIMode = true;
-      if (type == 'end') _resetChat();
     });
   }
 
-  void _resetChat() {
+  Future<void> _sendMessageToAPI(String message) async {
     setState(() {
-      _messages.clear();
-      _isOpenAIMode = false;
+      messages.add({"text": message, "isUser": true});
+      isLoading = true;
     });
-  }
 
-  void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: Colors.red),
+    final response = await http.post(
+      Uri.parse("https://5cd4-34-143-131-3.ngrok-free.app/"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"input": message}),
     );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      setState(() {
+        messages.add({"text": data["output"], "isUser": false});
+        isLoading = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Mindful Chat 🌿'),
-        backgroundColor: Colors.green[700],
-        actions: [
-          IconButton(
-            icon: Icon(Icons.refresh),
-            onPressed: _resetChat,
-            color: Colors.white,
-          )
-        ],
+        title: Text("Chat with Mochi"),
+        backgroundColor: AppColors.secondary,
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              reverse: true,
-              padding: EdgeInsets.all(16),
-              itemCount: _messages.length,
-              itemBuilder: (ctx, index) => _messages.reversed.toList()[index],
-            ),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            opacity: 0.3,
+            image: AssetImage("assets/bg_logo.png"), // Path to your image
+            fit: BoxFit.contain, // Cover the entire screen
           ),
-          if (_isBotThinking)
-            Padding(
-              padding: EdgeInsets.all(16),
-              child: CircularProgressIndicator(color: Colors.green),
-            ),
-          _buildInputSection(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInputSection() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.green[50],
-        boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)],
-      ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        ),
         child: Column(
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _controller,
-                    decoration: InputDecoration(
-                      hintText: _isOpenAIMode
-                          ? "Type your message..."
-                          : "Select an option or type...",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        borderSide: BorderSide.none,
+            Expanded(
+              child: ListView.builder(
+                padding: EdgeInsets.all(12.0),
+                itemCount: messages.length + (isLoading ? 1 : 0),
+                itemBuilder: (context, index) {
+                  if (index == messages.length && isLoading) {
+                    return Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            CircularProgressIndicator(color: AppColors.secondary),
+                            SizedBox(width: 10),
+                            Text("Generating response...", style: TextStyle(color: AppColors.primary)),
+                          ],
+                        ),
                       ),
-                      filled: true,
-                      fillColor: Colors.white,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                    );
+                  }
+
+                  final message = messages[index];
+                  return Align(
+                    alignment: message["isUser"] == true
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
+                    child: Container(
+                      margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+                      padding: EdgeInsets.all(12.0),
+                      decoration: BoxDecoration(
+                        color: message["isUser"] == true ? AppColors.secondary : Colors.grey[800],
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(12.0),
+                          topRight: Radius.circular(12.0),
+                          bottomLeft: message["isUser"] == true ? Radius.circular(12.0) : Radius.zero,
+                          bottomRight: message["isUser"] == true ? Radius.zero : Radius.circular(12.0),
+                        ),
+                      ),
+                      child: Text(
+                        message["text"],
+                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      ),
                     ),
-                    onSubmitted: (_) => _sendMessage(),
-                  ),
-                ),
-                SizedBox(width: 8),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.green[700],
-                    shape: BoxShape.circle,
-                  ),
-                  child: IconButton(
-                    icon: Icon(Icons.send, color: Colors.white),
-                    onPressed: () => _sendMessage(),
-                  ),
-                ),
-              ],
+                  );
+                },
+              ),
             ),
-            SizedBox(height: 8),
+            if (messages.last.containsKey("options"))
+              Wrap(
+                spacing: 8.0,
+                children: (messages.last["options"] as List<String>).map((option) {
+                  return ElevatedButton(
+                    onPressed: () => _handleResponse(option),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.secondary,
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
+                    child: Text(option, style: TextStyle(fontSize: 16)),
+                  );
+                }).toList(),
+              ),
+            if (enableTextField)
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _controller,
+                        style: TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+                          hintText: "Type your message...",
+                          hintStyle: TextStyle(color: Colors.grey),
+                          filled: true,
+                          fillColor: Colors.grey[900],
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.0),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    IconButton(
+                      icon: Icon(Icons.send, color: AppColors.secondary),
+                      onPressed: () {
+                        if (_controller.text.isNotEmpty) {
+                          _sendMessageToAPI(_controller.text);
+                          _controller.clear();
+                        }
+                      },
+                    )
+                  ],
+                ),
+              ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class MessageBubble extends StatelessWidget {
-  final String text;
-  final bool isUser;
-  final String? type;
-  final List<String>? options;
-  final void Function(String)? onOptionSelected;
-
-  const MessageBubble({
-    required this.text,
-    required this.isUser,
-    this.type,
-    this.options,
-    this.onOptionSelected,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8),
-      child: Column(
-        crossAxisAlignment:
-        isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-        children: [
-          Container(
-            constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.8),
-            decoration: BoxDecoration(
-              color: isUser ? Colors.green[100] : Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 2)],
-            ),
-            padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(text, style: TextStyle(
-                  color: Colors.green[900],
-                  fontSize: 16,
-                )),
-                if (options != null && options!.isNotEmpty)
-                  Padding(
-                    padding: EdgeInsets.only(top: 8),
-                    child: Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: options!.map((option) => ActionChip(
-                        label: Text(option),
-                        backgroundColor: Colors.green[50],
-                        labelStyle: TextStyle(color: Colors.green[800]),
-                        onPressed: () => onOptionSelected?.call(option),
-                      )).toList(),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }
