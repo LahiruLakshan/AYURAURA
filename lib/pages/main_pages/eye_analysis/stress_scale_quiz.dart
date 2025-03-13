@@ -18,6 +18,8 @@ class StressScaleQuiz extends StatefulWidget {
 
 class _StressScaleQuizState extends State<StressScaleQuiz> {
   bool _isLoading = false;
+  bool _predictionDone = false;
+  double confidence = 33.01;
   final List<String> questions = [
     "In the last month, how often have you been upset because of something that happened unexpectedly?",
     "In the last month, how often have you felt that you were unable to control the important things in your life?",
@@ -88,8 +90,9 @@ class _StressScaleQuizState extends State<StressScaleQuiz> {
   }
 
   String _getStressLevel() {
-    if (_totalScore <= 13) return 'Low Stress';
-    if (_totalScore <= 26) return 'Moderate Stress';
+    print("((_totalScore/40*100) + confidence)/2 :----------   ${((_totalScore/40*100) + confidence)/2}");
+    if (((_totalScore/40*100) + confidence)/2 <= 33) return 'Low Stress';
+    if (((_totalScore/40*100) + confidence)/2 <= 65) return 'Moderate Stress';
     return 'High Perceived Stress';
   }
 
@@ -131,8 +134,10 @@ class _StressScaleQuizState extends State<StressScaleQuiz> {
 
   Widget _buildResults(BuildContext context) {
 
+
     Future<void> _analyzeStress() async {
       setState(() => _isLoading = true);
+
 
       try {
         final request = http.MultipartRequest(
@@ -152,12 +157,13 @@ class _StressScaleQuizState extends State<StressScaleQuiz> {
         print("-----------------" + responseBody);
 
         if (response.statusCode == 200) {
-          Navigator.push(
-            context, // Correct context here
-            MaterialPageRoute(
-              builder: (context) => EyeStressLevelScreen(responseData: responseBody),
-            ),
-          );
+          setState(() => _predictionDone = true);
+          // Navigator.push(
+          //   context, // Correct context here
+          //   MaterialPageRoute(
+          //     builder: (context) => EyeStressLevelScreen(responseData: responseBody),
+          //   ),
+          // );
         } else {
           _showError('Analysis failed: ${response.reasonPhrase}');
         }
@@ -165,61 +171,114 @@ class _StressScaleQuizState extends State<StressScaleQuiz> {
         _showError('Connection error: $e');
       } finally {
         setState(() => _isLoading = false);
+
       }
     }
 
-    return Column(
-      children: [
-        Text(
-          'Your PSS Score: $_totalScore',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 20),
-        Text(
-          _getStressLevel(),
-          style: TextStyle(
-            fontSize: 22,
-            color: _totalScore <= 13
-                ? Colors.green
-                : _totalScore <= 26
-                ? Colors.orange
-                : Colors.red,
+    return Center(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            'Your PSS Score: $_totalScore',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
-        ),
-        SizedBox(height: 30),
-        Text(
-          'Score Interpretation:',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 10),
-        Text('0-13: Low Stress\n14-26: Moderate Stress\n27-40: High Perceived Stress'),
-        SizedBox(height: 30),
-        Text(
-          'Disclaimer: This self-assessment does not reflect any particular diagnosis or course of treatment. '
-              'It is meant as a tool to help assess your stress level. If you have concerns about your well-being, '
-              'please consult a professional.',
-          style: TextStyle(fontStyle: FontStyle.italic),
-          textAlign: TextAlign.center,
-        ),
-        SizedBox(height: 30),
-        ElevatedButton.icon(
-          icon: _isLoading
-              ? const SizedBox.shrink()
-              : const Icon(Icons.analytics, size: 24),
-          label: _isLoading
-              ? const CircularProgressIndicator()
-              : const Text('Analyze Stress Level'),
-          onPressed: _isLoading ? null : _analyzeStress,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.secondary,
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
-            // shape: RoundedRectangleBorder(
-            //   borderRadius: BorderRadius.circular(30),
-            // ),
-          ),
-        ),
 
-      ],
+
+
+          SizedBox(height: 20),
+          ElevatedButton.icon(
+            icon: _isLoading
+                ? const SizedBox.shrink()
+                : const Icon(Icons.analytics, size: 24),
+            label: _isLoading
+                ? const CircularProgressIndicator()
+                : const Text('Analyze Stress Level'),
+            onPressed: _isLoading ? null : _analyzeStress,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.secondary,
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+              // shape: RoundedRectangleBorder(
+              //   borderRadius: BorderRadius.circular(30),
+              // ),
+            ),
+          ),
+          SizedBox(height: 20),
+
+          if(_predictionDone)
+            Text(
+              _getStressLevel(),
+              style: TextStyle(
+                fontSize: 22,
+                color: ((_totalScore/40*100) + confidence)/2 <= 33
+                    ? Colors.green
+                    : ((_totalScore/40*100) + confidence)/2 <= 65
+                    ? Colors.orange
+                    : Colors.red,
+              ),
+            ),
+
+          if(_predictionDone)
+            Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      SizedBox(
+                        width: 120,
+                        height: 120,
+                        child: CircularProgressIndicator(
+                          value: ((_totalScore/40*100) + confidence)/200,
+                          strokeWidth: 8,
+                          backgroundColor: Colors.grey[300],
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                        ),
+                      ),
+                      Text('${(((_totalScore/40*100) + (confidence))/2).toStringAsFixed(2)}%'),
+                    ],
+                  ),
+                  SizedBox(height: 32),
+
+                  ElevatedButton(
+                    onPressed: () {
+                      // Navigate back to the main page
+                      Navigator.popUntil(context, (route) => route.isFirst);
+                    },
+                    child: const Text('Return to Main Page'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.secondary,
+                      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                      // shape: RoundedRectangleBorder(
+                      //   borderRadius: BorderRadius.circular(30),
+                      // ),
+                    ),
+                  ),
+                  SizedBox(height: 30),
+                  Text(
+                    'Percentage Interpretation:',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 10),
+                  Text('0%-33%: Low Stress\n34%-65%: Moderate Stress\n66%-100%: High Perceived Stress'),
+                  SizedBox(height: 30),
+                  Text(
+                    'Disclaimer: This self-assessment does not reflect any particular diagnosis or course of treatment. '
+                        'It is meant as a tool to help assess your stress level. If you have concerns about your well-being, '
+                        'please consult a professional.',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
