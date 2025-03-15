@@ -91,8 +91,10 @@ class _StressScaleQuizState extends State<StressScaleQuiz> {
 
   String _getStressLevel() {
     print("((_totalScore/40*100) + confidence)/2 :----------   ${((_totalScore/40*100) + confidence)/2}");
-    if (((_totalScore/40*100) + confidence)/2 <= 33) return 'Low Stress';
-    if (((_totalScore/40*100) + confidence)/2 <= 65) return 'Moderate Stress';
+    if (((_totalScore/40*100) + confidence)/2 <= 13) return 'Low Stress';
+    if (((_totalScore/40*100) + confidence)/2 <= 26) return 'Moderate Stress';
+    if (((_totalScore/40*100) + confidence)/2 <= 34) return 'Severe Stress';
+    if (((_totalScore/40*100) + confidence)/2 <= 65) return 'Critical Stress';
     return 'High Perceived Stress';
   }
 
@@ -210,9 +212,9 @@ class _StressScaleQuizState extends State<StressScaleQuiz> {
               _getStressLevel(),
               style: TextStyle(
                 fontSize: 22,
-                color: ((_totalScore/40*100) + confidence)/2 <= 33
+                color: ((_totalScore/40*100) + confidence)/2 <= 13
                     ? Colors.green
-                    : ((_totalScore/40*100) + confidence)/2 <= 65
+                    : ((_totalScore/40*100) + confidence)/2 <= 34
                     ? Colors.orange
                     : Colors.red,
               ),

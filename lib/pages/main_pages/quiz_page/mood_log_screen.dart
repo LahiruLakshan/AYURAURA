@@ -135,9 +135,27 @@ class _MoodLogScreenState extends State<MoodLogScreen> {
                 style: TextStyle(fontSize: 18, color: AppColors.secondary),
               ),
             ),
+            SizedBox(height: 20),
+            _buildBackButton(context)
           ],
         ),
       ),
     );
   }
+}
+Widget _buildBackButton(BuildContext context) {
+  return Center(
+    child: ElevatedButton.icon(
+      icon: const Icon(Icons.arrow_back, size: 20),
+      label: const Text('Back to Home'),
+      onPressed: () => Navigator.of(context).pushReplacementNamed('/home'),
+      style: ElevatedButton.styleFrom(
+        primary: AppColors.primary,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30),
+        ),
+      ),
+    ),
+  );
 }

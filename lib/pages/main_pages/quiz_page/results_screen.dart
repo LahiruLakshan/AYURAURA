@@ -19,6 +19,7 @@ class ResultsScreen extends StatefulWidget {
 }
 
 class _ResultsScreenState extends State<ResultsScreen> {
+  bool _isLoading = false;
   double stressLevel = 0;
   int daysSinceRegistration = 0;
   Map<String, dynamic> data = <String, dynamic>{};
@@ -87,8 +88,46 @@ class _ResultsScreenState extends State<ResultsScreen> {
     print(answerNumbers);
     print(daysSinceRegistration);
     print(data["gender"]);
+    Future<void> saveMoodLog(int predictedDays) async {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        print("No user logged in.");
+        return;
+      }
+
+      CollectionReference moodLogs = FirebaseFirestore.instance.collection('mood_logs');
+      String today = DateTime.now().toIso8601String().split("T")[0]; // Get only the date
+
+      QuerySnapshot query = await moodLogs
+          .where("userId", isEqualTo: user.uid)
+          .where("date", isEqualTo: today)
+          .limit(1)
+          .get();
+
+      Map<String, dynamic> moodData = {
+        "userId": user.uid,
+        "date": today,
+        "stress": answerNumbers[0],
+        "happiness": answerNumbers[1],
+        "calmness": answerNumbers[2],
+        "energy": answerNumbers[3],
+        "predictedRecoveryDays": predictedDays,
+        "timestamp": FieldValue.serverTimestamp(),
+      };
+
+      if (query.docs.isNotEmpty) {
+        // Update the existing mood log
+        await moodLogs.doc(query.docs.first.id).update(moodData);
+        print("Mood log updated for today.");
+      } else {
+        // Create a new mood log
+        await moodLogs.add(moodData);
+        print("New mood log saved.");
+      }
+    }
 
     Future<void> predictStress() async {
+      setState(() => _isLoading = true);
       try {
         final listeningSnapshot = await FirebaseFirestore.instance
             .collection('listening_logs')
@@ -125,6 +164,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
           "DurationofParticipation": listeningData['time_listened'] + coloringData['color_duration'],
           "BaseRecoveryDays": daysSinceRegistration >= 4 ? 5:10,
         };
+        print("payload : $payload");
         final response = await http.post(
           url,
           headers: {"Content-Type": "application/json"},
@@ -132,21 +172,29 @@ class _ResultsScreenState extends State<ResultsScreen> {
         );
 
         if (response.statusCode == 200) {
-          final data = jsonDecode(response.body);
-          print("data : $data");
+          final responseData = jsonDecode(response.body);
+          print("Response: $responseData");
+
           setState(() {
-            stressLevel = data["predicted_recovery_Days"];
+            stressLevel = responseData["predicted_recovery_Days"];
           });
+
+          await saveMoodLog(responseData["predicted_recovery_Days"].round());
+          setState(() => _isLoading = false);
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => MoodLogScreen(predictedDays: data["predicted_recovery_Days"].round()),
+              builder: (context) => MoodLogScreen(predictedDays: responseData["predicted_recovery_Days"].round()),
             ),
           );
         }
       } catch (e) {
         print("Error predicting stress: $e");
+        setState(() => _isLoading = false);
       }
     }
+
+
+
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -193,7 +241,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
                 );
               }).toList(),
               ElevatedButton(
-                onPressed: () => predictStress(),
+                onPressed: () => _isLoading ? null : predictStress(),
                 style: ElevatedButton.styleFrom(
                   primary: AppColors.white,
                   padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
@@ -201,7 +249,9 @@ class _ResultsScreenState extends State<ResultsScreen> {
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
-                child: Text(
+                child: _isLoading
+                    ? const CircularProgressIndicator()
+                    : Text(
                   'Predict & Save My Mood Log 💾',
                   style: TextStyle(
                     fontSize: 18,
@@ -240,3 +290,4 @@ class _ResultsScreenState extends State<ResultsScreen> {
     );
   }
 }
+
