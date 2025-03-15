@@ -19,6 +19,7 @@ class ResultsScreen extends StatefulWidget {
 }
 
 class _ResultsScreenState extends State<ResultsScreen> {
+  bool _isLoading = false;
   double stressLevel = 0;
   int daysSinceRegistration = 0;
   Map<String, dynamic> data = <String, dynamic>{};
@@ -126,6 +127,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
     }
 
     Future<void> predictStress() async {
+      setState(() => _isLoading = true);
       try {
         final listeningSnapshot = await FirebaseFirestore.instance
             .collection('listening_logs')
@@ -178,7 +180,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
           });
 
           await saveMoodLog(responseData["predicted_recovery_Days"].round());
-
+          setState(() => _isLoading = false);
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => MoodLogScreen(predictedDays: responseData["predicted_recovery_Days"].round()),
@@ -187,6 +189,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
         }
       } catch (e) {
         print("Error predicting stress: $e");
+        setState(() => _isLoading = false);
       }
     }
 
@@ -238,7 +241,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
                 );
               }).toList(),
               ElevatedButton(
-                onPressed: () => predictStress(),
+                onPressed: () => _isLoading ? null : predictStress(),
                 style: ElevatedButton.styleFrom(
                   primary: AppColors.white,
                   padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
@@ -246,7 +249,9 @@ class _ResultsScreenState extends State<ResultsScreen> {
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
-                child: Text(
+                child: _isLoading
+                    ? const CircularProgressIndicator()
+                    : Text(
                   'Predict & Save My Mood Log 💾',
                   style: TextStyle(
                     fontSize: 18,
@@ -285,3 +290,4 @@ class _ResultsScreenState extends State<ResultsScreen> {
     );
   }
 }
+
