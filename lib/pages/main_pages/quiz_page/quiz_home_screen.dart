@@ -11,7 +11,7 @@ class AppColors {
 // Note: Removed the duplicate AppColors class since it's already imported from colors.dart
 
 class QuizHomeScreen extends StatelessWidget {
-  @override
+ @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
@@ -108,30 +108,10 @@ class QuizHomeScreen extends StatelessWidget {
 
   Widget _buildMoodCard() {
     final emotions = [
-      {
-        'icon': Icons.wb_sunny_rounded,
-        'label': 'Great',
-        'color': const Color(0xFFF59E0B),
-        'bgColor': const Color(0xFFFEF3C7)
-      },
-      {
-        'icon': Icons.sentiment_satisfied_rounded,
-        'label': 'Good',
-        'color': const Color(0xFF34D399),
-        'bgColor': const Color(0xFFD1FAE5)
-      },
-      {
-        'icon': Icons.cloud_rounded,
-        'label': 'Okay',
-        'color': const Color(0xFF60A5FA),
-        'bgColor': const Color(0xFFDBEAFE)
-      },
-      {
-        'icon': Icons.sentiment_dissatisfied_rounded,
-        'label': 'Not Great',
-        'color': const Color(0xFFF87171),
-        'bgColor': const Color(0xFFFEE2E2)
-      },
+      {'icon': Icons.wb_sunny_rounded, 'label': 'Great', 'color': const Color(0xFFF59E0B), 'bgColor': const Color(0xFFFEF3C7)},
+      {'icon': Icons.sentiment_satisfied_rounded, 'label': 'Good', 'color': const Color(0xFF34D399), 'bgColor': const Color(0xFFD1FAE5)},
+      {'icon': Icons.cloud_rounded, 'label': 'Okay', 'color': const Color(0xFF60A5FA), 'bgColor': const Color(0xFFDBEAFE)},
+      {'icon': Icons.sentiment_dissatisfied_rounded, 'label': 'Not Great', 'color': const Color(0xFFF87171), 'bgColor': const Color(0xFFFEE2E2)},
     ];
 
     return Container(
