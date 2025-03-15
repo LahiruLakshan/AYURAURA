@@ -87,6 +87,43 @@ class _ResultsScreenState extends State<ResultsScreen> {
     print(answerNumbers);
     print(daysSinceRegistration);
     print(data["gender"]);
+    Future<void> saveMoodLog(int predictedDays) async {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        print("No user logged in.");
+        return;
+      }
+
+      CollectionReference moodLogs = FirebaseFirestore.instance.collection('mood_logs');
+      String today = DateTime.now().toIso8601String().split("T")[0]; // Get only the date
+
+      QuerySnapshot query = await moodLogs
+          .where("userId", isEqualTo: user.uid)
+          .where("date", isEqualTo: today)
+          .limit(1)
+          .get();
+
+      Map<String, dynamic> moodData = {
+        "userId": user.uid,
+        "date": today,
+        "stress": answerNumbers[0],
+        "happiness": answerNumbers[1],
+        "calmness": answerNumbers[2],
+        "energy": answerNumbers[3],
+        "predictedRecoveryDays": predictedDays,
+        "timestamp": FieldValue.serverTimestamp(),
+      };
+
+      if (query.docs.isNotEmpty) {
+        // Update the existing mood log
+        await moodLogs.doc(query.docs.first.id).update(moodData);
+        print("Mood log updated for today.");
+      } else {
+        // Create a new mood log
+        await moodLogs.add(moodData);
+        print("New mood log saved.");
+      }
+    }
 
     Future<void> predictStress() async {
       try {
@@ -125,6 +162,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
           "DurationofParticipation": listeningData['time_listened'] + coloringData['color_duration'],
           "BaseRecoveryDays": daysSinceRegistration >= 4 ? 5:10,
         };
+        print("payload : $payload");
         final response = await http.post(
           url,
           headers: {"Content-Type": "application/json"},
@@ -132,14 +170,18 @@ class _ResultsScreenState extends State<ResultsScreen> {
         );
 
         if (response.statusCode == 200) {
-          final data = jsonDecode(response.body);
-          print("data : $data");
+          final responseData = jsonDecode(response.body);
+          print("Response: $responseData");
+
           setState(() {
-            stressLevel = data["predicted_recovery_Days"];
+            stressLevel = responseData["predicted_recovery_Days"];
           });
+
+          await saveMoodLog(responseData["predicted_recovery_Days"].round());
+
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => MoodLogScreen(predictedDays: data["predicted_recovery_Days"].round()),
+              builder: (context) => MoodLogScreen(predictedDays: responseData["predicted_recovery_Days"].round()),
             ),
           );
         }
@@ -147,6 +189,9 @@ class _ResultsScreenState extends State<ResultsScreen> {
         print("Error predicting stress: $e");
       }
     }
+
+
+
 
     return Scaffold(
       backgroundColor: AppColors.background,
