@@ -63,6 +63,8 @@ dependencies:
   rxdart: ^0.27.7
   just_waveform: ^0.0.6
   flutter_dotenv: ^5.2.1
+  google_fonts: ^6.1.0
+  flutter_svg: ^2.0.9
 
 
 
@@ -103,6 +105,7 @@ flutter:
     - assets/bg_logo.png
     - assets/behaviors/
     - assets/home/
+    - assets/icons/
     - .env
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
