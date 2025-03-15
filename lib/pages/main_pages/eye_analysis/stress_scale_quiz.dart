@@ -91,11 +91,10 @@ class _StressScaleQuizState extends State<StressScaleQuiz> {
 
   String _getStressLevel() {
     print("((_totalScore/40*100) + confidence)/2 :----------   ${((_totalScore/40*100) + confidence)/2}");
-    if (((_totalScore/40*100) + confidence)/2 <= 13) return 'Low Stress';
-    if (((_totalScore/40*100) + confidence)/2 <= 26) return 'Moderate Stress';
-    if (((_totalScore/40*100) + confidence)/2 <= 34) return 'Severe Stress';
-    if (((_totalScore/40*100) + confidence)/2 <= 65) return 'Critical Stress';
-    return 'High Perceived Stress';
+    if (((_totalScore/40*100) + confidence)/2 <= 25) return 'Low Stress';
+    if (((_totalScore/40*100) + confidence)/2 <= 50) return 'Moderate Stress';
+    if (((_totalScore/40*100) + confidence)/2 <= 75) return 'Severe Stress';
+    return 'Critical Stress';
   }
 
   Widget _buildQuestion(int index) {
@@ -266,7 +265,7 @@ class _StressScaleQuizState extends State<StressScaleQuiz> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 10),
-                  Text('0%-33%: Low Stress\n34%-65%: Moderate Stress\n66%-100%: High Perceived Stress'),
+                  Text('0%-25%: Low Stress\n26%-50%: Moderate Stress\n51%-75%: Severe Stress\n76%-100%: Critical Stress'),
                   SizedBox(height: 30),
                   Text(
                     'Disclaimer: This self-assessment does not reflect any particular diagnosis or course of treatment. '

@@ -5,10 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:stress_management/constants/constants.dart';
 import 'package:stress_management/pages/main_pages/mandala_page/prediction_stress_mandala_and_music.dart';
 import 'package:http/http.dart' as http;
-import 'package:stress_management/pages/main_pages/music_page/categories_screen.dart';
 import 'package:flutter/material.dart';
 import '../../../constants/colors.dart';
-import '../music_page/listening_history_screen.dart';
 
 class PredictionAndHistory extends StatefulWidget {
   @override
@@ -95,26 +93,26 @@ class _PredictionAndHistoryState extends State<PredictionAndHistory> {
       }
 
       var listeningData =
-          listeningSnapshot.docs.first.data() as Map<String, dynamic>;
+      listeningSnapshot.docs.first.data() as Map<String, dynamic>;
       var coloringData =
-          coloringSnapshot.docs.first.data() as Map<String, dynamic>;
+      coloringSnapshot.docs.first.data() as Map<String, dynamic>;
       print(
           "listeningData['music_type'].split(' ')[0] : ${listeningData['track_title'].split(' ')[0]}");
 
       final url =
-          Uri.parse("${AppConstants.BASE_URL_MANDALA_MUSIC}predict_stress");
+      Uri.parse("${AppConstants.BASE_URL_MANDALA_MUSIC}predict_stress");
       final payload = {
         "Age": userData["age"],
         "Gender": userData["gender"],
         "Mandala Design Pattern":
-            getComplexityValue(coloringData['image_type']),
+        getComplexityValue(coloringData['image_type']),
         "Mandala Colors Used": coloringData['color_palette_id'],
         "Mandala Time Spent": coloringData['color_duration'],
         "Music Type":
-            getMusicTypeValue(listeningData['track_title'].split(" ")[0]),
+        getMusicTypeValue(listeningData['track_title'].split(" ")[0]),
         "Music Time Spent": listeningData['time_listened'],
         "Total_Time":
-            coloringData['color_duration'] + listeningData['time_listened']
+        coloringData['color_duration'] + listeningData['time_listened']
       };
 
       final response = await http.post(
@@ -143,13 +141,12 @@ class _PredictionAndHistoryState extends State<PredictionAndHistory> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: Colors.black,
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
             opacity: 0.3,
-            image: AssetImage("assets/bg_logo.png"), // Path to your image
-            fit: BoxFit.contain, // Cover the entire screen
+            image: AssetImage("assets/bg_logo.png"),
+            fit: BoxFit.contain,
           ),
         ),
         child: Padding(
@@ -160,70 +157,26 @@ class _PredictionAndHistoryState extends State<PredictionAndHistory> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Prediction Stress and History',
+                  'Prediction Stress',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
                       color: Colors.green),
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => CategoriesScreen(),
-                      ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    primary: AppColors.secondary,
-                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                    // shape: RoundedRectangleBorder(
-                    //   borderRadius: BorderRadius.circular(30),
-                    // ),
-                  ),
-                  child: const Text(
-                    'Mandala Arts History',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                ),
-                SizedBox(height: 40),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => ListeningHistoryScreen(),
-                      ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    primary: AppColors.secondary,
-                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                    // shape: RoundedRectangleBorder(
-                    //   borderRadius: BorderRadius.circular(30),
-                    // ),
-                  ),
-                  child: Text(
-                    'Listening History',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                ),
                 SizedBox(height: 40),
                 ElevatedButton(
                   onPressed: () => _isLoading ? null : predictStress(),
                   style: ElevatedButton.styleFrom(
-                    primary: _isLoading ? AppColors.primary:AppColors.secondary,
+                    primary: _isLoading ? AppColors.primary : AppColors.secondary,
                     padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                    // shape: RoundedRectangleBorder(
-                    //   borderRadius: BorderRadius.circular(30),
-                    // ),
                   ),
                   child: _isLoading
                       ? const CircularProgressIndicator()
                       : const Text(
-                          'Predict Stress',
-                          style: TextStyle(fontSize: 18),
-                        ),
+                    'Predict Stress',
+                    style: TextStyle(fontSize: 18),
+                  ),
                 ),
                 SizedBox(height: 40),
                 FutureBuilder<QuerySnapshot>(
@@ -237,7 +190,7 @@ class _PredictionAndHistoryState extends State<PredictionAndHistory> {
                     if (snapshot.data!.docs.isEmpty)
                       return Text("No most played track.");
                     var track = snapshot.data!.docs.first.data()
-                        as Map<String, dynamic>;
+                    as Map<String, dynamic>;
                     return Card(
                       color: Colors.blueGrey,
                       child: ListTile(
@@ -262,7 +215,7 @@ class _PredictionAndHistoryState extends State<PredictionAndHistory> {
                     if (snapshot.data!.docs.isEmpty)
                       return Text("No coloring logs.");
                     var coloringLog = snapshot.data!.docs.first.data()
-                        as Map<String, dynamic>;
+                    as Map<String, dynamic>;
                     return Card(
                       color: Colors.deepPurple,
                       child: ListTile(
