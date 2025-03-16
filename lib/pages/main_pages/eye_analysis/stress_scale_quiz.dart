@@ -22,7 +22,7 @@ class StressScaleQuiz extends StatefulWidget {
 class _StressScaleQuizState extends State<StressScaleQuiz> {
   bool _isLoading = false;
   bool _predictionDone = false;
-  double confidence = 100;
+  double confidence = 0;
   final List<String> questions = [
     "In the last month, how often have you been upset because of something that happened unexpectedly?",
     "In the last month, how often have you felt that you were unable to control the important things in your life?",
