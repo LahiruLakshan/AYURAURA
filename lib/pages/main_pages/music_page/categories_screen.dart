@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:stress_management/pages/main_pages/music_page/tracks_screen.dart';
 
-class CategoriesScreen extends StatelessWidget {
+class CategoriesScreen extends StatefulWidget {
+  @override
+  _CategoriesScreenState createState() => _CategoriesScreenState();
+}
+
+class _CategoriesScreenState extends State<CategoriesScreen> {
   final List<Map<String, dynamic>> categories = [
     {
       "type": "Deep Sleep Music (Delta Waves)",
@@ -77,26 +82,165 @@ class CategoriesScreen extends StatelessWidget {
     }
   ];
 
+  String searchQuery = '';
+
+  List<Map<String, dynamic>> get filteredCategories {
+    if (searchQuery.isEmpty) return categories;
+    return categories.where((category) =>
+        category['type'].toString().toLowerCase().contains(searchQuery.toLowerCase())).toList();
+  }
+
+  // Get icon based on category type
+  IconData getCategoryIcon(String type) {
+    switch (type.toLowerCase()) {
+      case 'deep sleep music (delta waves)':
+        return Icons.nightlight_round;
+      case 'gregorian chants or om mantra meditation':
+        return Icons.music_note;
+      case 'tibetan singing bowls':
+        return Icons.waves;
+      case 'ambient meditation music':
+        return Icons.spa;
+      case 'soft instrumental':
+        return Icons.piano;
+      case 'alpha waves':
+        return Icons.psychology;
+      case 'nature sounds with soft piano':
+        return Icons.nature;
+      case 'lofi chill beats':
+        return Icons.headphones;
+      default:
+        return Icons.music_note;
+    }
+  }
+
+  // Get gradient colors based on category type
+  List<Color> getGradientColors(String type) {
+    switch (type.toLowerCase()) {
+      case 'deep sleep music (delta waves)':
+        return [Colors.indigo, Colors.blue.shade900];
+      case 'gregorian chants or om mantra meditation':
+        return [Colors.purple, Colors.deepPurple];
+      case 'tibetan singing bowls':
+        return [Colors.orange, Colors.deepOrange];
+      case 'ambient meditation music':
+        return [Colors.teal, Colors.cyan];
+      case 'soft instrumental':
+        return [Colors.pink, Colors.pinkAccent];
+      case 'alpha waves':
+        return [Colors.green, Colors.teal];
+      case 'nature sounds with soft piano':
+        return [Colors.lightGreen, Colors.green];
+      case 'lofi chill beats':
+        return [Colors.blue, Colors.lightBlue];
+      default:
+        return [Colors.blue, Colors.blueAccent];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: categories.length,
-      itemBuilder: (context, index) {
-        return Card(
-          margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: ListTile(
-            title: Text(categories[index]['type'], style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => TracksScreen(category: categories[index]),
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextField(
+              onChanged: (value) => setState(() => searchQuery = value),
+              decoration: InputDecoration(
+                hintText: 'Search categories...',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  borderSide: BorderSide.none,
                 ),
-              );
-            },
+                filled: true,
+                fillColor: Colors.grey.withOpacity(0.1),
+              ),
+            ),
           ),
-        );
-      },
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.all(16.0),
+          sliver: SliverGrid(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: MediaQuery.of(context).size.width > 600 ? 3 : 2,
+              childAspectRatio: 1.0,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+            ),
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                final category = filteredCategories[index];
+                return Hero(
+                  tag: 'category_${category['type']}',
+                  child: Material(
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => TracksScreen(category: category),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: getGradientColors(category['type']),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 10,
+                              offset: Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              getCategoryIcon(category['type']),
+                              size: 40,
+                              color: Colors.white,
+                            ),
+                            SizedBox(height: 16),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Text(
+                                category['type'],
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              '${category['tracks'].length} tracks',
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.8),
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+              childCount: filteredCategories.length,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -101,11 +101,16 @@ flutter:
     - assets/simple/
     - assets/medium/
     - assets/complex/
+    - assets/animals/
+    - assets/flowers/
+    - assets/matters/
+    - assets/plants/
+    - assets/icons/
+    - assets/home/
+    - assets/behaviors/
+    - assets/fonts/
     - assets/logo.png
     - assets/bg_logo.png
-    - assets/behaviors/
-    - assets/home/
-    - assets/icons/
     - .env
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
