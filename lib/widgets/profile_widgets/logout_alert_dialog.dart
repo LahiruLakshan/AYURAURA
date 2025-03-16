@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:mobile_app/theme/colors.dart';
+
+import '../../constants/colors.dart';
 
 class LogoutDialog extends StatefulWidget {
   @override
