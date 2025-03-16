@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:path/path.dart';
 import 'dart:io';
 
@@ -10,6 +12,7 @@ import 'eye_stress_level_screen.dart';
 
 class StressScaleQuiz extends StatefulWidget {
   final File videoFile;
+
   const StressScaleQuiz({super.key, required this.videoFile});
 
   @override
@@ -19,7 +22,7 @@ class StressScaleQuiz extends StatefulWidget {
 class _StressScaleQuizState extends State<StressScaleQuiz> {
   bool _isLoading = false;
   bool _predictionDone = false;
-  double confidence = 33.01;
+  double confidence = 0;
   final List<String> questions = [
     "In the last month, how often have you been upset because of something that happened unexpectedly?",
     "In the last month, how often have you felt that you were unable to control the important things in your life?",
@@ -34,15 +37,14 @@ class _StressScaleQuizState extends State<StressScaleQuiz> {
   ];
 
   void _showError(String message) {
-    ScaffoldMessenger.of(context as BuildContext).showSnackBar( // Fixed Context to context
+    ScaffoldMessenger.of(context as BuildContext)
+        .showSnackBar( // Fixed Context to context
       SnackBar(
         content: Text(message),
         backgroundColor: Colors.red,
       ),
     );
   }
-
-
 
 
   List<int?> answers = List.filled(10, null);
@@ -90,10 +92,13 @@ class _StressScaleQuizState extends State<StressScaleQuiz> {
   }
 
   String _getStressLevel() {
-    print("((_totalScore/40*100) + confidence)/2 :----------   ${((_totalScore/40*100) + confidence)/2}");
-    if (((_totalScore/40*100) + confidence)/2 <= 25) return 'Low Stress';
-    if (((_totalScore/40*100) + confidence)/2 <= 50) return 'Moderate Stress';
-    if (((_totalScore/40*100) + confidence)/2 <= 75) return 'Severe Stress';
+    print("((_totalScore/40*100) + confidence)/2 :----------   ${((_totalScore /
+        40 * 100) + confidence) / 2}");
+    if (((_totalScore / 40 * 100) + confidence) / 2 <= 25) return 'Low Stress';
+    if (((_totalScore / 40 * 100) + confidence) / 2 <= 50)
+      return 'Moderate Stress';
+    if (((_totalScore / 40 * 100) + confidence) / 2 <= 75)
+      return 'Severe Stress';
     return 'Critical Stress';
   }
 
@@ -134,6 +139,7 @@ class _StressScaleQuizState extends State<StressScaleQuiz> {
   }
 
   Widget _buildResults(BuildContext context) {
+    print("confidence :=========== $confidence");
 
 
     Future<void> _analyzeStress() async {
@@ -155,16 +161,15 @@ class _StressScaleQuizState extends State<StressScaleQuiz> {
         final response = await request.send();
         final responseBody = await response.stream.bytesToString();
 
+
         print("-----------------" + responseBody);
 
+
         if (response.statusCode == 200) {
+          final Map<dynamic, dynamic> parsedData = jsonDecode(responseBody);
+          setState(() => confidence = parsedData["predicted_percentage"]);
           setState(() => _predictionDone = true);
-          // Navigator.push(
-          //   context, // Correct context here
-          //   MaterialPageRoute(
-          //     builder: (context) => EyeStressLevelScreen(responseData: responseBody),
-          //   ),
-          // );
+
         } else {
           _showError('Analysis failed: ${response.reasonPhrase}');
         }
@@ -172,7 +177,6 @@ class _StressScaleQuizState extends State<StressScaleQuiz> {
         _showError('Connection error: $e');
       } finally {
         setState(() => _isLoading = false);
-
       }
     }
 
@@ -180,30 +184,32 @@ class _StressScaleQuizState extends State<StressScaleQuiz> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            'Your PSS Score: $_totalScore',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-
+          if(!_predictionDone)
+            Text(
+              'Your PSS Score: $_totalScore',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
 
 
           SizedBox(height: 20),
-          ElevatedButton.icon(
-            icon: _isLoading
-                ? const SizedBox.shrink()
-                : const Icon(Icons.analytics, size: 24),
-            label: _isLoading
-                ? const CircularProgressIndicator()
-                : const Text('Analyze Stress Level'),
-            onPressed: _isLoading ? null : _analyzeStress,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.secondary,
-              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
-              // shape: RoundedRectangleBorder(
-              //   borderRadius: BorderRadius.circular(30),
-              // ),
+          if(!_predictionDone)
+            ElevatedButton.icon(
+              icon: _isLoading
+                  ? const SizedBox.shrink()
+                  : const Icon(Icons.analytics, size: 24),
+              label: _isLoading
+                  ? const CircularProgressIndicator()
+                  : const Text('Analyze Stress Level'),
+              onPressed: _isLoading ? null : _analyzeStress,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.secondary,
+                padding: const EdgeInsets.symmetric(
+                    vertical: 16, horizontal: 32),
+                // shape: RoundedRectangleBorder(
+                //   borderRadius: BorderRadius.circular(30),
+                // ),
+              ),
             ),
-          ),
           SizedBox(height: 20),
 
           if(_predictionDone)
@@ -211,9 +217,9 @@ class _StressScaleQuizState extends State<StressScaleQuiz> {
               _getStressLevel(),
               style: TextStyle(
                 fontSize: 22,
-                color: ((_totalScore/40*100) + confidence)/2 <= 13
+                color: ((_totalScore / 40 * 100) + confidence) / 2 <= 13
                     ? Colors.green
-                    : ((_totalScore/40*100) + confidence)/2 <= 34
+                    : ((_totalScore / 40 * 100) + confidence) / 2 <= 34
                     ? Colors.orange
                     : Colors.red,
               ),
@@ -221,63 +227,69 @@ class _StressScaleQuizState extends State<StressScaleQuiz> {
 
           if(_predictionDone)
             Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Center(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
+              padding: EdgeInsets.all(16.0),
+              child: Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
 
-                  Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      SizedBox(
-                        width: 120,
-                        height: 120,
-                        child: CircularProgressIndicator(
-                          value: ((_totalScore/40*100) + confidence)/200,
-                          strokeWidth: 8,
-                          backgroundColor: Colors.grey[300],
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        SizedBox(
+                          width: 120,
+                          height: 120,
+                          child: CircularProgressIndicator(
+                            value: ((_totalScore / 40 * 100) + confidence) /
+                                200,
+                            strokeWidth: 8,
+                            backgroundColor: Colors.grey[300],
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors
+                                .green),
+                          ),
                         ),
-                      ),
-                      Text('${(((_totalScore/40*100) + (confidence))/2).toStringAsFixed(2)}%'),
-                    ],
-                  ),
-                  SizedBox(height: 32),
-
-                  ElevatedButton(
-                    onPressed: () {
-                      // Navigate back to the main page
-                      Navigator.popUntil(context, (route) => route.isFirst);
-                    },
-                    child: const Text('Return to Main Page'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.secondary,
-                      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
-                      // shape: RoundedRectangleBorder(
-                      //   borderRadius: BorderRadius.circular(30),
-                      // ),
+                        Text('${(((_totalScore / 40 * 100) + (confidence)) / 2)
+                            .toStringAsFixed(2)}%'),
+                      ],
                     ),
-                  ),
-                  SizedBox(height: 30),
-                  Text(
-                    'Percentage Interpretation:',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 10),
-                  Text('0%-25%: Low Stress\n26%-50%: Moderate Stress\n51%-75%: Severe Stress\n76%-100%: Critical Stress'),
-                  SizedBox(height: 30),
-                  Text(
-                    'Disclaimer: This self-assessment does not reflect any particular diagnosis or course of treatment. '
-                        'It is meant as a tool to help assess your stress level. If you have concerns about your well-being, '
-                        'please consult a professional.',
-                    style: TextStyle(fontStyle: FontStyle.italic),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
+                    SizedBox(height: 32),
+
+                    ElevatedButton(
+                      onPressed: () {
+                        // Navigate back to the main page
+                        Navigator.popUntil(context, (route) => route.isFirst);
+                      },
+                      child: const Text('Return to Main Page'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.secondary,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 16, horizontal: 32),
+                        // shape: RoundedRectangleBorder(
+                        //   borderRadius: BorderRadius.circular(30),
+                        // ),
+                      ),
+                    ),
+                    SizedBox(height: 30),
+                    Text(
+                      'Percentage Interpretation:',
+                      style: TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                        '0%-25%: Low Stress\n26%-50%: Moderate Stress\n51%-75%: Severe Stress\n76%-100%: Critical Stress'),
+                    SizedBox(height: 30),
+                    Text(
+                      'Disclaimer: This self-assessment does not reflect any particular diagnosis or course of treatment. '
+                          'It is meant as a tool to help assess your stress level. If you have concerns about your well-being, '
+                          'please consult a professional.',
+                      style: TextStyle(fontStyle: FontStyle.italic),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
         ],
       ),
     );
