@@ -31,16 +31,11 @@ class EyeAnalysisHomeScreen extends StatelessWidget {
                   const SizedBox(height: 40),
                   _buildHeader(),
                   const SizedBox(height: 30),
-                  _buildInfoCard(
-                    "Analyze your stress levels through advanced eye movement tracking. Quick and non-invasive! 👁️",
-                    AppColors.secondary,
-                  ),
-                  const SizedBox(height: 24),
                   _buildFeaturesCard(),
                   const SizedBox(height: 20),
-                  _buildActionButton(context),
-                  const SizedBox(height: 20),
                   _buildGuidelineCard(),
+                  const SizedBox(height: 20),
+                  _buildActionButton(context),
                   const SizedBox(height: 40),
                 ],
               ),
@@ -65,7 +60,7 @@ class EyeAnalysisHomeScreen extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Text(
-          'Detect stress through eye movement patterns',
+          'Track and analyze your eye movement patterns',
           style: TextStyle(
             fontSize: 16,
             color: const Color(0xFF4B5563),
@@ -105,8 +100,8 @@ class EyeAnalysisHomeScreen extends StatelessWidget {
   Widget _buildFeaturesCard() {
     final features = [
       {'icon': Icons.remove_red_eye_rounded, 'label': 'Eye Tracking', 'color': const Color(0xFF60A5FA), 'bgColor': const Color(0xFFDBEAFE)},
-      {'icon': Icons.psychology_outlined, 'label': 'Stress Analysis', 'color': const Color(0xFF34D399), 'bgColor': const Color(0xFFD1FAE5)},
-      {'icon': Icons.speed_rounded, 'label': 'Quick Results', 'color': const Color(0xFFF59E0B), 'bgColor': const Color(0xFFFEF3C7)},
+      {'icon': Icons.analytics_outlined, 'label': 'Analysis', 'color': const Color(0xFF34D399), 'bgColor': const Color(0xFFD1FAE5)},
+      {'icon': Icons.speed_rounded, 'label': 'Real-time Results', 'color': const Color(0xFFF59E0B), 'bgColor': const Color(0xFFFEF3C7)},
       {'icon': Icons.privacy_tip_rounded, 'label': 'Non-invasive', 'color': const Color(0xFFF87171), 'bgColor': const Color(0xFFFEE2E2)},
     ];
 
@@ -136,7 +131,7 @@ class EyeAnalysisHomeScreen extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            'Advanced stress detection technology',
+            'Advanced eye tracking technology',
             style: TextStyle(
               fontSize: 16,
               color: const Color(0xFF6B7280),
@@ -272,9 +267,10 @@ class EyeAnalysisHomeScreen extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                'Guidelines ✨',
+                'Guidelines ✨\n'
+                    '📸 Get Ready for Your Stress Check!',
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: AppColors.primary,
                 ),
@@ -283,14 +279,27 @@ class EyeAnalysisHomeScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            '1. Find a well-lit area\n'
-                '2. Keep your face centered\n'
-                '3. Maintain a steady position\n'
-                '4. Follow the on-screen instructions',
+            'Face the Camera – Keep your face centered and eyes visible.\n'
+                'Stay Still – Hold your position for 10 seconds while we analyze.\n'
+                'Good Lighting – Sit in a well-lit area, avoid shadows.\n'
+                'Relax & Blink Naturally – No need to force blinks!\n'
+                'Quiet Space – Minimize distractions for accurate results.',
             style: TextStyle(
               fontSize: 16,
               color: const Color(0xFF4B5563),
               height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Center(
+            child: Text(
+              '👉 Tap Start Eye Analysis to begin!',
+              style: TextStyle(
+                fontSize: 16,
+                color: const Color(0xFF4B5563),
+                height: 1.5,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],
