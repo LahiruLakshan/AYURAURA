@@ -1,12 +1,58 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../constants/colors.dart';
 
-class ProgressScreen extends StatelessWidget {
+class ProgressScreen extends StatefulWidget {
   ProgressScreen({Key? key}) : super(key: key);
 
-  final List<DailyMetrics> barChartData = _createBarChartData();
-  final List<DayMetrics> lineChartData = _createLineChartData();
+  @override
+  _ProgressScreenState createState() => _ProgressScreenState();
+}
+
+class _ProgressScreenState extends State<ProgressScreen> {
+  List<DailyMetrics> barChartData = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchMoodData();
+  }
+
+  Future<void> _fetchMoodData() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    DateTime today = DateTime.now();
+    DateTime lastWeek = today.subtract(Duration(days: 7));
+
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('mood_logs')
+        .where('userId', isEqualTo: user.uid)
+        .where('date', isGreaterThanOrEqualTo: lastWeek.toIso8601String().split("T")[0])
+        .orderBy('date', descending: false)
+        .get();
+
+    List<DailyMetrics> fetchedData = snapshot.docs.map((doc) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      return DailyMetrics(
+        day: data['date'].toString().split('-').last, // Extracting day from YYYY-MM-DD
+        stress: double.parse(data['stress']),
+        happiness: double.parse(data['happiness']),
+        calmness: double.parse(data['calmness']),
+        energy: double.parse(data['energy']),
+      );
+    }).toList();
+
+    setState(() {
+      barChartData = fetchedData;
+    });
+  }
+  String _formatDate(Timestamp timestamp) {
+    DateTime date = timestamp.toDate();
+    return "${date.day}/${date.month}";
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +66,6 @@ class ProgressScreen extends StatelessWidget {
               const SizedBox(height: 24),
               _buildBarChartCard(),
               const SizedBox(height: 24),
-              // _buildLineChartCard(),
               const SizedBox(height: 24),
               _buildBackButton(context),
             ],
@@ -111,7 +156,6 @@ class ProgressScreen extends StatelessWidget {
         domainFn: (DailyMetrics metrics, _) => metrics.day,
         measureFn: (DailyMetrics metrics, _) => metrics.stress,
         data: barChartData,
-        labelAccessorFn: (DailyMetrics metrics, _) => 'Stress: ${metrics.stress}',
       ),
       charts.Series<DailyMetrics, String>(
         id: 'Happiness',
@@ -119,7 +163,6 @@ class ProgressScreen extends StatelessWidget {
         domainFn: (DailyMetrics metrics, _) => metrics.day,
         measureFn: (DailyMetrics metrics, _) => metrics.happiness,
         data: barChartData,
-        labelAccessorFn: (DailyMetrics metrics, _) => 'Happiness: ${metrics.happiness}',
       ),
       charts.Series<DailyMetrics, String>(
         id: 'Calmness',
@@ -127,7 +170,6 @@ class ProgressScreen extends StatelessWidget {
         domainFn: (DailyMetrics metrics, _) => metrics.day,
         measureFn: (DailyMetrics metrics, _) => metrics.calmness,
         data: barChartData,
-        labelAccessorFn: (DailyMetrics metrics, _) => 'Calmness: ${metrics.calmness}',
       ),
       charts.Series<DailyMetrics, String>(
         id: 'Energy',
@@ -135,67 +177,26 @@ class ProgressScreen extends StatelessWidget {
         domainFn: (DailyMetrics metrics, _) => metrics.day,
         measureFn: (DailyMetrics metrics, _) => metrics.energy,
         data: barChartData,
-        labelAccessorFn: (DailyMetrics metrics, _) => 'Energy: ${metrics.energy}',
       ),
     ];
   }
+}
 
-  List<charts.Series<DayMetrics, String>> _createLineChartSeries() {
-    return [
-      charts.Series<DayMetrics, String>(
-        id: 'Happiness',
-        colorFn: (_, __) => charts.ColorUtil.fromDartColor(AppColors.happiness),
-        domainFn: (DayMetrics metrics, _) => metrics.day,
-        measureFn: (DayMetrics metrics, _) => metrics.happiness,
-        data: lineChartData,
-      ),
-      charts.Series<DayMetrics, String>(
-        id: 'Calmness',
-        colorFn: (_, __) => charts.ColorUtil.fromDartColor(AppColors.calmness),
-        domainFn: (DayMetrics metrics, _) => metrics.day,
-        measureFn: (DayMetrics metrics, _) => metrics.calmness,
-        data: lineChartData,
-      ),
-    ];
-  }
-
-  Widget _buildBackButton(BuildContext context) {
-    return Center(
-      child: ElevatedButton.icon(
-        icon: const Icon(Icons.arrow_back, size: 20),
-        label: const Text('Back to Dashboard'),
-        onPressed: () => Navigator.pop(context),
-        style: ElevatedButton.styleFrom(
-          primary: AppColors.primary,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
-          ),
+Widget _buildBackButton(BuildContext context) {
+  return Center(
+    child: ElevatedButton.icon(
+      icon: const Icon(Icons.arrow_back, size: 20),
+      label: const Text('Back to Dashboard'),
+      onPressed: () => Navigator.pop(context),
+      style: ElevatedButton.styleFrom(
+        primary: AppColors.primary,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30),
         ),
       ),
-    );
-  }
-
-  static List<DailyMetrics> _createBarChartData() {
-    return [
-      DailyMetrics(day: 'Monday', stress: 2, happiness: 4, calmness: 3, energy: 5),
-      DailyMetrics(day: 'Tuesday', stress: 3, happiness: 3, calmness: 4, energy: 4),
-      DailyMetrics(day: 'Wednesday', stress: 4, happiness: 2, calmness: 3, energy: 3),
-      DailyMetrics(day: 'Thursday', stress: 1, happiness: 5, calmness: 4, energy: 4),
-      DailyMetrics(day: 'Friday', stress: 2, happiness: 4, calmness: 5, energy: 3),
-      DailyMetrics(day: 'Saturday', stress: 3, happiness: 3, calmness: 3, energy: 5),
-      DailyMetrics(day: 'Sunday', stress: 4, happiness: 2, calmness: 2, energy: 4),
-    ];
-  }
-
-
-  static List<DayMetrics> _createLineChartData() {
-    return List.generate(7, (index) => DayMetrics(
-      day: 'Day ${index + 1}',
-      happiness: (5 * (index % 4) / 3).round().toDouble(),
-      calmness: (5 * (index % 5) / 4).round().toDouble(),
-    ));
-  }
+    ),
+  );
 }
 
 class DailyMetrics {
@@ -213,6 +214,7 @@ class DailyMetrics {
     required this.energy,
   });
 }
+
 
 class DayMetrics {
   final String day;

@@ -43,6 +43,12 @@ class MainProvider extends ChangeNotifier {
   final LocalStorage storage = LocalStorage('coloring_app');
 
   Future<void> loadData() async {
+    // Clear existing lists first
+    simpleList.clear();
+    mediumList.clear();
+    complexList.clear();
+
+    // Add items from assets
     AssetsConst.simple.asMap().forEach((key, value) {
       simpleList.add(ImageModelData(path: value));
     });
