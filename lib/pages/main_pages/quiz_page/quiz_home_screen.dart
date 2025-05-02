@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 // App colors constants similar to the ones in your project
 class AppColors {
   static const Color background = Colors.white;
-  static const Color primary = Color(0xFF34D399);
+  static const Color primary = Color(0xFF047857);
   static const Color secondary = Color(0xFF111827);
-  static const Color accent = Color(0xFF4CAF50);
+  static const Color accent = Color(0xFF047857);
 }
 // Note: Removed the duplicate AppColors class since it's already imported from colors.dart
 
@@ -69,7 +69,7 @@ class QuizHomeScreen extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Text(
-          'Let\'s check in on your journey to a stress-free life',
+          'Let us check in on your journey to a stress-free life',
           style: TextStyle(
             fontSize: 16,
             color: const Color(0xFF4B5563),
@@ -96,20 +96,20 @@ class QuizHomeScreen extends StatelessWidget {
         ],
       ),
       child: Text(
-        text,
+        "Take this quick quiz to predict how many days it might take you to feel stress-free!",
         textAlign: TextAlign.center,
         style: TextStyle(
           fontSize: 18,
           color: textColor,
         ),
-      ),
-    );
+       ),
+   );
   }
 
   Widget _buildMoodCard() {
     final emotions = [
       {'icon': Icons.wb_sunny_rounded, 'label': 'Great', 'color': const Color(0xFFF59E0B), 'bgColor': const Color(0xFFFEF3C7)},
-      {'icon': Icons.sentiment_satisfied_rounded, 'label': 'Good', 'color': const Color(0xFF34D399), 'bgColor': const Color(0xFFD1FAE5)},
+      {'icon': Icons.sentiment_satisfied_rounded, 'label': 'Good', 'color': const Color(0xFF047857), 'bgColor': const Color(0xFFD1FAE5)},
       {'icon': Icons.cloud_rounded, 'label': 'Okay', 'color': const Color(0xFF60A5FA), 'bgColor': const Color(0xFFDBEAFE)},
       {'icon': Icons.sentiment_dissatisfied_rounded, 'label': 'Not Great', 'color': const Color(0xFFF87171), 'bgColor': const Color(0xFFFEE2E2)},
     ];
@@ -131,7 +131,7 @@ class QuizHomeScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'How are you feeling?',
+            'Let AyurAura guide you toward a stress-free life.',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w600,
@@ -140,7 +140,7 @@ class QuizHomeScreen extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            'Your daily emotions help shape your recovery journey!',
+            'Track your emotions, energy levels, and daily activities to get personalized insights and guidance.',
             style: TextStyle(
               fontSize: 16,
               color: const Color(0xFF6B7280),
@@ -218,20 +218,20 @@ class QuizHomeScreen extends StatelessWidget {
         );
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-        elevation: 5,
-        shadowColor: AppColors.primary.withOpacity(0.3),
+        backgroundColor: Color(0xFF047857),  // Primary button background
+        foregroundColor: Colors.white,       // Primary button text
+        elevation: 8,
+        shadowColor: Color(0xFF047857).withOpacity(0.4),
         minimumSize: const Size(double.infinity, 56),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
+          borderRadius: BorderRadius.circular(16),
         ),
         padding: const EdgeInsets.symmetric(vertical: 16),
       ),
       child: Text(
         "Let's find out! Log Your Answers Now",
         style: TextStyle(
-          fontSize: 18,
+          fontSize: 16,
           fontWeight: FontWeight.w600,
           color: Colors.white,
         ),
@@ -241,48 +241,52 @@ class QuizHomeScreen extends StatelessWidget {
 
   Widget _buildInsightCard() {
     return Container(
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Color(0xFF047857).withOpacity(0.2),
+          width: 1,
+        ),
       ),
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Row(
-            children: [
-              Icon(
-                Icons.auto_awesome,
-                size: 20,
-                color: const Color(0xFFF59E0B),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'Today\'s Stress-Free Insight ✨',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.secondary,
-                ),
-              ),
-            ],
+          Container(
+            padding: EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Color(0xFFE8FFF5),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              Icons.lightbulb_outline,
+              color: Color(0xFF047857),
+              size: 24,
+            ),
           ),
-          const SizedBox(height: 16),
-          Text(
-            '"Taking a moment to reflect on your emotions can help improve your mental well-being. '
-            'Remember to be kind to yourself today! 💚"',
-            style: TextStyle(
-              fontSize: 16,
-              color: const Color(0xFF4B5563),
-              height: 1.5,
-              fontStyle: FontStyle.italic,
+          SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Did you know?",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF047857),
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  "Regular stress assessment can help you understand and manage your mental well-being better.",
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Color(0xFF64748B),
+                    height: 1.5,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

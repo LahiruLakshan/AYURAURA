@@ -63,7 +63,7 @@ dependencies:
   rxdart: ^0.27.7
   just_waveform: ^0.0.6
   flutter_dotenv: ^5.2.1
-  google_fonts: ^6.1.0
+  google_fonts: ^4.0.4
   flutter_svg: ^2.0.9
 
 

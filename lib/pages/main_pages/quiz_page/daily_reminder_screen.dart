@@ -1,157 +1,307 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-import '../../../constants/colors.dart';
-
-class DailyReminder extends StatefulWidget {
-  const DailyReminder({Key? key}) : super(key: key);
-
+class DailyReminderScreen extends StatefulWidget {
   @override
-  State<DailyReminder> createState() => _DailyReminderState();
+  _DailyReminderScreenState createState() => _DailyReminderScreenState();
 }
 
-class _DailyReminderState extends State<DailyReminder> {
-  TimeOfDay selectedTime = TimeOfDay.now(); // Default time
+class _DailyReminderScreenState extends State<DailyReminderScreen> {
+  TimeOfDay _selectedTime = TimeOfDay.now();
+  List<bool> _selectedDays = List.generate(7, (index) => true);
+  bool _isReminderEnabled = true;
 
-  // Function to open the TimePicker
-  Future<void> _pickTime(BuildContext context) async {
-    final TimeOfDay? pickedTime = await showTimePicker(
+  final List<String> _weekDays = [
+    'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'
+  ];
+
+  void _selectTime() async {
+    final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: selectedTime,
-      initialEntryMode: TimePickerEntryMode.dial, // Clock Dial Mode
-      builder: (BuildContext context, Widget? child) {
+      initialTime: _selectedTime,
+      builder: (context, child) {
         return Theme(
-          data: ThemeData.light().copyWith(
-            timePickerTheme: TimePickerThemeData(
-              backgroundColor: Colors.white,
-              dialHandColor: AppColors.secondary,
-              dialBackgroundColor: Colors.grey[200],
-              hourMinuteTextColor: Colors.black,
-              hourMinuteColor: AppColors.secondary.withOpacity(0.5),
-              entryModeIconColor: AppColors.secondary,
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: Color(0xFF047857),
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: Color(0xFF1A1A1A),
             ),
-            materialTapTargetSize: MaterialTapTargetSize.padded,
           ),
           child: child!,
         );
       },
     );
-
-    if (pickedTime != null && pickedTime != selectedTime) {
+    if (picked != null && picked != _selectedTime) {
       setState(() {
-        selectedTime = pickedTime;
+        _selectedTime = picked;
       });
     }
-  }
-
-  // Function to show a success alert
-  void _showReminderSetAlert(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Reminder Set!'),
-          content: Text(
-            'Your reminder is set for ${selectedTime.format(context)}! We’ll notify you to log your emotions daily.',
-            style: const TextStyle(fontSize: 16),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-              child: const Text('OK', style: TextStyle(
-                color: AppColors.secondary,
-              ),),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(height: 20),
-              const Text(
-                "Stay On Track With Daily Reminders 📅",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
+      backgroundColor: Color(0xFFF8FAFC),
+      appBar: AppBar(
+        title: Text(
+          'Daily Reminder',
+          style: GoogleFonts.inter(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF047857),
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Color(0xFF047857)),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Set Your Wellness Reminder',
+              style: GoogleFonts.inter(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1A1A1A),
               ),
-              const SizedBox(height: 20),
-              const Text(
-                "Let us remind you to check in and feel better every day!",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.black54,
-                ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              'Choose when you would like to receive daily reminders for your wellness activities.',
+              style: GoogleFonts.inter(
+                fontSize: 16,
+                color: Color(0xFF64748B),
+                height: 1.5,
               ),
-              const SizedBox(height: 40),
-              // Clock View Display
-              Container(
-                height: 200,
-                width: 200,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.secondary.withOpacity(0.1),
-                  border: Border.all(color: AppColors.secondary, width: 4),
-                ),
-                child: Center(
-                  child: Text(
-                    selectedTime.format(context),
-                    style: const TextStyle(
-                      fontSize: 36,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.secondary,
+            ),
+            SizedBox(height: 32),
+            
+            // Enable Reminder Switch
+            Container(
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0xFF047857).withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Color(0xFFE8FFF5),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      Icons.notifications_active_outlined,
+                      color: Color(0xFF047857),
+                      size: 24,
                     ),
                   ),
+                  SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Enable Reminders',
+                          style: GoogleFonts.inter(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF1A1A1A),
+                          ),
+                        ),
+                        Text(
+                          'Get notified daily',
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            color: Color(0xFF64748B),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Switch(
+                    value: _isReminderEnabled,
+                    onChanged: (value) {
+                      setState(() {
+                        _isReminderEnabled = value;
+                      });
+                    },
+                    activeColor: Color(0xFF047857),
+                    activeTrackColor: Color(0xFF047857).withOpacity(0.2),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 24),
+
+            // Time Picker
+            if (_isReminderEnabled) ...[
+              Text(
+                'Reminder Time',
+                style: GoogleFonts.inter(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF1A1A1A),
                 ),
               ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () => _pickTime(context),
-                style: ElevatedButton.styleFrom(
-                  primary: AppColors.secondary,
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+              SizedBox(height: 12),
+              InkWell(
+                onTap: _selectTime,
+                child: Container(
+                  padding: EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0xFF047857).withOpacity(0.05),
+                        blurRadius: 10,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
                   ),
-                ),
-                child: const Text(
-                  'Edit Time',
-                  style: TextStyle(fontSize: 18),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Color(0xFFE8FFF5),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          Icons.access_time,
+                          color: Color(0xFF047857),
+                          size: 24,
+                        ),
+                      ),
+                      SizedBox(width: 16),
+                      Text(
+                        _selectedTime.format(context),
+                        style: GoogleFonts.inter(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF1A1A1A),
+                        ),
+                      ),
+                      Spacer(),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        color: Color(0xFF64748B),
+                        size: 16,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () => _showReminderSetAlert(context),
-                style: ElevatedButton.styleFrom(
-                  primary: AppColors.secondary,
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
+              SizedBox(height: 24),
+
+              // Days Selection
+              Text(
+                'Repeat On',
+                style: GoogleFonts.inter(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF1A1A1A),
                 ),
-                child: const Text(
-                  'Set My Reminder ⏰',
-                  style: TextStyle(fontSize: 18),
+              ),
+              SizedBox(height: 12),
+              Container(
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0xFF047857).withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: List.generate(7, (index) {
+                    return InkWell(
+                      onTap: () {
+                        setState(() {
+                          _selectedDays[index] = !_selectedDays[index];
+                        });
+                      },
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: _selectedDays[index]
+                              ? Color(0xFF047857)
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: _selectedDays[index]
+                                ? Color(0xFF047857)
+                                : Color(0xFFE2E8F0),
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            _weekDays[index],
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: _selectedDays[index]
+                                  ? Colors.white
+                                  : Color(0xFF64748B),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
                 ),
               ),
             ],
-          ),
+            SizedBox(height: 32),
+
+            // Save Button
+            Container(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: _isReminderEnabled
+                    ? () {
+                        // TODO: Implement reminder saving logic
+                        Navigator.pop(context);
+                      }
+                    : null,
+                icon: Icon(Icons.save_outlined),
+                label: Text('Save Reminder'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF047857),
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: 0,
+                  disabledBackgroundColor: Color(0xFF047857).withOpacity(0.3),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
