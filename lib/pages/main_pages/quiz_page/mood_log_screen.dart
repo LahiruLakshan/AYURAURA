@@ -38,13 +38,13 @@ class _MoodLogScreenState extends State<MoodLogScreen> {
             ),
             SizedBox(height: 20),
             Text(
-              '🌟 \"Your Personalized Stress-Free Plan\"',
+              '🌟 Your Personalized Stress-Free Plan',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 20, color: Colors.black),
             ),
             SizedBox(height: 20),
             Text(
-              '\"Here’s what we recommend to help you feel your best!\"',
+              'Here’s what we recommend to help you feel your best!\"',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 20, color: Colors.black),
             ),
@@ -64,7 +64,7 @@ class _MoodLogScreenState extends State<MoodLogScreen> {
                 ],
               ),
               child: Text(
-                '🗓 \"It will take approximately 7 days to feel completely stress-free.\"',
+                '🗓 It will take approximately 7 days to feel completely stress-free.',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 18, color: AppColors.primary),
               ),
