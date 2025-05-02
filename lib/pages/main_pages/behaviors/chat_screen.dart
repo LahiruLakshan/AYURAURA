@@ -178,7 +178,7 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
     //tokenAstraCS = oKfWmWBXOWibrpZEBDGkcHBB:7ef70e360f832659d71c5b6a61345d8072cb417108cd8c72a66151618b826d34
     final headers = {
       "Authorization":
-      "Bearer AstraCSAstraCS:<token>", // Replace with your token
+      "Bearer AstraCSAstraCS:oKfWmWBXOWibrpZEBDGkcHBB:7ef70e360f832659d71c5b6a61345d8072cb417108cd8c72a66151618b826d34", // Replace with your token
       "Content-Type": "application/json",
     };
 
