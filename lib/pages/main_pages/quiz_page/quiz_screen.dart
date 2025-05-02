@@ -80,9 +80,9 @@ class _QuizScreenState extends State<QuizScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: AppColors.primary,
+        backgroundColor: Color(0xFF047857),
         title: Text(
-          "Stress Assessment",
+          "Daily Assessment",
           style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
@@ -101,11 +101,11 @@ class _QuizScreenState extends State<QuizScreen> {
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
                         child: Text(
-                          "Please answer all questions to assess your current stress levels:",
+                          "Please take the assessment to see how many days you have to become stress-free",
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w500,
-                            color: AppColors.secondary,
+                            color: Colors.black,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -139,16 +139,22 @@ class _QuizScreenState extends State<QuizScreen> {
         child: ElevatedButton(
           onPressed: submitAnswers,
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
+            backgroundColor: Color(0xFF047857),
             foregroundColor: Colors.white,
             padding: EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),
+              borderRadius: BorderRadius.circular(16),
             ),
+            elevation: 8,
+            shadowColor: Color(0xFF047857).withOpacity(0.4),
           ),
           child: Text(
             'Submit Answers',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
           ),
         ),
       ),
@@ -193,7 +199,7 @@ class _QuizScreenState extends State<QuizScreen> {
               ),
               value: answer,
               groupValue: selectedAnswers[questionIndex],
-              activeColor: AppColors.primary,
+              activeColor: Color(0xFF047857),
               onChanged: (value) {
                 setState(() {
                   selectedAnswers[questionIndex] = value!;

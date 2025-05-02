@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:stress_management/pages/main_pages/quiz_page/quiz_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import '../../../constants/colors.dart';
 import '../../../constants/constants.dart';
@@ -26,7 +27,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
 
   Future<Timestamp?> getCreatedAtTimestamp() async {
     // Get the current user
-    User? user = FirebaseAuth.instance.currentUser;
+    User? user = FirebaseAuth.instance.currentUser;//to get the currently logged-in user.
     if (user == null) {
       print("No user is currently logged in.");
       return null;
@@ -81,13 +82,40 @@ class _ResultsScreenState extends State<ResultsScreen> {
   @override
   Widget build(BuildContext context) {
     List<String> answerNumbers = widget.selectedAnswers.map((answer) {
-      return answer[0]; // Get the first character
+      return answer[0];
     }).toList();
 
+    List<Map<String, dynamic>> emotionCards = [
+      {
+        'title': 'Stress Level',
+        'answer': widget.selectedAnswers[0],
+        'icon': Icons.psychology,
+        'color': Color(0xFFF59E0B),
+        'bgColor': Color(0xFFFEF3C7),
+      },
+      {
+        'title': 'Happiness Level',
+        'answer': widget.selectedAnswers[1],
+        'icon': Icons.sentiment_satisfied,
+        'color': Color(0xFF059669),
+        'bgColor': Color(0xFFD1FAE5),
+      },
+      {
+        'title': 'Calmness Level',
+        'answer': widget.selectedAnswers[2],
+        'icon': Icons.spa,
+        'color': Color(0xFF8B5CF6),
+        'bgColor': Color(0xFFEDE9FE),
+      },
+      {
+        'title': 'Energy Level',
+        'answer': widget.selectedAnswers[3],
+        'icon': Icons.bolt,
+        'color': Color(0xFF60A5FA),
+        'bgColor': Color(0xFFDBEAFE),
+      },
+    ];
 
-    print(answerNumbers);
-    print(daysSinceRegistration);
-    print(data["gender"]);
     Future<void> saveMoodLog(int predictedDays) async {
       User? user = FirebaseAuth.instance.currentUser;
       if (user == null) {
@@ -130,13 +158,13 @@ class _ResultsScreenState extends State<ResultsScreen> {
       setState(() => _isLoading = true);
       try {
         final listeningSnapshot = await FirebaseFirestore.instance
-            .collection('listening_logs')
+            .collection('listening_logs')//orders the logs by time_listened in descending order, and retrieves the most recent log.
             .orderBy('time_listened', descending: true)
             .limit(1)
             .get();
 
         final coloringSnapshot = await FirebaseFirestore.instance
-            .collection('coloring_logs')
+            .collection('coloring_logs')//orders the logs by timestamp, and retrieves the most recent log.
             .orderBy('timestamp', descending: true)
             .limit(1)
             .get();
@@ -151,9 +179,9 @@ class _ResultsScreenState extends State<ResultsScreen> {
         var coloringData =
         coloringSnapshot.docs.first.data() as Map<String, dynamic>;
 
-        final url = Uri.parse("${AppConstants.BASE_URL_QUIZ}predict_recovery_time");
+        final url = Uri.parse("${AppConstants.BASE_URL_QUIZ}predict_recovery_time");//The app sends a POST request to the backend API
 
-        final payload = {
+        final payload = {//constructor load below data
           "Age": data["age"],
           "Gender": data["gender"] == "Male" ? 0:1,
           "Days": daysSinceRegistration,
@@ -165,7 +193,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
           "BaseRecoveryDays": daysSinceRegistration >= 4 ? 5:10,
         };
         print("payload : $payload");
-        final response = await http.post(
+        final response = await http.post( //backend API call
           url,
           headers: {"Content-Type": "application/json"},
           body: jsonEncode(payload),
@@ -193,97 +221,167 @@ class _ResultsScreenState extends State<ResultsScreen> {
       }
     }
 
-
-
-
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 50.0, horizontal: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                'Your Emotional Summary for Today',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 20),
-              ...widget.selectedAnswers.asMap().entries.map((entry) {
-                int index = entry.key;
-                String answer = entry.value;
-                return Column(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(12.0),
+      backgroundColor: Colors.white,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFFE8FFF5),
+              Colors.white,
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 40.0, horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Your Emotional Summary',
+                    style: GoogleFonts.inter(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF059669),
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    "Here's how you're feeling today",
+                    style: GoogleFonts.inter(
+                      fontSize: 16,
+                      color: Color(0xFF6B7280),
+                    ),
+                  ),
+                  SizedBox(height: 32),
+                  ...emotionCards.map((emotion) => Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: Container(
+                      padding: EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: AppColors.background,
-                        borderRadius: BorderRadius.circular(15),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.grey.withOpacity(0.3),
-                            blurRadius: 10,
-                            spreadRadius: 2,
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 12,
                             offset: Offset(0, 4),
                           ),
                         ],
                       ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: emotion['bgColor'] as Color,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Icon(
+                              emotion['icon'] as IconData,
+                              color: emotion['color'] as Color,
+                              size: 24,
+                            ),
+                          ),
+                          SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  emotion['title'] as String,
+                                  style: GoogleFonts.inter(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF111827),
+                                  ),
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  emotion['answer'] as String,
+                                  style: GoogleFonts.inter(
+                                    fontSize: 14,
+                                    color: Color(0xFF6B7280),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )).toList(),
+                  SizedBox(height: 32),
+                  Container(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () => _isLoading ? null : predictStress(),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF059669),
+                        padding: EdgeInsets.symmetric(vertical: 18),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        elevation: 4,
+                        shadowColor: Color(0xFF059669).withOpacity(0.3),
+                      ),
+                      child: _isLoading
+                          ? SizedBox(
+                              height: 24,
+                              width: 24,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : Text(
+                              'Calculate Recovery Time',
+                              style: GoogleFonts.inter(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  Container(
+                    width: double.infinity,
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => QuizScreen(
+                              initialAnswers: widget.selectedAnswers,
+                            ),
+                          ),
+                        );
+                      },
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 18),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
                       child: Text(
-                        '$answer',
-                        style: TextStyle(fontSize: 18),
-                        textAlign: TextAlign.center,
-                      ),
-                      width: double.maxFinite,
-                    ),
-                    SizedBox(height: 20),
-                  ],
-                );
-              }).toList(),
-              ElevatedButton(
-                onPressed: () => _isLoading ? null : predictStress(),
-                style: ElevatedButton.styleFrom(
-                  primary: AppColors.white,
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-                child: _isLoading
-                    ? const CircularProgressIndicator()
-                    : Text(
-                  'Predict & Save My Mood Log 💾',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: AppColors.secondary,
-                  ),
-                ),
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => QuizScreen(
-                        initialAnswers: widget.selectedAnswers,
+                        'Edit My Answers',
+                        style: GoogleFonts.inter(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF6B7280),
+                        ),
                       ),
                     ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: AppColors.secondary,
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
                   ),
-                ),
-                child: Text(
-                  'Edit My Answers ✏️',
-                  style: TextStyle(fontSize: 18),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
