@@ -175,9 +175,10 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
     final apiUrl =
         "https://api.langflow.astra.datastax.com/lf/4ac4002e-d027-4f4d-9aec-6c9f31cf8377/api/v1/run/5d198fe5-06dd-4658-bfab-0ac8ba18e90e?stream=false";
 
+    //tokenAstraCS = oKfWmWBXOWibrpZEBDGkcHBB:7ef70e360f832659d71c5b6a61345d8072cb417108cd8c72a66151618b826d34
     final headers = {
       "Authorization":
-      "Bearer AstraCS:oKfWmWBXOWibrpZEBDGkcHBB:7ef70e360f832659d71c5b6a61345d8072cb417108cd8c72a66151618b826d34", // Replace with your token
+      "Bearer AstraCSAstraCS:<token>", // Replace with your token
       "Content-Type": "application/json",
     };
 
