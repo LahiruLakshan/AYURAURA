@@ -209,7 +209,7 @@ class _MandalaMusicHomeScreenState extends State<MandalaMusicHomeScreen> {
           'Mandala Arts',
           'Color intricate patterns to find your inner peace',
           Icons.palette,
-              () {
+          () {
             Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => MandalaNavigator()),
             );
@@ -220,7 +220,7 @@ class _MandalaMusicHomeScreenState extends State<MandalaMusicHomeScreen> {
           'Music Listening',
           'Let the healing sounds calm your mind',
           Icons.music_note,
-              () {
+          () {
             Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => MusicNavigator()),
             );
@@ -249,9 +249,9 @@ class _MandalaMusicHomeScreenState extends State<MandalaMusicHomeScreen> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color: title == 'Mandala Arts'
-                ? AppColors.calmness.withOpacity(0.3)
-                : AppColors.energy.withOpacity(0.3),
+            color: title == 'Mandala Arts' 
+              ? AppColors.calmness.withOpacity(0.3)
+              : AppColors.energy.withOpacity(0.3),
             width: 2,
           ),
           boxShadow: [
@@ -290,16 +290,16 @@ class _MandalaMusicHomeScreenState extends State<MandalaMusicHomeScreen> {
               child: ShaderMask(
                 shaderCallback: (bounds) => LinearGradient(
                   colors: title == 'Mandala Arts'
-                      ? [
-                    Colors.white,
-                    Color(0xFFFFF9C4), // Light yellow
-                    Colors.white,
-                  ]
-                      : [
-                    Colors.white,
-                    Color(0xFFE1F5FE), // Light blue
-                    Colors.white,
-                  ],
+                    ? [
+                        Colors.white,
+                        Color(0xFFFFF9C4), // Light yellow
+                        Colors.white,
+                      ]
+                    : [
+                        Colors.white,
+                        Color(0xFFE1F5FE), // Light blue
+                        Colors.white,
+                      ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ).createShader(bounds),
@@ -323,11 +323,11 @@ class _MandalaMusicHomeScreenState extends State<MandalaMusicHomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ShaderMask(
-                    shaderCallback: (bounds) => title == 'Mandala Arts'
-                        ? mandalaGradient.createShader(bounds)
-                        : LinearGradient(
-                      colors: [AppColors.energy, AppColors.energy],
-                    ).createShader(bounds),
+                    shaderCallback: (bounds) => title == 'Mandala Arts' 
+                      ? mandalaGradient.createShader(bounds)
+                      : LinearGradient(
+                          colors: [AppColors.energy, AppColors.energy],
+                        ).createShader(bounds),
                     child: Text(
                       title,
                       style: TextStyle(
@@ -391,20 +391,20 @@ class _MandalaMusicHomeScreenState extends State<MandalaMusicHomeScreen> {
       ),
       child: _isLoading
           ? SizedBox(
-        height: 24,
-        width: 24,
-        child: CircularProgressIndicator(
-          color: Colors.white,
-          strokeWidth: 2,
-        ),
-      )
+              height: 24,
+              width: 24,
+              child: CircularProgressIndicator(
+                color: Colors.white,
+                strokeWidth: 2,
+              ),
+            )
           : Text(
-        'How Stressed Am I?',
-        style: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
+              'How Stressed Am I?',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
     );
   }
 

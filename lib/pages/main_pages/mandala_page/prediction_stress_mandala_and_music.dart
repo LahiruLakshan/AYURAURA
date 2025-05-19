@@ -47,10 +47,10 @@ class _PredictionStressMandalaAndMusicState
                   ),
                 ),
                 const SizedBox(height: 40),
-                StressMeter(stressLevel: widget.stressLevel == 1 ? 4:widget.stressLevel == 2 ? 3:widget.stressLevel == 3?2:1 ), // Use the state variable
+                StressMeter(stressLevel: widget.stressLevel), // Use the state variable
                 const SizedBox(height: 40),
                 Text(
-                  widget.stressLevel == 1 ? "(${widget.stressLevel}) CRITICAL LEVEL " : widget.stressLevel == 2 ?  "(${widget.stressLevel}) SEVERE LEVEL ": widget.stressLevel == 3 ? "(${widget.stressLevel}) MODERATE LEVEL ":"(${widget.stressLevel}) LOW LEVEL ", // Example logic
+                  widget.stressLevel < 2 ? "(${widget.stressLevel}) LOW LEVEL " : "(${widget.stressLevel}) HIGH LEVEL ", // Example logic
                   style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
