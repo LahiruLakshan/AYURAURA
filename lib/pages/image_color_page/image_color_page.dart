@@ -38,15 +38,16 @@ class _ImageColorPageState extends State<ImageColorPage> {
   // create some values
   Color pickerColor = Color(0xffffffff);
   double _currentSliderValue = 20;
-  int _currentPaletteIndex = 0;
+  int _currentPaletteIndex = 4;
 
   late final ImageProvider imageProvider;
   late Stopwatch _stopwatch;
   late Timer _timer;
+  bool _isZooming = false;
+  bool _isPanning = false;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _stopwatch = Stopwatch()..start();
     _timer = Timer.periodic(Duration(seconds: 1), (_) {});
@@ -101,61 +102,57 @@ class _ImageColorPageState extends State<ImageColorPage> {
   // Define multiple color palettes
   final List<List<Color>> _colorPalettes = [
     [
-      Colors.white,
-      Colors.red,
-      Colors.green,
-      Colors.blue,
-      Colors.yellow,
-      Colors.orange,
-      Colors.pink,
-      Colors.purple,
-      Colors.brown,
+      Color(0xFF1B2A49), // deepNavy
+      Color(0xFF3E4A33), // darkOliveGreen
+      Color(0xFFA14D3A), // burntSienna
+      Color(0xFF2B616D), // deepTeal
+      Color(0xFF6C4A63), // mutedPlum
+      Color(0xFF4A4E69), // charcoalGray
+      Color(0xFFB4A69B), // warmSand
+      Color(0xFF64232E), // darkMaroon
     ],
     [
-      Colors.black,
-      Colors.cyan,
-      Colors.amber,
-      Colors.deepOrange,
-      Colors.lightGreen,
-      Colors.indigo,
-      Colors.lime,
-      Colors.teal,
-      Colors.grey,
+      Color(0xFFE8A87C), // Soft Peach
+      Color(0xFFF6A6B2), // Blush Pink
+      Color(0xFFB8DE6F), // Fresh Lime Green
+      Color(0xFFA6CFE2), // Gentle Sky Blue
+      Color(0xFF8066C2), // Soft Lavender
+      Color(0xFFFAE596), // Sunny Yellow
+      Color(0xFFB9936C), // Warm Beige
+      Color(0xFFD85A7F), // Raspberry Rose
     ],
     [
-      Colors.blueGrey,
-      Colors.lightBlue,
-      Colors.deepPurple,
-      Colors.redAccent,
-      Colors.greenAccent,
-      Colors.orangeAccent,
-      Colors.yellowAccent,
-      Colors.pinkAccent,
-      Colors.purpleAccent,
+      Color(0xFFFFC3A0), // Pastel Peach (Happiness)
+      Color(0xFF84DCC6), // Soft Mint (Calmness)
+      Color(0xFFB5A4E6), // Lavender Mist (Stress)
+      Color(0xFFFF8C94), // Coral Pink (Energy)
+      Color(0xFFA1C6EA), // Serenity Blue (Calmness)
+      Color(0xFFF4D06F), // Warm Gold (Energy)
+      Color(0xFFD499B9), // Soft Rosewood (Happiness)
+      Color(0xFF6495ED), // Cornflower Blue (Calmness)
     ],
     [
-      Colors.lightGreenAccent,
-      Colors.tealAccent,
-      Colors.indigoAccent,
-      Colors.cyanAccent,
-      Colors.amberAccent,
-      Colors.deepOrangeAccent,
-      Colors.limeAccent,
-      Colors.brown,
-      Colors.black,
+      Color(0xFF92A8D1), // Dusty Blue (Calmness)
+      Color(0xFFF7CAC9), // Soft Blush (Happiness)
+      Color(0xFFFFA07A), // Light Coral (Energy)
+      Color(0xFFB39BC8), // Deep Lavender (Stress)
+      Color(0xFF52C2B2), // Turquoise Teal (Calmness)
+      Color(0xFFFAE3B0), // Soft Lemon (Energy)
+      Color(0xFFEC96A4), // Warm Pink (Happiness)
+      Color(0xFF8C7AA9), // Muted Purple (Stress)
     ],
     [
-      Colors.white70,
-      Colors.black87,
-      Colors.grey,
-      Colors.blueAccent,
-      Colors.deepPurpleAccent,
-      Colors.redAccent,
-      Colors.greenAccent,
-      Colors.pinkAccent,
-      Colors.yellowAccent,
+      Color(0xFFADEFD1), // Fresh Aqua Green (Calmness)
+      Color(0xFFFF6B6B), // Vibrant Coral (Happiness)
+      Color(0xFFA29BFE), // Soft Periwinkle (Stress)
+      Color(0xFF6AB187), // Gentle Forest Green (Calmness)
+      Color(0xFFFFC857), // Warm Amber (Energy)
+      Color(0xFF77C3EC), // Bright Sky Blue (Calmness)
+      Color(0xFFEE6C4D), // Fiery Orange (Energy)
+      Color(0xFFD8B4E2), // Light Orchid (Happiness)
     ],
   ];
+
 
 
   void _changeColorPalette(int index) {
@@ -242,34 +239,34 @@ class _ImageColorPageState extends State<ImageColorPage> {
       },
       child: SafeArea(
         child: Scaffold(
-          // appBar: MyAppBar(
-          //   title: "Color",
-          // ),
           body: Column(
             children: <Widget>[
               buildRow(),
-              Container(
-                width: w,
-                height: MediaQuery.of(context).size.height - 200,
-                child: Zoom(
-                  maxZoomHeight: 5000,
-                  maxZoomWidth: 5000,
-                  initZoom: 0,
-                  child: Center(
-                    child: FloodFillImage(
-                      imageProvider: imageProvider,
-                      fillColor: _fillColor,
-                      avoidColor: [Colors.transparent, Colors.black],
-                      tolerance: 19,
-                      onFloodFillEnd: (img) {
-                        context.read<MainProvider>().setImage(img);
-                      },
+              Expanded(
+                child: Container(
+                  width: w,
+                  child: Zoom(
+                    maxZoomHeight: 5000,
+                    maxZoomWidth: 5000,
+                    initZoom: 0,
+                    child: Center(
+                      child: FloodFillImage(
+                        imageProvider: imageProvider,
+                        fillColor: _fillColor,
+                        avoidColor: [Colors.transparent, Colors.black],
+                        tolerance: 19,
+                        onFloodFillEnd: (img) {
+                          context.read<MainProvider>().setImage(img);
+                        },
+                      ),
                     ),
                   ),
                 ),
               ),
-              Spacer(),
-              selectedColorPalette()
+              Container(
+                height: 70,
+                child: selectedColorPalette(),
+              ),
             ],
           ),
         ),
@@ -277,45 +274,77 @@ class _ImageColorPageState extends State<ImageColorPage> {
     );
   }
 
-
   SingleChildScrollView selectedColorPalette() {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: _colorPalettes[_currentPaletteIndex].map((color) {
-          return PaletteItem(
+          return GestureDetector(
             onTap: () {
               setState(() {
                 _fillColor = color;
+                _colorize = color;
               });
             },
-            color: color,
+            child: Container(
+              width: 40,
+              height: 40,
+              margin: EdgeInsets.symmetric(horizontal: 5),
+              decoration: BoxDecoration(
+                color: color,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: _fillColor == color ? Colors.black : Colors.transparent,
+                  width: 2,
+                ),
+              ),
+            ),
           );
         }).toList(),
       ),
     );
   }
 
-  Row buildRow() {
-    return Row(
-      children: [
-        IconButton(
-          onPressed: () {
-            setState(() {
-              _fillColor = Colors.white;
-            });
-          },
-          icon: Icon(EraserIcon.icon_eraser),
-        ),
-        Spacer(),
-        ElevatedButton(
-          onPressed: _submitColoring,
-          child: Text("Submit"),
-        ),
-        TextButton(
-          onPressed: _showPaletteSelectionDialog,
-          child: const Text("Change Palette"),
-        ),
-      ],
+  Widget buildRow() {
+    return Container(
+      height: 50,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              if (widget.path != null) {
+                context
+                    .read<MainProvider>()
+                    .saveImage(name: widget.path!.split('/').last);
+              } else {
+                context.read<MainProvider>().saveImage(
+                    name: widget.file!.path.split('/').last, index: widget.index);
+              }
+              Navigator.pop(context);
+            },
+          ),
+          IconButton(
+            icon: Icon(EraserIcon.icon_eraser),
+            onPressed: () {
+              setState(() {
+                _fillColor = Colors.white;
+                _colorize = Colors.white;
+              });
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.palette),
+            onPressed: _showPaletteSelectionDialog,
+          ),
+          IconButton(
+            icon: Icon(Icons.save),
+            onPressed: _submitColoring,
+          ),
+        ],
+      ),
     );
-  }}
+  }
+}

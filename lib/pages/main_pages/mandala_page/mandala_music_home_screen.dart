@@ -79,7 +79,7 @@ class _MandalaMusicHomeScreenState extends State<MandalaMusicHomeScreen> {
 
       final listeningSnapshot = await FirebaseFirestore.instance
           .collection('listening_logs')
-          .orderBy('time_listened', descending: true)
+          .orderBy('date_time_listened', descending: true)
           .limit(1)
           .get();
 
@@ -100,15 +100,17 @@ class _MandalaMusicHomeScreenState extends State<MandalaMusicHomeScreen> {
       var listeningData = listeningSnapshot.docs.first.data() as Map<String, dynamic>;
       var coloringData = coloringSnapshot.docs.first.data() as Map<String, dynamic>;
 
+      print("-------listeningData : $listeningData");
+      print("---------coloringData : $coloringData");
       final url = Uri.parse("${AppConstants.BASE_URL_MANDALA_MUSIC}predict_stress");
       final payload = {
         "Age": userData["age"],
         "Gender": userData["gender"],
         "Mandala Design Pattern": getComplexityValue(coloringData['image_type']),
         "Mandala Colors Used": coloringData['color_palette_id'],
-        "Mandala Time Spent": coloringData['color_duration'],
+        "Mandala Time Spent": coloringData['color_duration']/60,
         "Music Type": getMusicTypeValue(listeningData['track_title'].split(" ")[0]),
-        "Music Time Spent": listeningData['time_listened'],
+        "Music Time Spent": listeningData['time_listened']/60,
         "Total_Time": coloringData['color_duration'] + listeningData['time_listened']
       };
 
@@ -209,7 +211,7 @@ class _MandalaMusicHomeScreenState extends State<MandalaMusicHomeScreen> {
           'Mandala Arts',
           'Color intricate patterns to find your inner peace',
           Icons.palette,
-          () {
+              () {
             Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => MandalaNavigator()),
             );
@@ -220,7 +222,7 @@ class _MandalaMusicHomeScreenState extends State<MandalaMusicHomeScreen> {
           'Music Listening',
           'Let the healing sounds calm your mind',
           Icons.music_note,
-          () {
+              () {
             Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => MusicNavigator()),
             );
@@ -249,9 +251,9 @@ class _MandalaMusicHomeScreenState extends State<MandalaMusicHomeScreen> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color: title == 'Mandala Arts' 
-              ? AppColors.calmness.withOpacity(0.3)
-              : AppColors.energy.withOpacity(0.3),
+            color: title == 'Mandala Arts'
+                ? AppColors.calmness.withOpacity(0.3)
+                : AppColors.energy.withOpacity(0.3),
             width: 2,
           ),
           boxShadow: [
@@ -290,16 +292,16 @@ class _MandalaMusicHomeScreenState extends State<MandalaMusicHomeScreen> {
               child: ShaderMask(
                 shaderCallback: (bounds) => LinearGradient(
                   colors: title == 'Mandala Arts'
-                    ? [
-                        Colors.white,
-                        Color(0xFFFFF9C4), // Light yellow
-                        Colors.white,
-                      ]
-                    : [
-                        Colors.white,
-                        Color(0xFFE1F5FE), // Light blue
-                        Colors.white,
-                      ],
+                      ? [
+                    Colors.white,
+                    Color(0xFFFFF9C4), // Light yellow
+                    Colors.white,
+                  ]
+                      : [
+                    Colors.white,
+                    Color(0xFFE1F5FE), // Light blue
+                    Colors.white,
+                  ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ).createShader(bounds),
@@ -323,11 +325,11 @@ class _MandalaMusicHomeScreenState extends State<MandalaMusicHomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ShaderMask(
-                    shaderCallback: (bounds) => title == 'Mandala Arts' 
-                      ? mandalaGradient.createShader(bounds)
-                      : LinearGradient(
-                          colors: [AppColors.energy, AppColors.energy],
-                        ).createShader(bounds),
+                    shaderCallback: (bounds) => title == 'Mandala Arts'
+                        ? mandalaGradient.createShader(bounds)
+                        : LinearGradient(
+                      colors: [AppColors.energy, AppColors.energy],
+                    ).createShader(bounds),
                     child: Text(
                       title,
                       style: TextStyle(
@@ -391,20 +393,20 @@ class _MandalaMusicHomeScreenState extends State<MandalaMusicHomeScreen> {
       ),
       child: _isLoading
           ? SizedBox(
-              height: 24,
-              width: 24,
-              child: CircularProgressIndicator(
-                color: Colors.white,
-                strokeWidth: 2,
-              ),
-            )
+        height: 24,
+        width: 24,
+        child: CircularProgressIndicator(
+          color: Colors.white,
+          strokeWidth: 2,
+        ),
+      )
           : Text(
-              'How Stressed Am I?',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+        'How Stressed Am I?',
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
     );
   }
 

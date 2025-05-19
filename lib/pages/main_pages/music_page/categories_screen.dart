@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:stress_management/pages/main_pages/music_page/tracks_screen.dart';
-import 'package:stress_management/constants/colors.dart';
 
-class CategoriesScreen extends StatelessWidget {
+class CategoriesScreen extends StatefulWidget {
+  @override
+  _CategoriesScreenState createState() => _CategoriesScreenState();
+}
+
+class _CategoriesScreenState extends State<CategoriesScreen> {
   final List<Map<String, dynamic>> categories = [
     {
       "type": "Deep Sleep Music (Delta Waves)",
@@ -78,140 +82,165 @@ class CategoriesScreen extends StatelessWidget {
     }
   ];
 
-  // Map of icons for each category
-  final Map<String, IconData> categoryIcons = {
-    'Deep Sleep Music (Delta Waves)': Icons.nightlight_round,
-    'Gregorian Chants or OM Mantra Meditation': Icons.self_improvement,
-    'Tibetan Singing Bowls': Icons.music_note,
-    'Ambient Meditation Music': Icons.spa,
-    'Soft Instrumental': Icons.piano,
-    'Alpha Waves': Icons.waves,
-    'Nature Sounds with Soft Piano': Icons.forest,
-    'LoFI chill beats': Icons.headphones,
-  };
+  String searchQuery = '';
 
-  // Map of gradients for each category
-  final Map<String, List<Color>> categoryGradients = {
-    'Deep Sleep Music (Delta Waves)': [Color(0xFF2196F3), Color(0xFF1565C0)],
-    'Gregorian Chants or OM Mantra Meditation': [Color(0xFFE91E63), Color(0xFFC2185B)],
-    'Tibetan Singing Bowls': [Color(0xFFFF9800), Color(0xFFF57C00)],
-    'Ambient Meditation Music': [Color(0xFF4CAF50), Color(0xFF388E3C)],
-    'Soft Instrumental': [Color(0xFF9C27B0), Color(0xFF7B1FA2)],
-    'Alpha Waves': [Color(0xFF00BCD4), Color(0xFF0097A7)],
-    'Nature Sounds with Soft Piano': [Color(0xFF8BC34A), Color(0xFF689F38)],
-    'LoFI chill beats': [Color(0xFF795548), Color(0xFF5D4037)],
-  };
+  List<Map<String, dynamic>> get filteredCategories {
+    if (searchQuery.isEmpty) return categories;
+    return categories.where((category) =>
+        category['type'].toString().toLowerCase().contains(searchQuery.toLowerCase())).toList();
+  }
+
+  // Get icon based on category type
+  IconData getCategoryIcon(String type) {
+    switch (type.toLowerCase()) {
+      case 'deep sleep music (delta waves)':
+        return Icons.nightlight_round;
+      case 'gregorian chants or om mantra meditation':
+        return Icons.music_note;
+      case 'tibetan singing bowls':
+        return Icons.waves;
+      case 'ambient meditation music':
+        return Icons.spa;
+      case 'soft instrumental':
+        return Icons.piano;
+      case 'alpha waves':
+        return Icons.psychology;
+      case 'nature sounds with soft piano':
+        return Icons.nature;
+      case 'lofi chill beats':
+        return Icons.headphones;
+      default:
+        return Icons.music_note;
+    }
+  }
+
+  // Get gradient colors based on category type
+  List<Color> getGradientColors(String type) {
+    switch (type.toLowerCase()) {
+      case 'deep sleep music (delta waves)':
+        return [Colors.indigo, Colors.blue.shade900];
+      case 'gregorian chants or om mantra meditation':
+        return [Colors.purple, Colors.deepPurple];
+      case 'tibetan singing bowls':
+        return [Colors.orange, Colors.deepOrange];
+      case 'ambient meditation music':
+        return [Colors.teal, Colors.cyan];
+      case 'soft instrumental':
+        return [Colors.pink, Colors.pinkAccent];
+      case 'alpha waves':
+        return [Colors.green, Colors.teal];
+      case 'nature sounds with soft piano':
+        return [Colors.lightGreen, Colors.green];
+      case 'lofi chill beats':
+        return [Colors.blue, Colors.lightBlue];
+      default:
+        return [Colors.blue, Colors.blueAccent];
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Colors.white,
-            AppColors.accent.withOpacity(0.1),
-          ],
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextField(
+              onChanged: (value) => setState(() => searchQuery = value),
+              decoration: InputDecoration(
+                hintText: 'Search categories...',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: Colors.grey.withOpacity(0.1),
+              ),
+            ),
+          ),
         ),
-      ),
-      child: ListView.builder(
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        itemCount: categories.length,
-        itemBuilder: (context, index) {
-          final category = categories[index];
-          final categoryType = category['type'] as String;
-          final icon = categoryIcons[categoryType] ?? Icons.music_note;
-          final gradientColors = categoryGradients[categoryType] ?? [Colors.blue, Colors.blueAccent];
-
-          return Hero(
-            tag: 'category_$index',
-            child: Material(
-              child: Container(
-                margin: EdgeInsets.only(bottom: 16),
-                child: InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => TracksScreen(category: category),
-                      ),
-                    );
-                  },
-                  borderRadius: BorderRadius.circular(20),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      gradient: LinearGradient(
-                        colors: gradientColors,
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: gradientColors[0].withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: Offset(0, 4),
-                          spreadRadius: 0,
+        SliverPadding(
+          padding: const EdgeInsets.all(16.0),
+          sliver: SliverGrid(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: MediaQuery.of(context).size.width > 600 ? 3 : 2,
+              childAspectRatio: 1.0,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+            ),
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                final category = filteredCategories[index];
+                return Hero(
+                  tag: 'category_${category['type']}',
+                  child: Material(
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => TracksScreen(category: category),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: getGradientColors(category['type']),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 10,
+                              offset: Offset(0, 5),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.all(20),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            child: Icon(
-                              icon,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              getCategoryIcon(category['type']),
+                              size: 40,
                               color: Colors.white,
-                              size: 30,
                             ),
-                          ),
-                          SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  categoryType,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 0.5,
-                                  ),
+                            SizedBox(height: 16),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Text(
+                                category['type'],
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                SizedBox(height: 4),
-                                Text(
-                                  '${(category['tracks'] as List).length} tracks',
-                                  style: TextStyle(
-                                    color: Colors.white.withOpacity(0.8),
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
-                          Icon(
-                            Icons.arrow_forward_ios,
-                            color: Colors.white.withOpacity(0.8),
-                            size: 20,
-                          ),
-                        ],
+                            SizedBox(height: 8),
+                            Text(
+                              '${category['tracks'].length} tracks',
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.8),
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ),
+                );
+              },
+              childCount: filteredCategories.length,
             ),
-          );
-        },
-      ),
+          ),
+        ),
+      ],
     );
   }
 }
