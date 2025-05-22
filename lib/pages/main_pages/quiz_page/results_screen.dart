@@ -179,7 +179,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
         var coloringData =
         coloringSnapshot.docs.first.data() as Map<String, dynamic>;
 
-        final url = Uri.parse("${AppConstants.BASE_URL_QUIZ}predict_recovery_time");//The app sends a POST request to the backend API
+        final url = Uri.parse(AppConstants.BASE_URL_QUIZ);//The app sends a POST request to the backend API
 
         final payload = {//constructor load below data
           "Age": data["age"],

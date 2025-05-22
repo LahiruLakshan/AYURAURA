@@ -102,7 +102,7 @@ class _MandalaMusicHomeScreenState extends State<MandalaMusicHomeScreen> {
 
       print("-------listeningData : $listeningData");
       print("---------coloringData : $coloringData");
-      final url = Uri.parse("${AppConstants.BASE_URL_MANDALA_MUSIC}predict_stress");
+      final url = Uri.parse(AppConstants.BASE_URL_MANDALA_MUSIC);
       final payload = {
         "Age": userData["age"],
         "Gender": userData["gender"],

@@ -352,7 +352,7 @@ class _StressScaleQuizState extends State<StressScaleQuiz> {
                           try {
                             final request = http.MultipartRequest(
                               'POST',
-                              Uri.parse('${AppConstants.BASE_URL_EYE_ANALYSIS}predict'),
+                              Uri.parse(AppConstants.BASE_URL_EYE_ANALYSIS),
                             );
 
                             final videoFile = await http.MultipartFile.fromPath(

@@ -99,8 +99,7 @@ class _PredictionAndHistoryState extends State<PredictionAndHistory> {
       print(
           "listeningData['music_type'].split(' ')[0] : ${listeningData['track_title'].split(' ')[0]}");
 
-      final url =
-      Uri.parse("${AppConstants.BASE_URL_MANDALA_MUSIC}predict_stress");
+      final url = Uri.parse(AppConstants.BASE_URL_MANDALA_MUSIC);
       final payload = {
         "Age": userData["age"],
         "Gender": userData["gender"],

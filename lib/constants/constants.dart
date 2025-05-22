@@ -1,6 +1,8 @@
 class AppConstants {
-  static const String BASE_URL_MANDALA_MUSIC = "https://your-api.com"; // Thyagi
-  static const String BASE_URL_QUIZ = "https://1426-34-73-36-227.ngrok-free.app/"; // Jayathri
-  static const String BASE_URL_EYE_ANALYSIS = "https://5cd4-34-143-131-3.ngrok-free.app/";// Chirath
-  static const String BASE_URL_BEHAVIORS = "https://9a5b-35-231-230-9.ngrok-free.app/"; //Poorna
+  static const String  BACKEND_URL = "https://96b8-34-168-173-119.ngrok-free.app/";
+
+  static const String BASE_URL_MANDALA_MUSIC = BACKEND_URL + "predict_activities"; // Thyagi
+  static const String BASE_URL_QUIZ = BACKEND_URL + "predict_recovery"; // Jayathri
+  static const String BASE_URL_EYE_ANALYSIS = BACKEND_URL + "predict_eye";// Chirath
+  static const String BASE_URL_BEHAVIORS = BACKEND_URL + "predict_behavior"; //Poorna
 }

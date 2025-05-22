@@ -20,7 +20,7 @@ class PredictionPage extends StatefulWidget {
 
 class _PredictionPageState extends State<PredictionPage> {
   late Future<Map<String, dynamic>> _predictionFuture;
-  final String _backendUrl = '${AppConstants.BASE_URL_BEHAVIORS}predict';
+  final String _backendUrl = AppConstants.BASE_URL_BEHAVIORS;
 
   @override
   void initState() {
