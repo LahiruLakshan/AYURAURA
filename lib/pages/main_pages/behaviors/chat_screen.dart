@@ -171,14 +171,12 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
       isLoading = true;
     });
 
-    // LangFlow API endpoint
-    final apiUrl =
-        "https://api.langflow.astra.datastax.com/lf/4ac4002e-d027-4f4d-9aec-6c9f31cf8377/api/v1/run/5d198fe5-06dd-4658-bfab-0ac8ba18e90e?stream=false";
+    // LangFlow API configuration
+    final apiUrl = "https://api.langflow.astra.datastax.com/lf/628e491a-ce21-4264-b7a1-cb49a4e75323/api/v1/run/faa4d895-cd01-4ac6-966d-b6af9837391f?stream=false";
+    final apiToken = "AstraCS:ydELKUJnGNhYFXSNpLWCerBM:1caf8564f69e7eb17e7e6543cf8f9953ef8774a8f14b59b686a65a43267f4512";
 
-    //tokenAstraCS = oKfWmWBXOWibrpZEBDGkcHBB:7ef70e360f832659d71c5b6a61345d8072cb417108cd8c72a66151618b826d34
     final headers = {
-      "Authorization":
-      "Bearer AstraCSAstraCS:oKfWmWBXOWibrpZEBDGkcHBB:7ef70e360f832659d71c5b6a61345d8072cb417108cd8c72a66151618b826d34", // Replace with your token
+      "Authorization": "Bearer $apiToken",
       "Content-Type": "application/json",
     };
 
@@ -195,56 +193,75 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
     });
 
     try {
-      print("Sending request to API...");
-      print("API URL: $apiUrl");
-      print("Headers: $headers");
-      print("Body: $body");
-
       final response = await http.post(
         Uri.parse(apiUrl),
         headers: headers,
         body: body,
       );
 
-      print("Status Code: ${response.statusCode}");
-      print("Response Headers: ${response.headers}");
-      print("Response Body: ${response.body}");
-
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final output = data["outputs"][0]["outputs"][0]["results"]["message"]["text"] as String?;
+        final responseData = jsonDecode(response.body);
 
-        if (output != null) {
-          // Add a small delay to simulate natural typing
-          await Future.delayed(Duration(seconds: 1));
-          setState(() {
-            isTyping = false;
-            isLoading = false;
-            messages.add({"text": output, "isUser": false});
-          });
-        } else {
-          setState(() {
-            isTyping = false;
-            isLoading = false;
-            messages.add({"text": "Error: No output from API", "isUser": false});
-          });
+        String botResponse = "";
+        List<String>? responseOptions;
+
+        // Parse the response text
+        if (responseData.containsKey("message")) {
+          botResponse = responseData["message"];
         }
-      } else {
+        else if (responseData.containsKey("outputs")) {
+          try {
+            botResponse = responseData["outputs"][0]["outputs"][0]["results"]["message"]["text"] ?? "";
+          } catch (e) {
+            print("Error parsing nested response: $e");
+          }
+        }
+
+        // Parse options if they exist
+        try {
+          if (responseData["options"] != null) {
+            responseOptions = List<String>.from(responseData["options"]);
+          } else if (responseData["outputs"]?[0]["outputs"]?[0]["results"]?["options"] != null) {
+            responseOptions = List<String>.from(
+                responseData["outputs"][0]["outputs"][0]["results"]["options"]
+            );
+          }
+        } catch (e) {
+          print("Error parsing options: $e");
+          responseOptions = null;
+        }
+
+        await Future.delayed(Duration(seconds: 1));
+
         setState(() {
           isTyping = false;
           isLoading = false;
-          messages.add({
-            "text": "Error: ${response.statusCode} - ${response.body}",
-            "isUser": false
-          });
+
+          // Create new message map
+          Map<String, dynamic> newMessage = {
+            "text": botResponse.isNotEmpty ? botResponse : "I didn't quite get that. Could you rephrase?",
+            "isUser": false,
+          };
+
+          // Only add options if they exist
+          if (responseOptions != null && responseOptions.isNotEmpty) {
+            newMessage["options"] = responseOptions;
+          }
+
+          messages.add(newMessage);
         });
+      } else {
+        throw Exception("API request failed with status ${response.statusCode}: ${response.body}");
       }
     } catch (e) {
-      print("Error occurred: $e");
+      print("Error calling LangFlow API: $e");
       setState(() {
         isTyping = false;
         isLoading = false;
-        messages.add({"text": "Error: $e", "isUser": false});
+        messages.add({
+          "text": "Oops! I'm having trouble connecting right now. Please try again in a moment.",
+          "isUser": false
+        });
       });
     }
   }

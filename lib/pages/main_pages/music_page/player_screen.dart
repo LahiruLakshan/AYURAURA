@@ -91,23 +91,81 @@ class _PlayerScreenState extends State<PlayerScreen> with SingleTickerProviderSt
         'percentage_listened': percentageListened,
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              Icon(Icons.check_circle, color: Colors.white),
-              SizedBox(width: 8),
-              Text('Meditation session recorded'),
-            ],
-          ),
-          backgroundColor: Colors.green,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        ),
-      );
-      Navigator.pop(context);
+      _showCategoryDialog();
     }
   }
+
+  IconData _getCategoryIcon(String type) {
+    switch (type.toLowerCase()) {
+      case 'deep sleep music (delta waves)':
+        return Icons.nightlight_round;
+      case 'gregorian chants or om mantra meditation':
+        return Icons.volume_up;
+      case 'tibetan singing bowls':
+        return Icons.waves;
+      case 'ambient meditation music':
+        return Icons.spa;
+      case 'soft instrumental':
+        return Icons.piano;
+      case 'alpha waves':
+        return Icons.psychology;
+      case 'nature sounds with soft piano':
+        return Icons.nature;
+      case 'lofi chill beats':
+        return Icons.headphones;
+      default:
+        return Icons.music_note;
+    }
+  }
+
+
+  void _showCategoryDialog() {
+    final categories = [
+      'Deep Sleep Music (Delta Waves)',
+      'Gregorian Chants or Om Mantra Meditation',
+      'Tibetan Singing Bowls',
+      'Ambient Meditation Music',
+      'Soft Instrumental',
+      'Alpha Waves',
+      'Nature Sounds with Soft Piano',
+      'Lofi Chill Beats',
+    ];
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("What's your favourite music category?"),
+          content: Container(
+            width: double.maxFinite,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: categories.length,
+              itemBuilder: (context, index) {
+                String category = categories[index];
+                return ListTile(
+                  leading: Icon(_getCategoryIcon(category)),
+                  title: Text(category),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('You selected "$category" as your favorite'),
+                        backgroundColor: Colors.blueAccent,
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                    Navigator.pop(context); // Exit PlayerScreen
+                  },
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
 
   String _formatDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');

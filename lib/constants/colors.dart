@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  static const Color primary = Color(0xFF193416);
+  static const Color primary = Color(0xFF2E7D32);
+  static const Color lightGreen = Color(0xFFE8F5E9); // Lightest green (50)
+  static const Color lightGreenAccent = Color(0xFFC8E6C9); // Slightly darker (100)
   static const Color secondary = Colors.green;
   static const Color white = Color(0xFFFFFFFF); // Light Grey
   static const Color background = Color(0xFFE8F5E9); // Light Grey
@@ -30,4 +32,9 @@ List<Color> progressBackgroundColor = [
   const Color(0xff7639FB).withOpacity(0.6),
   const Color(0xffFF7A01).withOpacity(0.6),
 ];
+
+const kPrimaryGreen = Color(0xFF2E7D32);      // Dark Green
+const kSecondaryGreen = Color(0xFF66BB6A);    // Light Green
+const kAccentGreen = Color(0xFF81C784);       // Soft green for backgrounds
+const kBackground = Color(0xFFF0F8F4);         // Very light greenish background
 

@@ -161,6 +161,15 @@ class _ImageColorPageState extends State<ImageColorPage> {
     });
   }
   Future<void> _submitColoring() async {
+    if (widget.path != null) {
+      context
+          .read<MainProvider>()
+          .saveImage(name: widget.path!.split('/').last);
+    } else {
+      context.read<MainProvider>().saveImage(
+          name: widget.file!.path.split('/').last, index: widget.index);
+    }
+
     _stopwatch.stop();
     int colorDuration = _stopwatch.elapsed.inSeconds;
     String userId = FirebaseAuth.instance.currentUser?.uid ?? "Unknown";

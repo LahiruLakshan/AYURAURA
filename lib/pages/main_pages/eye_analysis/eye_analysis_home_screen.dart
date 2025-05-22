@@ -1,5 +1,5 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../constants/colors.dart';
 import '../../../utils/camera_utils.dart';
 import '../../../utils/permission_utils.dart';
@@ -7,39 +7,27 @@ import '../../../widgets/camera_bloc.dart';
 import '../../camera_page/camera_page.dart';
 
 class EyeAnalysisHomeScreen extends StatelessWidget {
+  const EyeAnalysisHomeScreen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              const Color(0xFFE8FFF5),
-              AppColors.secondary.withOpacity(0.1),
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(),
+              const SizedBox(height: 32),
+              _buildFeatureGrid(),
+              const SizedBox(height: 32),
+              _buildGuidelines(),
+              const SizedBox(height: 32),
+              _buildActionButton(context),
+              const SizedBox(height: 40),
             ],
-          ),
-        ),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 40),
-                  _buildHeader(),
-                  const SizedBox(height: 30),
-                  _buildFeaturesCard(),
-                  const SizedBox(height: 20),
-                  _buildGuidelineCard(),
-                  const SizedBox(height: 20),
-                  _buildActionButton(context),
-                  const SizedBox(height: 40),
-                ],
-              ),
-            ),
           ),
         ),
       ),
@@ -50,145 +38,167 @@ class EyeAnalysisHomeScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Eye Analysis 👁️',
-          style: TextStyle(
-            fontSize: 32,
-            fontWeight: FontWeight.bold,
-            color: AppColors.primary,
-          ),
+        Row(
+          children: [
+            Icon(Icons.remove_red_eye, color: AppColors.primary, size: 32),
+            const SizedBox(width: 12),
+            Text(
+              'Eye Stress Analysis',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: AppColors.primary,
+                height: 1.2,
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 8),
         Text(
-          'Track and analyze your eye movement patterns',
+          'Detect stress levels through eye movement patterns',
           style: TextStyle(
             fontSize: 16,
-            color: const Color(0xFF4B5563),
-            height: 1.5,
+            color: Colors.grey.shade600,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildInfoCard(String text, Color textColor) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            blurRadius: 10,
-            spreadRadius: 2,
-            offset: const Offset(0, 4),
+  Widget _buildFeatureGrid() {
+    final features = [
+      {
+        'icon': Icons.track_changes,
+        'label': 'Eye Tracking',
+        'color': Colors.blue.shade400,
+        'bgColor': Colors.blue.shade50
+      },
+      {
+        'icon': Icons.analytics,
+        'label': 'Real-time Analysis',
+        'color': Colors.green.shade400,
+        'bgColor': Colors.green.shade50
+      },
+      {
+        'icon': Icons.speed,
+        'label': 'Quick Results',
+        'color': Colors.orange.shade400,
+        'bgColor': Colors.orange.shade50
+      },
+      {
+        'icon': Icons.security,
+        'label': 'Privacy Focused',
+        'color': Colors.purple.shade400,
+        'bgColor': Colors.purple.shade50
+      },
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Key Features',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey.shade800,
           ),
-        ],
-      ),
-      child: Text(
-        text,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 18,
-          color: textColor,
         ),
-      ),
+        const SizedBox(height: 16),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            childAspectRatio: 1.2,
+          ),
+          itemCount: features.length,
+          itemBuilder: (context, index) {
+            final feature = features[index];
+            return _FeatureCard(
+              icon: feature['icon'] as IconData,
+              label: feature['label'] as String,
+              color: feature['color'] as Color,
+              bgColor: feature['bgColor'] as Color,
+            );
+          },
+        ),
+      ],
     );
   }
 
-  Widget _buildFeaturesCard() {
-    final features = [
-      {'icon': Icons.remove_red_eye_rounded, 'label': 'Eye Tracking', 'color': const Color(0xFF60A5FA), 'bgColor': const Color(0xFFDBEAFE)},
-      {'icon': Icons.analytics_outlined, 'label': 'Analysis', 'color': const Color(0xFF34D399), 'bgColor': const Color(0xFFD1FAE5)},
-      {'icon': Icons.speed_rounded, 'label': 'Real-time Results', 'color': const Color(0xFFF59E0B), 'bgColor': const Color(0xFFFEF3C7)},
-      {'icon': Icons.privacy_tip_rounded, 'label': 'Non-invasive', 'color': const Color(0xFFF87171), 'bgColor': const Color(0xFFFEE2E2)},
-    ];
-
+  Widget _buildGuidelines() {
     return Container(
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        color: AppColors.primary.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppColors.primary.withOpacity(0.1),
+          width: 1,
+        ),
       ),
-      padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Key Features',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w600,
-              color: AppColors.primary,
-            ),
+          Row(
+            children: [
+              Icon(
+                Icons.lightbulb_outline,
+                color: AppColors.primary,
+                size: 24,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'How To Prepare',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primary,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 16),
+          _buildGuidelineItem('Find a well-lit area'),
+          _buildGuidelineItem('Position your face in frame'),
+          _buildGuidelineItem('Keep still for 10 seconds'),
+          _buildGuidelineItem('Blink naturally'),
+          const SizedBox(height: 8),
           Text(
-            'Advanced eye tracking technology',
+            'The analysis will begin automatically',
             style: TextStyle(
-              fontSize: 16,
-              color: const Color(0xFF6B7280),
+              fontSize: 14,
+              color: Colors.grey.shade700,
+              fontStyle: FontStyle.italic,
             ),
-          ),
-          const SizedBox(height: 24),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              childAspectRatio: 1.5,
-            ),
-            itemCount: features.length,
-            itemBuilder: (context, index) {
-              final feature = features[index];
-              return _buildFeatureButton(
-                icon: feature['icon'] as IconData,
-                label: feature['label'] as String,
-                color: feature['color'] as Color,
-                bgColor: feature['bgColor'] as Color,
-              );
-            },
           ),
         ],
       ),
     );
   }
 
-  Widget _buildFeatureButton({
-    required IconData icon,
-    required String label,
-    required Color color,
-    required Color bgColor,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+  Widget _buildGuidelineItem(String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(
-            icon,
-            size: 28,
-            color: color,
+            Icons.check_circle,
+            size: 20,
+            color: AppColors.primary,
           ),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: color,
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey.shade800,
+              ),
             ),
           ),
         ],
@@ -197,109 +207,93 @@ class EyeAnalysisHomeScreen extends StatelessWidget {
   }
 
   Widget _buildActionButton(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => BlocProvider(
-              create: (context) {
-                return CameraBloc(
-                  cameraUtils: CameraUtils(),
-                  permissionUtils: PermissionUtils(),
-                )..add(const CameraInitialize(recordingLimit: 15));
-              },
-              child: const CameraPage(),
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => BlocProvider(
+                create: (context) {
+                  return CameraBloc(
+                    cameraUtils: CameraUtils(),
+                    permissionUtils: PermissionUtils(),
+                  )..add(const CameraInitialize(recordingLimit: 15));
+                },
+                child: const CameraPage(),
+              ),
             ),
+          );
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primary,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
           ),
-        );
-      },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-        elevation: 5,
-        shadowColor: AppColors.primary.withOpacity(0.3),
-        minimumSize: const Size(double.infinity, 56),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
         ),
-        padding: const EdgeInsets.symmetric(vertical: 16),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.camera_alt_rounded, size: 24),
-          SizedBox(width: 12),
-          Text(
-            "Start Eye Analysis",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
+        child: const Text(
+          'Start Eye Analysis',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
           ),
-        ],
+        ),
       ),
     );
   }
+}
 
-  Widget _buildGuidelineCard() {
+class _FeatureCard extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final Color bgColor;
+
+  const _FeatureCard({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.bgColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        color: bgColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: color.withOpacity(0.2),
+          width: 1,
+        ),
       ),
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(12),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Row(
-            children: [
-              Icon(
-                Icons.info_outline_rounded,
-                size: 20,
-                color: const Color(0xFFF59E0B),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'Guidelines ✨\n'
-                    '📸 Get Ready for Your Stress Check!',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.primary,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Face the Camera – Keep your face centered and eyes visible.\n'
-                'Stay Still – Hold your position for 10 seconds while we analyze.\n'
-                'Good Lighting – Sit in a well-lit area, avoid shadows.\n'
-                'Relax & Blink Naturally – No need to force blinks!\n'
-                'Quiet Space – Minimize distractions for accurate results.',
-            style: TextStyle(
-              fontSize: 16,
-              color: const Color(0xFF4B5563),
-              height: 1.5,
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.2),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              color: color,
+              size: 24,
             ),
           ),
-          const SizedBox(height: 16),
-          Center(
-            child: Text(
-              '👉 Tap Start Eye Analysis to begin!',
-              style: TextStyle(
-                fontSize: 16,
-                color: const Color(0xFF4B5563),
-                height: 1.5,
-                fontWeight: FontWeight.bold,
-              ),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: color,
             ),
           ),
         ],

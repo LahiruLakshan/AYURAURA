@@ -1,18 +1,13 @@
-import 'package:stress_management/pages/image_list_page/image_grid_list_page.dart';
-import 'package:stress_management/pages/main_pages/behaviors/chat_screen.dart';
-import 'package:stress_management/pages/main_pages/mandala_page/mandala_music_home_screen.dart';
-import 'package:stress_management/pages/navigator_page/mandala_navigator_page.dart';
-import 'package:stress_management/providers/main_provider.dart';
-import 'package:stress_management/widgets/image_menu_item/image_menu_item.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:stress_management/pages/auth/profile_page.dart';
 
-import '../../auth/profile_page.dart';
-import'../../auth/profile_screen.dart';
-import '../behaviors/behaviors_quiz_home_page.dart';
-import '../eye_analysis/eye_analysis_home_screen.dart';
-import '../mandala_page/mandala_page.dart';
-import '../quiz_page/quiz_home_screen.dart';
+import 'package:stress_management/pages/main_pages/eye_analysis/eye_analysis_home_screen.dart';
+import 'package:stress_management/pages/main_pages/mandala_page/mandala_music_home_screen.dart';
+import 'package:stress_management/pages/main_pages/behaviors/chat_screen.dart';
+import 'package:stress_management/pages/main_pages/quiz_page/quiz_home_screen.dart';
+import 'package:stress_management/pages/main_pages/behaviors/behaviors_quiz_home_page.dart';
+
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -48,318 +43,285 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF5F6FA),
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(120.0),
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xFF2E7D32), Color(0xFF1B5E20)],
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 10,
-                offset: Offset(0, 2),
-              ),
-            ],
-          ),
-          child: SafeArea(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      backgroundColor: const Color(0xFFF5F6FA),
+      body: SafeArea(
+        child: Stack(
+          children: [
+            FadeTransition(
+              opacity: _animation,
+              child: Column(
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Welcome to',
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          color: Colors.white.withOpacity(0.8),
+                  _buildHeader(context),
+                  Expanded(
+                    child: ListView(
+                      padding: const EdgeInsets.all(20),
+                      children: [
+                        _buildSectionTitle("Quick Access"),
+                        Wrap(
+                          spacing: 16,
+                          runSpacing: 16,
+                          children: [
+                            _buildFeatureCard(
+                              context,
+                              'Will I\nBe Stressed?',
+                              'assets/home/behavior_quiz.png',
+                              Icons.psychology,
+                              BehaviorsQuizHomePage(),
+                              [Colors.green.shade500, Colors.green.shade300],
+                            ),
+                            _buildFeatureCard(
+                              context,
+                              'Recovery\nPrediction',
+                              'assets/home/mood_quiz.png',
+                              Icons.quiz,
+                              QuizHomeScreen(),
+                              [Colors.green.shade500, Colors.green.shade300],
+                            ),
+                          ],
                         ),
-                      ),
-                      Text(
-                        'Ayuraura',
-                        style: TextStyle(
-                          fontSize: 28.0,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                        const SizedBox(height: 30),
+                        _buildSectionTitle("Relaxation Tools"),
+                        _buildFeatureCard(
+                          context,
+                          'Mandala Arts\n& Music',
+                          'assets/home/mandala.png',
+                          Icons.palette,
+                          MandalaMusicHomeScreen(),
+                          [Colors.green.shade500, Colors.green.shade300],
+                          fullWidth: true,
                         ),
-                      ),
-                    ],
-                  ),
-                  GestureDetector(
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ProfileScreen()),
-                    ),
-                    child: Container(
-                      padding: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.2),
-                      ),
-                      child: Icon(
-                        Icons.account_circle,
-                        size: 32,
-                        color: Colors.white,
-                      ),
+                        const SizedBox(height: 30),
+                        _buildSectionTitle("Evaluate Stress"),
+                        _buildFeatureCard(
+                          context,
+                          'Evaluate\nStress',
+                          'assets/home/check_stress.png',
+                          Icons.remove_red_eye,
+                          EyeAnalysisHomeScreen(),
+                          [Colors.green.shade500, Colors.green.shade300],
+                          fullWidth: true,
+                        ),
+                        const SizedBox(height: 30),
+                        _buildFooter(),
+                        const SizedBox(height: 80), // for chatbot space
+                      ],
                     ),
                   ),
                 ],
               ),
             ),
-          ),
-        ),
-      ),
-      body: FadeTransition(
-        opacity: _animation,
-        child: Stack(
-          children: [
-            Column(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(
-                      children: [
-                        // First row - Evaluate Stress (full width)
-                        AspectRatio(
-                          aspectRatio: 2.1,  // Make it rectangular
-                          child: _buildFeatureCard(
-                            context,
-                            'Evaluate\nStress',
-                            'assets/home/check_stress.png',
-                            Icons.remove_red_eye,
-                            EyeAnalysisHomeScreen(),
-                            [Color(0xFF00695C), Color(0xFF004D40)],
-                          ),
-                        ),
-                        SizedBox(height: 20.0),  // Spacing between rows
-                        // Second row - Mandala Arts (full width)
-                        AspectRatio(
-                          aspectRatio: 2.1,  // Make it rectangular
-                          child: _buildFeatureCard(
-                            context,
-                            'Mandala Arts\n& Music',
-                            'assets/home/mandala.png',
-                            Icons.palette,
-                            MandalaMusicHomeScreen(),
-                            [Color(0xCC6A1B9A), Color(0xCC4A148C)],
-                          ),
-                        ),
-                        SizedBox(height: 20.0),  // Spacing between rows
-                        // Third row - Two smaller buttons
-                        Row(
-                          children: [
-                            Expanded(
-                              child: AspectRatio(
-                                aspectRatio: 1,  // Keep square for smaller buttons
-                                child: _buildFeatureCard(
-                                  context,
-                                  'Will I\nBe Stressed?',
-                                  'assets/home/behavior_quiz.png',
-                                  Icons.psychology,
-                                  BehaviorsQuizScreen(),
-                                  [Color(0xFFE65100), Color(0xFFEF6C00)],
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 20.0),  // Spacing between buttons
-                            Expanded(
-                              child: AspectRatio(
-                                aspectRatio: 1,  // Keep square for smaller buttons
-                                child: _buildFeatureCard(
-                                  context,
-                                  'Recovery\nPrediction',
-                                  'assets/home/mood_quiz.png',
-                                  Icons.quiz,
-                                  QuizHomeScreen(),
-                                  [Color(0xFF1565C0), Color(0xFF0D47A1)],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                // Footer
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(vertical: 8.0),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [Color(0xFF2E7D32), Color(0xFF1B5E20)],
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 4,
-                        offset: Offset(0, -2),
-                      ),
-                    ],
-                  ),
-                  child: Text(
-                    'Ayuraura Research Project 24-25J-180',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 12.0,
-                      color: Colors.white.withOpacity(0.8),
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            // Chatbot Button
-            Positioned(
-              right: 20.0,
-              bottom: 40.0,
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ChatScreen()),
-                  );
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30.0),
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 8,
-                        offset: Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Image.asset(
-                        'assets/home/panda.png',
-                        width: 40.0,
-                        height: 40.0,
-                        fit: BoxFit.contain,
-                      ),
-                      SizedBox(width: 8.0),
-                      Text(
-                        'Chat with\nMochi',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          height: 1.2,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF424242),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            _buildChatBotButton(context),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildFeatureCard(BuildContext context, String title, String imagePath,
-      IconData icon, Widget page, List<Color> gradientColors) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => page),
-        );
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20.0),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: gradientColors,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: gradientColors[0].withOpacity(0.3),
-              blurRadius: 12,
-              offset: Offset(0, 6),
-            ),
+  Widget _buildHeader(BuildContext context) {
+    return Container(
+      height: 120,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.green.shade800,
+            Colors.green.shade600,
           ],
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(20.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 10,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Welcome to',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white.withOpacity(0.8),
+                    ),
+                  ),
+                  const Text(
+                    'Ayuraura',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+              IconButton(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProfilePage(),
+                  ),
+                ),
+                icon: const Icon(
+                  Icons.account_circle,
+                  size: 36,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Your personal stress management companion',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.white.withOpacity(0.9),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          color: Color(0xFF424242),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFeatureCard(
+      BuildContext context,
+      String title,
+      String imagePath,
+      IconData icon,
+      Widget page,
+      List<Color> gradientColors, {
+        bool fullWidth = false,
+      }) {
+    return SizedBox(
+      width: fullWidth ? double.infinity : MediaQuery.of(context).size.width / 2 - 28,
+      height: 160,
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => page));
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              colors: gradientColors,
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: gradientColors.first.withOpacity(0.3),
+                blurRadius: 10,
+                offset: const Offset(0, 5),
+              )
+            ],
+          ),
           child: Stack(
             children: [
               Positioned.fill(
                 child: Opacity(
                   opacity: 0.15,
-                  child: Image.asset(
-                    imagePath,
-                    fit: BoxFit.cover,
-                  ),
+                  child: Image.asset(imagePath, fit: BoxFit.cover),
                 ),
               ),
-              Container(
-                padding: EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      gradientColors[0].withOpacity(0.3),
-                    ],
-                  ),
-                ),
+              Padding(
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      padding: EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                      padding: const EdgeInsets.all(10),
+                      decoration: const BoxDecoration(
+                        color: Colors.white24,
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(
-                        icon,
-                        size: 32.0,
-                        color: Colors.white,
-                      ),
+                      child: Icon(icon, color: Colors.white, size: 28),
                     ),
-                    SizedBox(height: 16.0),
+                    const SizedBox(height: 12),
                     Text(
                       title,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
+                      style: const TextStyle(
                         color: Colors.white,
-                        shadows: [
-                          Shadow(
-                            offset: Offset(1, 1),
-                            blurRadius: 4,
-                            color: Colors.black.withOpacity(0.3),
-                          ),
-                        ],
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        height: 1.3,
                       ),
                     ),
                   ],
                 ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFooter() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      alignment: Alignment.center,
+      child: const Text(
+        'Ayuraura Research Project 24-25J-180',
+        style: TextStyle(fontSize: 12, color: Colors.grey),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+
+  Widget _buildChatBotButton(BuildContext context) {
+    return Positioned(
+      bottom: 20,
+      right: 20,
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => ChatScreen()));
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(30),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 6,
+                offset: const Offset(0, 3),
               ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Image.asset('assets/home/panda.png', width: 36, height: 36),
+              const SizedBox(width: 8),
+              const Text(
+                'Chat with\nMochi',
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: Color(0xFF424242)),
+                textAlign: TextAlign.center,
+              )
             ],
           ),
         ),

@@ -2,101 +2,130 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
+
   @override
-  _SignUpScreenState createState() => _SignUpScreenState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _ageController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _birthDateController = TextEditingController();
+
+  final _nameFocusNode = FocusNode();
+  final _emailFocusNode = FocusNode();
+  final _passwordFocusNode = FocusNode();
+
   String? _selectedGender;
-  final FocusNode _genderFocusNode = FocusNode();
-  final FocusNode _nameFocusNode = FocusNode();
-  final FocusNode _ageFocusNode = FocusNode();
-  final FocusNode _emailFocusNode = FocusNode();
-  final FocusNode _passwordFocusNode = FocusNode();
-
   DateTime? _selectedDate;
+  bool _isLoading = false;
+  bool _obscurePassword = true;
 
-  Future<void> _signUp(BuildContext context) async {
-    // Unfocus all fields
-    _nameFocusNode.unfocus();
-    _ageFocusNode.unfocus();
-    _emailFocusNode.unfocus();
-    _passwordFocusNode.unfocus();
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _birthDateController.dispose();
+    _nameFocusNode.dispose();
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
+    super.dispose();
+  }
 
-    // Validate fields
-    if (_nameController.text.isEmpty ||
-        _ageController.text.isEmpty ||
-        _selectedGender == null ||
-        _emailController.text.isEmpty ||
-        _passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all fields')),
-      );
+  Future<void> _signUp() async {
+    if (!_formKey.currentState!.validate()) return;
+    if (_selectedGender == null || _selectedDate == null) {
+      _showErrorSnackBar('Please select your gender and birth date');
       return;
     }
 
-    try {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => const Center(child: CircularProgressIndicator()),
-      );
+    setState(() => _isLoading = true);
+    _nameFocusNode.unfocus();
+    _emailFocusNode.unfocus();
+    _passwordFocusNode.unfocus();
 
-      // Create user
-      UserCredential userCredential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+    try {
+      final userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
 
-      // Store additional user data in Firestore
       await FirebaseFirestore.instance
           .collection('users')
           .doc(userCredential.user!.uid)
           .set({
         'name': _nameController.text.trim(),
-        'birth_date': _selectedDate!, // Store actual date
-        'age': _calculateAge(_selectedDate!), // Store calculated age
+        'birth_date': _selectedDate!,
+        'age': _calculateAge(_selectedDate!),
         'gender': _selectedGender,
         'email': _emailController.text.trim(),
         'createdAt': Timestamp.now(),
+        'stressLevel': 0, // Initial stress level
+        'lastAssessment': null,
       });
 
-      Navigator.of(context).pop(); // Close loading
-      Navigator.of(context).pushReplacementNamed('/home');
+      if (mounted) {
+        Navigator.of(context).pushReplacementNamed('/home');
+      }
     } on FirebaseAuthException catch (e) {
-      Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message ?? 'Sign up failed')),
-      );
+      _showErrorSnackBar(_getErrorMessage(e));
     } catch (e) {
-      print("---------------Error" + e.toString());
-      Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('An error occurred')),
-      );
+      _showErrorSnackBar('An unexpected error occurred');
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  String _getErrorMessage(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'email-already-in-use':
+        return 'Email already in use';
+      case 'invalid-email':
+        return 'Please enter a valid email';
+      case 'weak-password':
+        return 'Password should be at least 6 characters';
+      case 'network-request-failed':
+        return 'Network error. Check your connection';
+      default:
+        return 'Sign up failed. Please try again';
     }
   }
 
   Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+    final picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: DateTime.now().subtract(const Duration(days: 365 * 18)),
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: Theme.of(context).colorScheme.primary,
+              onPrimary: Colors.white,
+              surface: Theme.of(context).colorScheme.surface,
+              onSurface: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (picked != null) {
       setState(() {
         _selectedDate = picked;
-        // Store both date and age calculation
-        _ageController.text = DateFormat('yyyy-MM-dd').format(picked);
+        _birthDateController.text = DateFormat('MMMM d, yyyy').format(picked);
       });
     }
   }
@@ -111,133 +140,255 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return age;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Image.asset('assets/logo.png', height: 200),
-              const SizedBox(height: 20),
-
-              // Name Field
-              TextField(
-                controller: _nameController,
-                focusNode: _nameFocusNode,
-                decoration: const InputDecoration(
-                  labelText: 'Full Name',
-                  border: OutlineInputBorder(),
-                ),
-                textInputAction: TextInputAction.next,
-                onSubmitted: (_) =>
-                    FocusScope.of(context).requestFocus(_ageFocusNode),
-              ),
-              const SizedBox(height: 16),
-
-              // Age/Birth Date Field
-              TextField(
-                controller: _ageController,
-                focusNode: _ageFocusNode,
-                decoration: InputDecoration(
-                  labelText: 'Birth Date',
-                  border: const OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.calendar_today),
-                    onPressed: () => _selectDate(context),
-                  ),
-                ),
-                readOnly: true,
-                onTap: () => _selectDate(context),
-                textInputAction: TextInputAction.next,
-                onSubmitted: (_) => FocusScope.of(context).requestFocus(_genderFocusNode),
-              ),
-              const SizedBox(height: 16),
-
-              // Gender Dropdown
-              DropdownButtonFormField<String>(
-                focusNode: _genderFocusNode,
-                decoration: const InputDecoration(
-                  labelText: 'Gender',
-                  border: OutlineInputBorder(),
-                ),
-                value: _selectedGender,
-                hint: const Text('Select Gender'),
-                items: const ['Male', 'Female']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedGender = newValue;
-                  });
-                  FocusScope.of(context).requestFocus(_emailFocusNode);
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Email Field
-              TextField(
-                controller: _emailController,
-                focusNode: _emailFocusNode,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.emailAddress,
-                textInputAction: TextInputAction.next,
-                onSubmitted: (_) =>
-                    FocusScope.of(context).requestFocus(_passwordFocusNode),
-              ),
-              const SizedBox(height: 16),
-
-              // Password Field
-              TextField(
-                controller: _passwordController,
-                focusNode: _passwordFocusNode,
-                decoration: const InputDecoration(
-                  labelText: 'Password',
-                  border: OutlineInputBorder(),
-                ),
-                obscureText: true,
-                textInputAction: TextInputAction.done,
-                onSubmitted: (_) => _signUp(context),
-              ),
-              const SizedBox(height: 20),
-
-              ElevatedButton(
-                onPressed: () => _signUp(context),
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 50),
-                ),
-                child: const Text('Sign Up'),
-              ),
-              const SizedBox(height: 10),
-
-              TextButton(
-                onPressed: () => Navigator.pushNamed(context, '/login'),
-                child: const Text('Already have an account? Login'),
-              ),
-            ],
-          ),
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Theme.of(context).colorScheme.error,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
         ),
       ),
     );
   }
 
   @override
-  void dispose() {
-    _nameController.dispose();
-    _ageController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    _genderFocusNode.dispose();
-    super.dispose();
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
+    return Scaffold(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Header Section
+                Column(
+                  children: [
+                    Image.asset(
+                      'assets/logo.png',
+                      height: 120,
+                      color: colors.primary,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Create Account',
+                      style: GoogleFonts.mcLaren(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: colors.primary,
+                      ),
+                    ),
+                    Text(
+                      'Start your stress management journey',
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 32),
+
+                // Name Field
+                TextFormField(
+                  controller: _nameController,
+                  focusNode: _nameFocusNode,
+                  decoration: InputDecoration(
+                    labelText: 'Full Name',
+                    prefixIcon: Icon(Icons.person_outline, color: colors.primary),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: colors.surfaceVariant.withOpacity(0.5),
+                  ),
+                  textInputAction: TextInputAction.next,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your name';
+                    }
+                    return null;
+                  },
+                  onFieldSubmitted: (_) => FocusScope.of(context).requestFocus(_emailFocusNode),
+                ),
+                const SizedBox(height: 16),
+
+                // Birth Date Field
+                TextFormField(
+                  controller: _birthDateController,
+                  decoration: InputDecoration(
+                    labelText: 'Birth Date',
+                    prefixIcon: Icon(Icons.calendar_today, color: colors.primary),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: colors.surfaceVariant.withOpacity(0.5),
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.edit),
+                      onPressed: () => _selectDate(context),
+                    ),
+                  ),
+                  readOnly: true,
+                  onTap: () => _selectDate(context),
+                  validator: (value) {
+                    if (_selectedDate == null) {
+                      return 'Please select your birth date';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // Gender Selection
+                DropdownButtonFormField<String>(
+                  decoration: InputDecoration(
+                    labelText: 'Gender',
+                    prefixIcon: Icon(Icons.transgender, color: colors.primary),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: colors.surfaceVariant.withOpacity(0.5),
+                  ),
+                  value: _selectedGender,
+                  hint: const Text('Select Gender'),
+                  items: const [
+                    DropdownMenuItem(value: 'Male', child: Text('Male')),
+                    DropdownMenuItem(value: 'Female', child: Text('Female')),
+                  ],
+                  onChanged: (value) => setState(() => _selectedGender = value),
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Please select your gender';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // Email Field
+                TextFormField(
+                  controller: _emailController,
+                  focusNode: _emailFocusNode,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    prefixIcon: Icon(Icons.email_outlined, color: colors.primary),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: colors.surfaceVariant.withOpacity(0.5),
+                  ),
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your email';
+                    }
+                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                      return 'Please enter a valid email';
+                    }
+                    return null;
+                  },
+                  onFieldSubmitted: (_) => FocusScope.of(context).requestFocus(_passwordFocusNode),
+                ),
+                const SizedBox(height: 16),
+
+                // Password Field
+                TextFormField(
+                  controller: _passwordController,
+                  focusNode: _passwordFocusNode,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    prefixIcon: Icon(Icons.lock_outline, color: colors.primary),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                        color: colors.primary,
+                      ),
+                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: colors.surfaceVariant.withOpacity(0.5),
+                  ),
+                  obscureText: _obscurePassword,
+                  textInputAction: TextInputAction.done,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your password';
+                    }
+                    if (value.length < 6) {
+                      return 'Password must be at least 6 characters';
+                    }
+                    return null;
+                  },
+                  onFieldSubmitted: (_) => _signUp(),
+                ),
+                const SizedBox(height: 24),
+
+                // Sign Up Button
+                ElevatedButton(
+                  onPressed: _isLoading ? null : _signUp,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colors.primary,
+                    foregroundColor: colors.onPrimary,
+                    minimumSize: const Size(double.infinity, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  child: _isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Text(
+                    'SIGN UP',
+                    style: GoogleFonts.mcLaren(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Login Prompt
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Already have an account? ',
+                      style: TextStyle(color: Colors.grey.shade600),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pushNamed(context, '/login'),
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: Text(
+                        'Login',
+                        style: TextStyle(
+                          color: colors.primary,
+                          fontSize: 16
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

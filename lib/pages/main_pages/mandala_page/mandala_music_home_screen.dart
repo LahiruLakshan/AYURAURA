@@ -143,36 +143,22 @@ class _MandalaMusicHomeScreenState extends State<MandalaMusicHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              const Color(0xFFE8FFF5),
-              AppColors.accent.withOpacity(0.1),
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(),
+              const SizedBox(height: 32),
+              _buildActivityCards(),
+              const SizedBox(height: 32),
+              _buildHowItWorks(),
+              const SizedBox(height: 32),
+              _buildStressCheckButton(),
+              const SizedBox(height: 40),
             ],
-          ),
-        ),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 40),
-                  _buildHeader(),
-                  const SizedBox(height: 30),
-                  _buildActivityCards(),
-                  const SizedBox(height: 30),
-                  _buildInsightCard(),
-                  const SizedBox(height: 30),
-                  _buildStressCheckButton(),
-                  const SizedBox(height: 40),
-                ],
-              ),
-            ),
           ),
         ),
       ),
@@ -184,20 +170,20 @@ class _MandalaMusicHomeScreenState extends State<MandalaMusicHomeScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Welcome! 🎨',
+          'Art & Music Therapy',
           style: TextStyle(
             fontSize: 32,
             fontWeight: FontWeight.bold,
-            color: AppColors.secondary,
+            color: AppColors.primary,
+            height: 1.2,
           ),
         ),
         const SizedBox(height: 8),
         Text(
-          'Express yourself through art and find peace in music',
+          'Combine mandala coloring and music for stress relief',
           style: TextStyle(
             fontSize: 16,
-            color: const Color(0xFF4B5563),
-            height: 1.5,
+            color: Colors.grey.shade600,
           ),
         ),
       ],
@@ -208,239 +194,221 @@ class _MandalaMusicHomeScreenState extends State<MandalaMusicHomeScreen> {
     return Column(
       children: [
         _buildActivityCard(
-          'Mandala Arts',
-          'Color intricate patterns to find your inner peace',
-          Icons.palette,
-              () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => MandalaNavigator()),
-            );
-          },
+          icon: Icons.palette,
+          title: 'Mandala Coloring',
+          description: 'Relax by coloring beautiful mandala patterns',
+          color: Colors.purple.shade50,
+          iconColor: Colors.purple,
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const MandalaNavigator()),
+          ),
         ),
         const SizedBox(height: 16),
         _buildActivityCard(
-          'Music Listening',
-          'Let the healing sounds calm your mind',
-          Icons.music_note,
-              () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => MusicNavigator()),
-            );
-          },
+          icon: Icons.music_note,
+          title: 'Meditation Music',
+          description: 'Calm your mind with therapeutic sounds',
+          color: Colors.blue.shade50,
+          iconColor: Colors.blue,
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const MusicNavigator()),
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildActivityCard(String title, String description, IconData icon, VoidCallback onTap) {
-    final mandalaGradient = LinearGradient(
-      colors: [
-        Color(0xFFFFEB3B), // Yellow
-        Color(0xFFFF9800), // Orange
-        Color(0xFFFF5252), // Red
-      ],
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-    );
-
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(
-            color: title == 'Mandala Arts'
-                ? AppColors.calmness.withOpacity(0.3)
-                : AppColors.energy.withOpacity(0.3),
-            width: 2,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: (title == 'Mandala Arts' ? AppColors.calmness : AppColors.energy).withOpacity(0.2),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
-              spreadRadius: 2,
-            ),
-          ],
+  Widget _buildActivityCard({
+    required IconData icon,
+    required String title,
+    required String description,
+    required Color color,
+    required Color iconColor,
+    required VoidCallback onTap,
+  }) {
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: Colors.grey.shade200,
+          width: 1,
         ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                gradient: title == 'Mandala Arts' ? mandalaGradient : LinearGradient(
-                  colors: [
-                    AppColors.energy,
-                    AppColors.energy.withOpacity(0.8),
-                    AppColors.energy.withOpacity(0.6),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: color,
+                  shape: BoxShape.circle,
                 ),
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: (title == 'Mandala Arts' ? Color(0xFFFF9800) : AppColors.energy).withOpacity(0.4),
-                    blurRadius: 12,
-                    offset: const Offset(0, 6),
-                    spreadRadius: 0,
-                  ),
-                ],
-              ),
-              child: ShaderMask(
-                shaderCallback: (bounds) => LinearGradient(
-                  colors: title == 'Mandala Arts'
-                      ? [
-                    Colors.white,
-                    Color(0xFFFFF9C4), // Light yellow
-                    Colors.white,
-                  ]
-                      : [
-                    Colors.white,
-                    Color(0xFFE1F5FE), // Light blue
-                    Colors.white,
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ).createShader(bounds),
                 child: Icon(
                   icon,
-                  color: Colors.white,
-                  size: 36,
-                  shadows: [
-                    Shadow(
-                      color: Colors.black26,
-                      blurRadius: 8,
-                      offset: Offset(0, 2),
+                  size: 32,
+                  color: iconColor,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey.shade800,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      description,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade600,
+                      ),
                     ),
                   ],
                 ),
               ),
-            ),
-            const SizedBox(width: 20),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ShaderMask(
-                    shaderCallback: (bounds) => title == 'Mandala Arts'
-                        ? mandalaGradient.createShader(bounds)
-                        : LinearGradient(
-                      colors: [AppColors.energy, AppColors.energy],
-                    ).createShader(bounds),
-                    child: Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        letterSpacing: 0.5,
-                        shadows: [
-                          Shadow(
-                            color: Colors.black12,
-                            blurRadius: 2,
-                            offset: Offset(0, 1),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    description,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Color(0xFF6B7280),
-                      height: 1.5,
-                    ),
-                  ),
-                ],
+              Icon(
+                Icons.chevron_right,
+                color: Colors.grey.shade400,
               ),
-            ),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: (title == 'Mandala Arts' ? Color(0xFFFF9800) : AppColors.energy).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Icon(
-                Icons.arrow_forward_ios,
-                color: title == 'Mandala Arts' ? Color(0xFFFF9800) : AppColors.energy,
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHowItWorks() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.primary.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppColors.primary.withOpacity(0.1),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.help_outline,
+                color: AppColors.primary,
                 size: 24,
               ),
+              const SizedBox(width: 8),
+              Text(
+                'How It Works',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          _buildStep('1', 'Complete a mandala coloring session'),
+          _buildStep('2', 'Listen to meditation music'),
+          _buildStep('3', 'Get your stress level analysis'),
+          const SizedBox(height: 8),
+          Text(
+            'The combination of art and music therapy provides powerful stress relief benefits',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey.shade700,
+              fontStyle: FontStyle.italic,
             ),
-          ],
-        ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStep(String number, String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 24,
+            height: 24,
+            decoration: BoxDecoration(
+              color: AppColors.primary,
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: Text(
+                number,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey.shade800,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildStressCheckButton() {
-    return ElevatedButton(
-      onPressed: _isLoading ? null : predictStress,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.accent,
-        foregroundColor: Colors.white,
-        elevation: 5,
-        shadowColor: AppColors.accent.withOpacity(0.3),
-        minimumSize: const Size(double.infinity, 56),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
-        padding: const EdgeInsets.symmetric(vertical: 16),
-      ),
-      child: _isLoading
-          ? SizedBox(
-        height: 24,
-        width: 24,
-        child: CircularProgressIndicator(
-          color: Colors.white,
-          strokeWidth: 2,
-        ),
-      )
-          : Text(
-        'How Stressed Am I?',
-        style: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInsightCard() {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
-      child: RichText(
-        textAlign: TextAlign.center,
-        text: TextSpan(
-          style: TextStyle(
-            fontSize: 18,
-            color: Color(0xFF1B5E20),
-            height: 1.5,
-            letterSpacing: 0.5,
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: _isLoading ? null : predictStress,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primary,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
           ),
-          children: [
-            TextSpan(
-              text: 'Complete both activities ',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            TextSpan(
-              text: 'to analyze your stress level!\n',
-            ),
-            TextSpan(
-              text: '🎨 + 🎵 = 😌',
-              style: TextStyle(
-                fontSize: 20,
-                letterSpacing: 4,
-                height: 2,
-              ),
-            ),
-          ],
+        ),
+        child: _isLoading
+            ? const SizedBox(
+          height: 24,
+          width: 24,
+          child: CircularProgressIndicator(
+            color: Colors.white,
+            strokeWidth: 2,
+          ),
+        )
+            : const Text(
+          'Check My Stress Level',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
     );
