@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:stress_management/pages/main_pages/music_page/tracks_screen.dart';
 
@@ -213,6 +214,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   ];
 
   String searchQuery = '';
+  bool _isLoading = false;
 
   List<Map<String, dynamic>> get filteredCategories {
     if (searchQuery.isEmpty) return categories;
@@ -412,18 +414,38 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     );
   }
 
-  void _showCategoryDialog() {
-    final categories = [
-      'Deep Sleep Music (Delta Waves)',
-      'Gregorian Chants or Om Mantra Meditation',
-      'Tibetan Singing Bowls',
-      'Ambient Meditation Music',
-      'Soft Instrumental',
-      'Alpha Waves',
-      'Nature Sounds with Soft Piano',
-      'Lofi Chill Beats',
-    ];
+  Future<void> _showCategoryDialog() async {
+    final listeningSnapshot = await FirebaseFirestore.instance
+        .collection('listening_logs')
+        .orderBy('date_time_listened', descending: true)
+        .get();
 
+    if (listeningSnapshot.docs.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please complete both coloring and listening activities first.')),
+      );
+      setState(() => _isLoading = false);
+      return;
+    }
+
+    // Extract all listening data
+    List<Map<String, dynamic>> listeningData = listeningSnapshot.docs
+        .map((doc) => doc.data() as Map<String, dynamic>)
+        .toList();
+
+    // Extract unique track titles (or transform to categories if needed)
+    Set<String> uniqueCategories = listeningData
+        .map((data) => data['track_title'] as String)
+        .toSet();
+
+    if (uniqueCategories.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No track titles found in listening history.')),
+      );
+      return;
+    }
+
+    // Show dynamic category selection dialog
     showDialog(
       context: context,
       builder: (context) {
@@ -431,16 +453,14 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           title: Text("What's your favourite music category?"),
           content: Container(
             width: double.maxFinite,
-            child: ListView.builder(
+            child: ListView(
               shrinkWrap: true,
-              itemCount: categories.length,
-              itemBuilder: (context, index) {
-                String category = categories[index];
+              children: uniqueCategories.map((category) {
                 return ListTile(
                   leading: Icon(_getCategoryIcon(category)),
                   title: Text(category),
                   onTap: () {
-                    Navigator.of(context).pop();
+                    Navigator.of(context).pop(); // Close dialog
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text('You selected "$category" as your favorite'),
@@ -451,7 +471,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                     Navigator.pop(context); // Exit PlayerScreen
                   },
                 );
-              },
+              }).toList(),
             ),
           ),
         );
