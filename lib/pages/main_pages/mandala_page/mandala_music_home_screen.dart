@@ -123,6 +123,7 @@ class _MandalaMusicHomeScreenState extends State<MandalaMusicHomeScreen> {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         setState(() => _isLoading = false);
+        print(data["Stress Level"]);
 
         Navigator.of(context).push(
           MaterialPageRoute(

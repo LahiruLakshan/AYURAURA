@@ -13,11 +13,11 @@ class PredictionStressMandalaAndMusic extends StatelessWidget {
   String get _stressLabel {
     switch (stressLevel) {
       case 1:
-        return 'Critical Level';
+        return 'High Level';
       case 2:
-        return 'Severe Level';
-      case 3:
         return 'Moderate Level';
+      case 3:
+        return 'Mild Level';
       default:
         return 'Low Level';
     }
@@ -25,13 +25,13 @@ class PredictionStressMandalaAndMusic extends StatelessWidget {
 
   Color get _stressColor {
     switch (stressLevel) {
-      case 1: // Critical
+      case 1:
         return Colors.red.shade700;
-      case 2: // Severe
+      case 2:
         return Colors.orange.shade700;
-      case 3: // Moderate
+      case 3:
         return Colors.amber.shade600;
-      default: // Low
+      default:
         return AppColors.primary;
     }
   }
@@ -51,9 +51,9 @@ class PredictionStressMandalaAndMusic extends StatelessWidget {
 
   int get _meterValue {
     // Convert your 1-4 scale to the meter's expected scale if different
-    return stressLevel == 1 ? 4 :
-    stressLevel == 2 ? 3 :
-    stressLevel == 3 ? 2 : 1;
+    return stressLevel == 1 ? 3 :
+    stressLevel == 2 ? 2 :
+    stressLevel == 3 ? 1 : 0;
   }
 
   @override
@@ -134,7 +134,7 @@ class PredictionStressMandalaAndMusic extends StatelessWidget {
                             ),
                           ),
                           child: Text(
-                            '${stressLevel} - $_stressLabel',
+                            '$_stressLabel',
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
@@ -193,29 +193,29 @@ class PredictionStressMandalaAndMusic extends StatelessWidget {
                         const SizedBox(height: 32),
 
                         // Action buttons
-                        // SizedBox(
-                        //   width: double.infinity,
-                        //   child: ElevatedButton(
-                        //     onPressed: () {
-                        //       // Add navigation to relaxation exercises
-                        //     },
-                        //     style: ElevatedButton.styleFrom(
-                        //       backgroundColor: AppColors.primary,
-                        //       foregroundColor: Colors.white,
-                        //       padding: const EdgeInsets.symmetric(vertical: 16),
-                        //       shape: RoundedRectangleBorder(
-                        //         borderRadius: BorderRadius.circular(12),
-                        //       ),
-                        //     ),
-                        //     child: const Text(
-                        //       'Start Relaxation Exercise',
-                        //       style: TextStyle(
-                        //         fontSize: 16,
-                        //         fontWeight: FontWeight.w600,
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: const Text(
+                              'Back To Home',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
                         const SizedBox(height: 16),
                         // TextButton(
                         //   onPressed: () {

@@ -28,6 +28,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     "Connect with loved ones regularly for emotional support"
   ];
   int _currentTipIndex = 0;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -57,6 +58,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   @override
   void dispose() {
+    _scrollController.dispose();
+
     _controller.dispose();
     super.dispose();
   }
@@ -66,70 +69,90 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     return Scaffold(
       backgroundColor: const Color(0xFFF5F6FA),
       body: SafeArea(
-        child: Stack(
+        child: Column(
           children: [
-            FadeTransition(
-              opacity: _animation,
-              child: CustomScrollView(
-                slivers: [
-                  SliverToBoxAdapter(child: _buildHeader(context)),
-                  SliverPadding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    sliver: SliverList(
-                      delegate: SliverChildListDelegate([
-                        _buildWellnessTipCard(),
-                        const SizedBox(height: 24),
-                        _buildSectionTitle("Evaluate Stress"),
-                        _buildFeatureCard(
-                          context,
-                          'Evaluate\nStress',
-                          'assets/home/check_stress.png',
-                          Icons.remove_red_eye,
-                          EyeAnalysisHomeScreen(),
-                          fullWidth: true,
-                        ),
-                        const SizedBox(height: 24),
-                        _buildSectionTitle("Relaxation Tools"),
-                        _buildFeatureCard(
-                          context,
-                          'Mandala Arts\n& Music',
-                          'assets/home/mandala.png',
-                          Icons.palette,
-                          MandalaMusicHomeScreen(),
-                          fullWidth: true,
-                        ),
-                        const SizedBox(height: 24),
-                        _buildSectionTitle("Quick Access"),
-                        Wrap(
-                          spacing: 16,
-                          runSpacing: 16,
-                          children: [
-                            _buildFeatureCard(
-                              context,
-                              'Will I\nBe Stressed?',
-                              'assets/home/behavior_quiz.png',
-                              Icons.psychology,
-                              BehaviorsQuizHomePage(),
-                            ),
-                            _buildFeatureCard(
-                              context,
-                              'Recovery\nPrediction',
-                              'assets/home/mood_quiz.png',
-                              Icons.quiz,
-                              QuizHomeScreen(),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 24),
-                        _buildFooter(),
-                        const SizedBox(height: 80), // Space for chatbot button
-                      ]),
-                    ),
-                  ),
+            // Fixed Header with Wellness Tips
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                children: [
+                  _buildHeader(context),
+                  const SizedBox(height: 16),
+                  _buildWellnessTipCard(),
                 ],
               ),
             ),
-            _buildChatBotButton(context),
+
+            // Divider for visual separation
+            Divider(height: 1, thickness: 1, color: Colors.grey[200]),
+
+            // Scrollable Content
+            Expanded(
+              child: Stack(
+                children: [
+                  FadeTransition(
+                    opacity: _animation,
+                    child: CustomScrollView(
+                      controller: _scrollController,
+                      slivers: [
+                        SliverPadding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                          sliver: SliverList(
+                            delegate: SliverChildListDelegate([
+                              _buildSectionTitle("Evaluate Stress"),
+                              _buildFeatureCard(
+                                context,
+                                'Evaluate\nStress',
+                                'assets/home/check_stress.png',
+                                Icons.remove_red_eye,
+                                EyeAnalysisHomeScreen(),
+                                fullWidth: true,
+                              ),
+                              const SizedBox(height: 24),
+                              _buildSectionTitle("Relaxation Tools"),
+                              _buildFeatureCard(
+                                context,
+                                'Mandala Arts\n& Music',
+                                'assets/home/mandala.png',
+                                Icons.palette,
+                                MandalaMusicHomeScreen(),
+                                fullWidth: true,
+                              ),
+                              const SizedBox(height: 24),
+                              _buildSectionTitle("Quick Access"),
+                              Wrap(
+                                spacing: 16,
+                                runSpacing: 16,
+                                children: [
+                                  _buildFeatureCard(
+                                    context,
+                                    'Will I\nBe Stressed?',
+                                    'assets/home/behavior_quiz.png',
+                                    Icons.psychology,
+                                    BehaviorsQuizHomePage(),
+                                  ),
+                                  _buildFeatureCard(
+                                    context,
+                                    'Recovery\nPrediction',
+                                    'assets/home/mood_quiz.png',
+                                    Icons.quiz,
+                                    QuizHomeScreen(),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 24),
+                              _buildFooter(),
+                              const SizedBox(height: 80), // Space for chatbot button
+                            ]),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  _buildChatBotButton(context),
+                ],
+              ),
+            ),
           ],
         ),
       ),

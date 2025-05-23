@@ -66,10 +66,9 @@ class StressMeter extends StatelessWidget {
         // Visual meter
         Container(
           width: width,
-          height: height,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(height / 2),
-            color: Colors.grey.shade200,
+            // color: Colors.grey.shade200,
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.1),
@@ -79,24 +78,20 @@ class StressMeter extends StatelessWidget {
             ],
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(height / 2),
+            borderRadius: BorderRadius.circular(100),
             child: Row(
               children: List.generate(4, (index) {
                 return Expanded(
                   child: AnimatedContainer(
+                    height: index < stressLevel
+                        ? 40
+                        : 43,
+                    color: index <= stressLevel
+                        ? levels[index]['color'] as Color
+                        : Colors.transparent,
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeOut,
-                    decoration: BoxDecoration(
-                      color: index <= stressLevel
-                          ? levels[index]['color'] as Color
-                          : Colors.grey.shade300,
-                      border: index < stressLevel
-                          ? Border.all(
-                        color: Colors.white,
-                        width: 2,
-                      )
-                          : null,
-                    ),
+
                     child: Center(
                       child: Text(
                         '${index + 1}',

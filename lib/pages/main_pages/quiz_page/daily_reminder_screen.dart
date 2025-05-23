@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:stress_management/constants/colors.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -27,7 +28,7 @@ class _DailyReminderScreenState extends State<DailyReminderScreen> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: Color(0xFF047857),
+              primary: kPrimaryGreen,
               onPrimary: Colors.white,
               surface: Colors.white,
               onSurface: Color(0xFF1A1A1A),
@@ -185,13 +186,13 @@ class _DailyReminderScreenState extends State<DailyReminderScreen> {
           style: GoogleFonts.inter(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF047857),
+            color: kPrimaryGreen,
           ),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Color(0xFF047857)),
+          icon: Icon(Icons.arrow_back, color: kPrimaryGreen),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -227,7 +228,7 @@ class _DailyReminderScreenState extends State<DailyReminderScreen> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Color(0xFF047857).withOpacity(0.05),
+                    color: kPrimaryGreen.withOpacity(0.05),
                     blurRadius: 10,
                     offset: Offset(0, 4),
                   ),
@@ -243,7 +244,7 @@ class _DailyReminderScreenState extends State<DailyReminderScreen> {
                     ),
                     child: Icon(
                       Icons.notifications_active_outlined,
-                      color: Color(0xFF047857),
+                      color: kPrimaryGreen,
                       size: 24,
                     ),
                   ),
@@ -277,8 +278,8 @@ class _DailyReminderScreenState extends State<DailyReminderScreen> {
                         _isReminderEnabled = value;
                       });
                     },
-                    activeColor: Color(0xFF047857),
-                    activeTrackColor: Color(0xFF047857).withOpacity(0.2),
+                    activeColor: kPrimaryGreen,
+                    activeTrackColor: kPrimaryGreen.withOpacity(0.2),
                   ),
                 ],
               ),
@@ -305,7 +306,7 @@ class _DailyReminderScreenState extends State<DailyReminderScreen> {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Color(0xFF047857).withOpacity(0.05),
+                        color: kPrimaryGreen.withOpacity(0.05),
                         blurRadius: 10,
                         offset: Offset(0, 4),
                       ),
@@ -321,7 +322,7 @@ class _DailyReminderScreenState extends State<DailyReminderScreen> {
                         ),
                         child: Icon(
                           Icons.access_time,
-                          color: Color(0xFF047857),
+                          color: kPrimaryGreen,
                           size: 24,
                         ),
                       ),
@@ -363,7 +364,7 @@ class _DailyReminderScreenState extends State<DailyReminderScreen> {
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Color(0xFF047857).withOpacity(0.05),
+                      color: kPrimaryGreen.withOpacity(0.05),
                       blurRadius: 10,
                       offset: Offset(0, 4),
                     ),
@@ -383,12 +384,12 @@ class _DailyReminderScreenState extends State<DailyReminderScreen> {
                         height: 40,
                         decoration: BoxDecoration(
                           color: _selectedDays[index]
-                              ? Color(0xFF047857)
+                              ? kPrimaryGreen
                               : Colors.white,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: _selectedDays[index]
-                                ? Color(0xFF047857)
+                                ? kPrimaryGreen
                                 : Color(0xFFE2E8F0),
                           ),
                         ),
@@ -422,7 +423,7 @@ class _DailyReminderScreenState extends State<DailyReminderScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('Reminder saved successfully'),
-                      backgroundColor: Color(0xFF047857),
+                      backgroundColor: kPrimaryGreen,
                     ),
                   );
                   Navigator.pop(context);
@@ -431,14 +432,14 @@ class _DailyReminderScreenState extends State<DailyReminderScreen> {
                 icon: Icon(Icons.save_outlined),
                 label: Text('Save Reminder'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF047857),
+                  backgroundColor: kPrimaryGreen,
                   foregroundColor: Colors.white,
                   padding: EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
                   elevation: 0,
-                  disabledBackgroundColor: Color(0xFF047857).withOpacity(0.3),
+                  disabledBackgroundColor: kPrimaryGreen.withOpacity(0.3),
                 ),
               ),
             ),
