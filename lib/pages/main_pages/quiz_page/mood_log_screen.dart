@@ -58,14 +58,14 @@ class _MoodLogScreenState extends State<MoodLogScreen> {
                           style: GoogleFonts.inter(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF047857),
+                            color: AppColors.primary,
                           ),
                         ),
                         SizedBox(height: 24),
                         Container(
                           padding: EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: Color(0xFF047857),
+                            color: AppColors.primary,
                             shape: BoxShape.circle,
                           ),
                           child: Text(
@@ -85,6 +85,14 @@ class _MoodLogScreenState extends State<MoodLogScreen> {
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
                             color: Color(0xFF111827),
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          "Please note: The number of days shown is only an approximate estimation and may vary based on individual progress and circumstances.",
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            color: Color(0xFF6B7280),
                           ),
                         ),
                       ],
@@ -114,7 +122,7 @@ class _MoodLogScreenState extends State<MoodLogScreen> {
                           style: GoogleFonts.inter(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF047857),
+                            color: AppColors.primary,
                           ),
                         ),
                         SizedBox(height: 20),
@@ -157,14 +165,14 @@ class _MoodLogScreenState extends State<MoodLogScreen> {
                         ),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF047857),
+                        backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
                         padding: EdgeInsets.symmetric(vertical: 20),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
                         elevation: 8,
-                        shadowColor: Color(0xFF047857).withOpacity(0.4),
+                        shadowColor: AppColors.primary.withOpacity(0.4),
                       ),
                     ),
                   ),
@@ -185,12 +193,12 @@ class _MoodLogScreenState extends State<MoodLogScreen> {
                           label: Text('Begin Journey'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
-                            foregroundColor: Color(0xFF047857),
+                            foregroundColor: AppColors.primary,
                             padding: EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
                               side: BorderSide(
-                                color: Color(0xFF047857).withOpacity(0.2),
+                                color: AppColors.primary.withOpacity(0.2),
                                 width: 1,
                               ),
                             ),
@@ -213,12 +221,12 @@ class _MoodLogScreenState extends State<MoodLogScreen> {
                           label: Text('Set Reminder'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
-                            foregroundColor: Color(0xFF047857),
+                            foregroundColor: AppColors.primary,
                             padding: EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
                               side: BorderSide(
-                                color: Color(0xFF047857).withOpacity(0.2),
+                                color: AppColors.primary.withOpacity(0.2),
                                 width: 1,
                               ),
                             ),
@@ -250,7 +258,7 @@ class _MoodLogScreenState extends State<MoodLogScreen> {
             ),
             child: Icon(
               icon,
-              color: Color(0xFF047857),
+              color: AppColors.primary,
               size: 24,
             ),
           ),

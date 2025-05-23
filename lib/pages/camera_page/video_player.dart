@@ -111,10 +111,10 @@ class _VideoPageState extends State<VideoPage> {
                   child: ElevatedButton.icon(
                     icon: _isLoading
                         ? const SizedBox.shrink()
-                        : const Icon(Icons.question_answer, size: 24),
+                        : const Icon(Icons.question_answer, size: 24, color: Colors.white,),
                     label: _isLoading
                         ? const CircularProgressIndicator()
-                        : const Text('Go to quiz'),
+                        : const Text('Go to quiz', style: TextStyle(color: Colors.white,),),
                     onPressed: (){
                       Navigator.push(
                         context, // Correct context here

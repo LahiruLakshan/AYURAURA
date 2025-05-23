@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:stress_management/values/icons/eraser_icon_icons.dart';
 import 'package:stress_management/widgets/palette_widget/palette_item.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import 'package:get/route_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:zoom_widget/zoom_widget.dart';
 import 'dart:ui' as ui;
+import '../../constants/colors.dart';
 import '../../packages/image_flood_fill/floodfill_image.dart';
 import '../../providers/main_provider.dart';
 
@@ -49,6 +51,9 @@ class _ImageColorPageState extends State<ImageColorPage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showPaletteSelectionDialog();
+    });
     _stopwatch = Stopwatch()..start();
     _timer = Timer.periodic(Duration(seconds: 1), (_) {});
     if (widget.path != null) {
@@ -191,39 +196,55 @@ class _ImageColorPageState extends State<ImageColorPage> {
   }
 
   Future<void> _showPaletteSelectionDialog() async {
-    await showDialog<void>(
+    await showModalBottomSheet(
       context: context,
-      barrierDismissible: true,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Select a Color Palette'),
-          content: SingleChildScrollView(
-            child: Column(
-              children: List.generate(_colorPalettes.length, (index) {
-                return GestureDetector(
-                  onTap: () {
-                    _changeColorPalette(index);
-                    Navigator.of(context).pop();
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: _colorPalettes[index]
-                          .map((color) => Container(
-                        width: 15,
-                        height: 30,
-                        margin: const EdgeInsets.symmetric(horizontal: 5),
-                        decoration: BoxDecoration(
-                          color: color,
-                          shape: BoxShape.circle,
-                        ),
-                      ))
-                          .toList(),
-                    ),
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) {
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          padding: EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(height: 50,),
+              Text(
+                'Select Color Palette',
+                style: GoogleFonts.inter(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              SizedBox(height: 16),
+              Divider(height: 1),
+              SizedBox(height: 16),
+              Expanded(
+                child: GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 1,
+                    childAspectRatio: 3,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
                   ),
-                );
-              }),
-            ),
+                  itemCount: _colorPalettes.length,
+                  itemBuilder: (context, index) {
+                    return _PaletteOption(
+                      palette: _colorPalettes[index],
+                      isSelected: _currentPaletteIndex == index,
+                      onTap: () {
+                        _changeColorPalette(index);
+                        Navigator.pop(context);
+                      },
+                    );
+                  },
+                ),
+              ),
+              SizedBox(height: 24),
+            ],
           ),
         );
       },
@@ -233,126 +254,243 @@ class _ImageColorPageState extends State<ImageColorPage> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    return WillPopScope(
-      onWillPop: () async {
-        if (widget.path != null) {
-          await context
-              .read<MainProvider>()
-              .saveImage(name: widget.path!.split('/').last);
-        } else {
-          await context.read<MainProvider>().saveImage(
-              name: widget.file!.path.split('/').last, index: widget.index);
-        }
-        return Future.value(true);
-      },
-      child: SafeArea(
-        child: Scaffold(
-          body: Column(
-            children: <Widget>[
-              buildRow(),
-              Expanded(
-                child: Container(
-                  width: w,
-                  child: Zoom(
-                    maxZoomHeight: 5000,
-                    maxZoomWidth: 5000,
-                    initZoom: 0,
-                    child: Center(
-                      child: FloodFillImage(
-                        imageProvider: imageProvider,
-                        fillColor: _fillColor,
-                        avoidColor: [Colors.transparent, Colors.black],
-                        tolerance: 19,
-                        onFloodFillEnd: (img) {
-                          context.read<MainProvider>().setImage(img);
-                        },
-                      ),
-                    ),
-                  ),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text(
+          'Mandala Coloring',
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: kPrimaryGreen,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white,),
+          onPressed: () async {
+            await _saveAndExit();
+            Navigator.pop(context);
+          },
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.palette, color: Colors.white,),
+            onPressed: _showPaletteSelectionDialog,
+          ),
+          IconButton(
+            icon: Icon(Icons.save, color: Colors.white,),
+            onPressed: _submitColoring,
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          // Coloring area
+          Expanded(
+            child: Zoom(
+              maxZoomHeight: 5000,
+              maxZoomWidth: 5000,
+              initZoom: 0,
+              child: Center(
+                child: FloodFillImage(
+                  imageProvider: imageProvider,
+                  fillColor: _fillColor,
+                  avoidColor: [Colors.transparent, Colors.black],
+                  tolerance: 19,
+                  onFloodFillEnd: (img) {
+                    context.read<MainProvider>().setImage(img);
+                  },
                 ),
               ),
-              Container(
-                height: 70,
-                child: selectedColorPalette(),
-              ),
-            ],
+            ),
           ),
+
+          // Color palette and tools
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: Offset(0, -2),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                // Selected palette
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: _colorPalettes[_currentPaletteIndex].map((color) {
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _fillColor = color;
+                            _colorize = color;
+                          });
+                        },
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          margin: EdgeInsets.symmetric(horizontal: 6),
+                          decoration: BoxDecoration(
+                            color: color,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: _fillColor == color
+                                  ? kPrimaryGreen
+                                  : Colors.transparent,
+                              width: 3,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 4,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+                SizedBox(height: 12),
+                // Tools
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    // _ToolButton(
+                    //   icon: Icons.colorize,
+                    //   label: 'Color Picker',
+                    //   onPressed: _showMyDialog,
+                    // ),
+                    _ToolButton(
+                      icon: Icons.cleaning_services,
+                      label: 'Eraser',
+                      onPressed: () {
+                        setState(() {
+                          _fillColor = Colors.white;
+                          _colorize = Colors.white;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _saveAndExit() async {
+    if (widget.path != null) {
+      await context
+          .read<MainProvider>()
+          .saveImage(name: widget.path!.split('/').last);
+    } else {
+      await context.read<MainProvider>().saveImage(
+          name: widget.file!.path.split('/').last, index: widget.index);
+    }
+  }
+}
+
+class _PaletteOption extends StatelessWidget {
+  final List<Color> palette;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _PaletteOption({
+    required this.palette,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 500,
+        decoration: BoxDecoration(
+          color: isSelected ? kAccentGreen.withOpacity(0.2) : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? kPrimaryGreen : Colors.grey.shade300,
+            width: 2,
+          ),
+        ),
+        padding: EdgeInsets.all(12),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: palette.map((color) {
+                  return Container(
+                    width: 30,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      color: color,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white,
+                        width: 2,
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+            if (isSelected)
+              Icon(Icons.check_circle, color: kPrimaryGreen),
+          ],
         ),
       ),
     );
   }
+}
 
-  SingleChildScrollView selectedColorPalette() {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: _colorPalettes[_currentPaletteIndex].map((color) {
-          return GestureDetector(
-            onTap: () {
-              setState(() {
-                _fillColor = color;
-                _colorize = color;
-              });
-            },
-            child: Container(
-              width: 40,
-              height: 40,
-              margin: EdgeInsets.symmetric(horizontal: 5),
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: _fillColor == color ? Colors.black : Colors.transparent,
-                  width: 2,
-                ),
-              ),
-            ),
-          );
-        }).toList(),
+class _ToolButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onPressed;
+
+  const _ToolButton({
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton.icon(
+      onPressed: onPressed,
+      style: TextButton.styleFrom(
+        primary: kPrimaryGreen,
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
       ),
-    );
-  }
-
-  Widget buildRow() {
-    return Container(
-      height: 50,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              if (widget.path != null) {
-                context
-                    .read<MainProvider>()
-                    .saveImage(name: widget.path!.split('/').last);
-              } else {
-                context.read<MainProvider>().saveImage(
-                    name: widget.file!.path.split('/').last, index: widget.index);
-              }
-              Navigator.pop(context);
-            },
-          ),
-          IconButton(
-            icon: Icon(EraserIcon.icon_eraser),
-            onPressed: () {
-              setState(() {
-                _fillColor = Colors.white;
-                _colorize = Colors.white;
-              });
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.palette),
-            onPressed: _showPaletteSelectionDialog,
-          ),
-          IconButton(
-            icon: Icon(Icons.save),
-            onPressed: _submitColoring,
-          ),
-        ],
+      icon: Icon(icon, size: 20),
+      label: Text(
+        label,
+        style: GoogleFonts.inter(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
       ),
     );
   }

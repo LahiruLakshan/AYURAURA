@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:stress_management/pages/main_pages/behaviors/prediction_page.dart'; // Import PredictionPage
+import 'package:stress_management/pages/main_pages/behaviors/prediction_page.dart';
+
+import '../../../constants/colors.dart'; // Import PredictionPage
 
 class BehaviorSummery extends StatelessWidget {
   final Map<int, double> answers;
@@ -15,21 +17,14 @@ class BehaviorSummery extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Colors.green, Colors.white],
-            stops: [0.15, 1.0],
-          ),
-        ),
+
         child: SafeArea(
           child: Column(
             children: [
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                 decoration: BoxDecoration(
-                  color: Colors.green,
+                  color: Colors.white,
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.1),
@@ -52,7 +47,7 @@ class BehaviorSummery extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: kPrimaryGreen,
                       ),
                     ),
                   ],
@@ -76,14 +71,14 @@ class BehaviorSummery extends StatelessWidget {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.assessment, color: Colors.green, size: 24),
+                                  Icon(Icons.assessment, color: kPrimaryGreen, size: 24),
                                   SizedBox(width: 8),
                                   Text(
                                     'Your Responses',
                                     style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.green,
+                                      color: kPrimaryGreen,
                                     ),
                                   ),
                                 ],
@@ -94,7 +89,7 @@ class BehaviorSummery extends StatelessWidget {
                                 physics: const NeverScrollableScrollPhysics(),
                                 itemCount: questions.length,
                                 separatorBuilder: (context, index) => Divider(
-                                  color: Colors.green[100],
+                                  color: kBackground,
                                   thickness: 1,
                                   height: 24,
                                 ),
@@ -116,21 +111,21 @@ class BehaviorSummery extends StatelessWidget {
                                     Container(
                                       padding: EdgeInsets.symmetric(horizontal: 18, vertical: 10),
                                       decoration: BoxDecoration(
-                                        color: Colors.green[50],
+                                        color: kBackground,
                                         borderRadius: BorderRadius.circular(14),
-                                        border: Border.all(color: Colors.green),
+                                        border: Border.all(color: kPrimaryGreen),
                                       ),
                                       child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Icon(Icons.check_circle, color: Colors.green, size: 22),
+                                          Icon(Icons.check_circle, color: kPrimaryGreen, size: 22),
                                           SizedBox(width: 10),
                                           Text(
                                             answers[index]?.toStringAsFixed(1) ?? '0.0',
                                             style: TextStyle(
                                               fontSize: 19,
                                               fontWeight: FontWeight.bold,
-                                              color: Colors.green,
+                                              color: kPrimaryGreen,
                                             ),
                                           ),
                                         ],
@@ -157,7 +152,7 @@ class BehaviorSummery extends StatelessWidget {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          primary: Colors.green[600],
+                          primary: kPrimaryGreen,
                           onPrimary: Colors.white,
                           padding: EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(

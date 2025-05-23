@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:stress_management/constants/colors.dart';
 import 'dart:convert';
 
 import 'package:stress_management/constants/constants.dart';
@@ -130,7 +132,19 @@ class _PredictionPageState extends State<PredictionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Prediction & Recommendations')),
+      appBar: AppBar(
+        title: Text(
+          'Behavior Analysis',
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.w600,
+            color: kPrimaryGreen,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        iconTheme: IconThemeData(color: kPrimaryGreen),
+      ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _predictionFuture,
         builder: (context, snapshot) {
@@ -171,11 +185,22 @@ class _PredictionPageState extends State<PredictionPage> {
           if (predictedClass == 'Stress') _buildRecommendationsSection(recommendations),
           const SizedBox(height: 24),
           ElevatedButton(
-            onPressed: () {
-              // Navigate back to the main page
-              Navigator.popUntil(context, (route) => route.isFirst);
-            },
-            child: const Text('Return to Main Page'),
+            onPressed: () => Navigator.popUntil(context, (route) => route.isFirst),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              minimumSize: Size(double.infinity, 56),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: Text(
+              'Return to Home',
+              style: GoogleFonts.inter(
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+                color: Colors.white,
+              ),
+            ),
           ),
         ],
       ),
@@ -219,30 +244,32 @@ class _PredictionPageState extends State<PredictionPage> {
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Recommendations',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
             if (recommendations.isEmpty)
-              const Text(
-                'No specific recommendations at this time.',
-                style: TextStyle(fontSize: 16),
+              Text(
+                'No specific recommendations needed at this time',
+                style: GoogleFonts.inter(
+                  color: Colors.grey.shade600,
+                ),
               ),
             if (recommendations.isNotEmpty)
-              ...recommendations.map((recommendation) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
+              ...recommendations.map((rec) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.arrow_forward, size: 16),
-                    const SizedBox(width: 8),
+                    Icon(
+                      Icons.circle,
+                      size: 8,
+                      color: AppColors.primary,
+                    ),
+                    SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        recommendation,
-                        style: const TextStyle(fontSize: 16),
+                        rec,
+                        style: GoogleFonts.inter(
+                          color: Colors.grey.shade700,
+                        ),
                       ),
                     ),
                   ],

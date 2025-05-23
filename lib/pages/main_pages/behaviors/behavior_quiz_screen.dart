@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:stress_management/pages/main_pages/behaviors/behavior_summery.dart';
 
+import '../../../constants/colors.dart';
+
 class BehaviorsQuizScreen extends StatefulWidget {
   const BehaviorsQuizScreen({Key? key}) : super(key: key);
 
@@ -60,24 +62,17 @@ class _BehaviorsQuizScreenState extends State<BehaviorsQuizScreen> {
 
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Colors.green, Colors.white],
-            stops: [0.15, 1.0],
-          ),
-        ),
+        color: kBackground,
         child: SafeArea(
           child: Column(
             children: [
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
                 decoration: BoxDecoration(
-                  color: Colors.green,
+                  color: kBackground,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: kBackground,
                       blurRadius: 4,
                       offset: Offset(0, 2),
                     ),
@@ -87,13 +82,13 @@ class _BehaviorsQuizScreenState extends State<BehaviorsQuizScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     IconButton(
-                      icon: Icon(Icons.close, color: Colors.white),
+                      icon: Icon(Icons.close, color: kPrimaryGreen),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.9),
+                        color: kPrimaryGreen,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
@@ -101,7 +96,7 @@ class _BehaviorsQuizScreenState extends State<BehaviorsQuizScreen> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.green,
+                          color: kBackground,
                         ),
                       ),
                     ),
@@ -110,8 +105,8 @@ class _BehaviorsQuizScreenState extends State<BehaviorsQuizScreen> {
               ),
               LinearProgressIndicator(
                 value: (_currentQuestionIndex + 1) / _questions.length,
-                backgroundColor: Colors.blue[100],
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.blue[700]!),
+                backgroundColor: kAccentGreen,
+                valueColor: AlwaysStoppedAnimation<Color>(kPrimaryGreen!),
                 minHeight: 6,
               ),
               Expanded(
@@ -141,7 +136,7 @@ class _BehaviorsQuizScreenState extends State<BehaviorsQuizScreen> {
                                       style: TextStyle(
                                         fontSize: 24,
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.blue[900],
+                                        color: kPrimaryGreen,
                                         height: 1.2,
                                       ),
                                     ),
@@ -169,7 +164,7 @@ class _BehaviorsQuizScreenState extends State<BehaviorsQuizScreen> {
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
-                              color: Colors.blue[900],
+                              color: kPrimaryGreen,
                             ),
                           ),
                           SizedBox(height: 8),
@@ -190,8 +185,8 @@ class _BehaviorsQuizScreenState extends State<BehaviorsQuizScreen> {
                                       shape: CircleBorder(),
                                       padding: EdgeInsets.all(16),
                                       primary: _answers[_currentQuestionIndex] == index.toDouble()
-                                          ? Colors.blue[700]
-                                          : Colors.blue[100],
+                                          ? kSecondaryGreen
+                                          : kBackground,
                                       elevation: _answers[_currentQuestionIndex] == index.toDouble() ? 8 : 2,
                                     ),
                                     child: Text(
@@ -200,7 +195,7 @@ class _BehaviorsQuizScreenState extends State<BehaviorsQuizScreen> {
                                         fontSize: 20,
                                         color: _answers[_currentQuestionIndex] == index.toDouble()
                                             ? Colors.white
-                                            : Colors.blue[900],
+                                            : kPrimaryGreen,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -222,8 +217,8 @@ class _BehaviorsQuizScreenState extends State<BehaviorsQuizScreen> {
                                       shape: CircleBorder(),
                                       padding: EdgeInsets.all(16),
                                       primary: _answers[_currentQuestionIndex] == (index + 4).toDouble()
-                                          ? Colors.blue[700]
-                                          : Colors.blue[100],
+                                          ? kSecondaryGreen
+                                          : kBackground,
                                       elevation: _answers[_currentQuestionIndex] == (index + 4).toDouble() ? 8 : 2,
                                     ),
                                     child: Text(
@@ -232,7 +227,7 @@ class _BehaviorsQuizScreenState extends State<BehaviorsQuizScreen> {
                                         fontSize: 20,
                                         color: _answers[_currentQuestionIndex] == (index + 4).toDouble()
                                             ? Colors.white
-                                            : Colors.blue[900],
+                                            : kPrimaryGreen,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -256,7 +251,7 @@ class _BehaviorsQuizScreenState extends State<BehaviorsQuizScreen> {
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.w600,
-                                      color: Colors.blue[900],
+                                      color: kPrimaryGreen,
                                     ),
                                   ),
                                   SizedBox(height: 12),
@@ -274,7 +269,7 @@ class _BehaviorsQuizScreenState extends State<BehaviorsQuizScreen> {
                                         fontSize: 22,
                                         fontWeight: FontWeight.bold,
                                         color: _answers[_currentQuestionIndex] != null
-                                            ? Colors.blue[900]
+                                            ? kPrimaryGreen
                                             : Colors.grey,
                                       ),
                                     ),
@@ -293,7 +288,7 @@ class _BehaviorsQuizScreenState extends State<BehaviorsQuizScreen> {
                                                   style: TextStyle(
                                                     fontSize: 16,
                                                     fontWeight: FontWeight.w600,
-                                                    color: Colors.blue[900],
+                                                    color: kPrimaryGreen,
                                                   ),
                                                 ),
                                                 if (_getRangeLabel(_currentQuestionIndex, true) != null)
@@ -316,7 +311,7 @@ class _BehaviorsQuizScreenState extends State<BehaviorsQuizScreen> {
                                                   style: TextStyle(
                                                     fontSize: 16,
                                                     fontWeight: FontWeight.w600,
-                                                    color: Colors.blue[900],
+                                                    color: kPrimaryGreen,
                                                   ),
                                                 ),
                                                 if (_getRangeLabel(_currentQuestionIndex, false) != null)
@@ -335,9 +330,9 @@ class _BehaviorsQuizScreenState extends State<BehaviorsQuizScreen> {
                                       SizedBox(height: 6),
                                       SliderTheme(
                                         data: SliderThemeData(
-                                          activeTrackColor: Colors.blue[700],
-                                          inactiveTrackColor: Colors.blue[100],
-                                          thumbColor: Colors.blue[900],
+                                          activeTrackColor: kSecondaryGreen,
+                                          inactiveTrackColor: kBackground,
+                                          thumbColor: kPrimaryGreen,
                                           overlayColor: Colors.blue.withOpacity(0.2),
                                           trackHeight: 6,
                                           thumbShape: RoundSliderThumbShape(enabledThumbRadius: 10),
@@ -408,7 +403,7 @@ class _BehaviorsQuizScreenState extends State<BehaviorsQuizScreen> {
                                 label: Text("Previous"),
                                 style: ElevatedButton.styleFrom(
                                   primary: Colors.grey[200],
-                                  onPrimary: Colors.blue[900],
+                                  onPrimary: kPrimaryGreen,
                                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),

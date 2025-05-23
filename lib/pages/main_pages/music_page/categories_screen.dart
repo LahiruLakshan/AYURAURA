@@ -281,108 +281,114 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            automaticallyImplyLeading: false,
-            expandedHeight: 120,
-            flexibleSpace: FlexibleSpaceBar(
-              title: Row(
-                children: [
-                  Text(
-                    'Music Therapy',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).primaryColor,
+    return WillPopScope(
+      onWillPop: () async {
+        _showCategoryDialog(); // Show dialog instead of going back
+        return false; // Prevent popping the page
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              automaticallyImplyLeading: false,
+              expandedHeight: 120,
+              flexibleSpace: FlexibleSpaceBar(
+                title: Row(
+                  children: [
+                    Text(
+                      'Music Therapy',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.info_outline, size: 18,),
+                      color: AppColors.primary,
+                      onPressed: () {
+                        _showInfoDialog(context);
+                      },
+                    ),
+                  ],
+                ),
+                background: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFFE8F5E9), Colors.white],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
                     ),
                   ),
-                  IconButton(
-                    icon: Icon(Icons.info_outline, size: 18,),
-                    color: AppColors.primary,
-                    onPressed: () {
-                      _showInfoDialog(context);
-                    },
-                  ),
-                ],
+                ),
               ),
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Color(0xFFE8F5E9), Colors.white],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
+            ),
+            SliverPadding(
+              padding: EdgeInsets.all(16),
+              sliver: SliverToBoxAdapter(
+                child: TextField(
+                  onChanged: (value) => setState(() => searchQuery = value),
+                  decoration: InputDecoration(
+                    hintText: 'Search music categories...',
+                    prefixIcon: Icon(Icons.search, color: Colors.grey),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey.withOpacity(0.1),
+                    contentPadding: EdgeInsets.symmetric(vertical: 12),
                   ),
                 ),
               ),
             ),
-          ),
-          SliverPadding(
-            padding: EdgeInsets.all(16),
-            sliver: SliverToBoxAdapter(
-              child: TextField(
-                onChanged: (value) => setState(() => searchQuery = value),
-                decoration: InputDecoration(
-                  hintText: 'Search music categories...',
-                  prefixIcon: Icon(Icons.search, color: Colors.grey),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
+            SliverPadding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              sliver: filteredCategories.isEmpty
+                  ? SliverToBoxAdapter(
+                child: Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 50),
+                    child: Text(
+                      'No categories found',
+                      style: TextStyle(color: Colors.grey),
+                    ),
                   ),
-                  filled: true,
-                  fillColor: Colors.grey.withOpacity(0.1),
-                  contentPadding: EdgeInsets.symmetric(vertical: 12),
+                ),
+              )
+                  : SliverGrid(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount:
+                  MediaQuery.of(context).size.width > 600 ? 3 : 2,
+                  childAspectRatio: 0.8, // More rectangular cards
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                ),
+                delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                    final category = filteredCategories[index];
+                    return _MusicCategoryCard(
+                      category: category,
+                      colors: _getGradientColors(category['type']),
+                      icon: _getCategoryIcon(category['type']),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                TracksScreen(category: category),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                  childCount: filteredCategories.length,
                 ),
               ),
             ),
-          ),
-          SliverPadding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            sliver: filteredCategories.isEmpty
-                ? SliverToBoxAdapter(
-              child: Center(
-                child: Padding(
-                  padding: EdgeInsets.only(top: 50),
-                  child: Text(
-                    'No categories found',
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                ),
-              ),
-            )
-                : SliverGrid(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount:
-                MediaQuery.of(context).size.width > 600 ? 3 : 2,
-                childAspectRatio: 0.8, // More rectangular cards
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-              ),
-              delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                  final category = filteredCategories[index];
-                  return _MusicCategoryCard(
-                    category: category,
-                    colors: _getGradientColors(category['type']),
-                    icon: _getCategoryIcon(category['type']),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              TracksScreen(category: category),
-                        ),
-                      );
-                    },
-                  );
-                },
-                childCount: filteredCategories.length,
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -403,6 +409,53 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  void _showCategoryDialog() {
+    final categories = [
+      'Deep Sleep Music (Delta Waves)',
+      'Gregorian Chants or Om Mantra Meditation',
+      'Tibetan Singing Bowls',
+      'Ambient Meditation Music',
+      'Soft Instrumental',
+      'Alpha Waves',
+      'Nature Sounds with Soft Piano',
+      'Lofi Chill Beats',
+    ];
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("What's your favourite music category?"),
+          content: Container(
+            width: double.maxFinite,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: categories.length,
+              itemBuilder: (context, index) {
+                String category = categories[index];
+                return ListTile(
+                  leading: Icon(_getCategoryIcon(category)),
+                  title: Text(category),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('You selected "$category" as your favorite'),
+                        backgroundColor: Colors.blueAccent,
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                    Navigator.pop(context); // Exit PlayerScreen
+                  },
+                );
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 

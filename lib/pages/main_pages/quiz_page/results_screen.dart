@@ -97,7 +97,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
         'title': 'Happiness Level',
         'answer': widget.selectedAnswers[1],
         'icon': Icons.sentiment_satisfied,
-        'color': Color(0xFF059669),
+        'color': AppColors.primary,
         'bgColor': Color(0xFFD1FAE5),
       },
       {
@@ -224,16 +224,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFE8FFF5),
-              Colors.white,
-            ],
-          ),
-        ),
+
         child: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
@@ -246,7 +237,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
                     style: GoogleFonts.inter(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF059669),
+                      color: AppColors.primary,
                     ),
                   ),
                   SizedBox(height: 8),
@@ -322,13 +313,13 @@ class _ResultsScreenState extends State<ResultsScreen> {
                     child: ElevatedButton(
                       onPressed: () => _isLoading ? null : predictStress(),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF059669),
+                        backgroundColor: AppColors.primary,
                         padding: EdgeInsets.symmetric(vertical: 18),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
                         elevation: 4,
-                        shadowColor: Color(0xFF059669).withOpacity(0.3),
+                        shadowColor: AppColors.primary.withOpacity(0.3),
                       ),
                       child: _isLoading
                           ? SizedBox(

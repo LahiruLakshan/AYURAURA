@@ -269,22 +269,34 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Chat with Mochi"),
-        backgroundColor: AppColors.secondary,
-      ),
+      // appBar: AppBar(
+      //   title: Text("Chat with Mochi"),
+      //   backgroundColor: AppColors.secondary,
+      // ),
       body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            opacity: 0.3,
-            image: AssetImage("assets/bg_logo.png"),
-            fit: BoxFit.contain,
-          ),
-        ),
+
         child: Stack(
           children: [
+
             Column(
               children: [
+                SizedBox(height: 70,),
+                Row(
+                  children: [
+                    Icon(Icons.remove_red_eye, color: AppColors.primary, size: 32),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Eye Stress Analysis',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
+                        height: 1.2,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20,),
                 AnimatedBuilder(
                   animation: _animation,
                   builder: (context, child) {
@@ -324,7 +336,7 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
                           margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
                           padding: EdgeInsets.all(12.0),
                           decoration: BoxDecoration(
-                            color: isUser ? Color(0xFF1a237e) : Colors.grey[800],
+                            color: isUser ? kPrimaryGreen : kBackground,
                             borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(12.0),
                               topRight: Radius.circular(12.0),
@@ -334,7 +346,7 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
                           ),
                           child: Text(
                             text,
-                            style: TextStyle(color: Colors.white, fontSize: 16),
+                            style: TextStyle(color: isUser ? kBackground : Colors.black, fontSize: 16),
                           ),
                         ),
                       );

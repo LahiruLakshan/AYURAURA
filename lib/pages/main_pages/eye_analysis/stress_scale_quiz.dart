@@ -340,12 +340,12 @@ class _StressScaleQuizState extends State<StressScaleQuiz> {
                       ElevatedButton.icon(
                         icon: _isLoading
                             ? const SizedBox.shrink()
-                            : const Icon(Icons.analytics, size: 24),
+                            : const Icon(Icons.analytics, size: 24, color: Colors.white,),
                         label: _isLoading
                             ? const CircularProgressIndicator(color: Colors.white)
                             : const Text(
                           'Analyze Stress Level',
-                          style: TextStyle(fontSize: 16),
+                          style: TextStyle(fontSize: 16, color: Colors.white),
                         ),
                         onPressed: _isLoading ? null : () async {
                           setState(() => _isLoading = true);
@@ -477,6 +477,7 @@ class _StressScaleQuizState extends State<StressScaleQuiz> {
               child: const Text(
                 'Return to Main Page',
                 style: TextStyle(
+                  color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
@@ -789,12 +790,12 @@ class _StressScaleQuizState extends State<StressScaleQuiz> {
                         _currentQuestionIndex == questions.length - 1
                             ? Icons.check
                             : Icons.arrow_forward,
-                      ),
+                        color: Colors.white,),
                       label: Text(
                         _currentQuestionIndex == questions.length - 1
                             ? 'Finish'
                             : 'Next',
-                      ),
+                      style: TextStyle(color: Colors.white,),),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green[700],
                         padding: const EdgeInsets.symmetric(

@@ -1,13 +1,11 @@
-import 'package:stress_management/pages/main_pages/quiz_page/results_screen.dart';
 import 'package:flutter/material.dart';
-
+import 'package:stress_management/pages/main_pages/quiz_page/results_screen.dart';
 import '../../../constants/colors.dart';
 import '../../../models/question_model/question.dart';
 
 class QuizScreen extends StatefulWidget {
   final List<String>? initialAnswers;
-
-  QuizScreen({this.initialAnswers});
+  const QuizScreen({Key? key, this.initialAnswers}) : super(key: key);
 
   @override
   _QuizScreenState createState() => _QuizScreenState();
@@ -16,48 +14,55 @@ class QuizScreen extends StatefulWidget {
 class _QuizScreenState extends State<QuizScreen> {
   final List<Question> questions = [
     Question("How much pressure are you feeling right now?", [
-      "1. 😰 I feel extremely anxious and unable to cope with daily tasks.",
-      "2. 😟 I feel quite overwhelmed and find it hard to relax.",
-      "3. 😐 I'm aware of some stress but I'm managing okay.",
-      "4. 🙂 I have a few minor concerns but feel generally fine.",
-      "5. 😌 I'm completely relaxed and worry-free."
+      "1. 😰 Extremely anxious, can't cope",
+      "2. 😟 Quite overwhelmed",
+      "3. 😐 Managing okay",
+      "4. 🙂 Generally fine",
+      "5. 😌 Completely relaxed"
     ]),
     Question("How happy do you feel today?", [
-      "1. 😐 I feel mostly unhappy or neutral.",
-      "2. 🙂 I feel a little happy, but nothing special.",
-      "3. 😊 I feel generally happy and content.",
-      "4. 😄 I feel very happy and positive about my day.",
-      "5. 🤩 I'm bursting with joy and feeling ecstatic!"
+      "1. 😐 Mostly unhappy",
+      "2. 🙂 A little happy",
+      "3. 😊 Generally content",
+      "4. 😄 Very positive",
+      "5. 🤩 Bursting with joy"
     ]),
     Question("How calm and relaxed do you feel?", [
-      "1. 😫 I feel very agitated or anxious.",
-      "2. 😟 I feel a bit uneasy but not too stressed.",
-      "3. 😌 I feel generally calm and at ease.",
-      "4. 🧘‍♂️ I feel very relaxed and peaceful.",
-      "5. 🌅 I'm completely serene and tranquil."
+      "1. 😫 Very agitated",
+      "2. 😟 A bit uneasy",
+      "3. 😌 Generally calm",
+      "4. 🧘‍♂️ Very peaceful",
+      "5. 🌅 Completely serene"
     ]),
     Question("How energetic are you feeling right now?", [
-      "1. 😴 I feel very low on energy and sluggish.",
-      "2. 😪 I have a bit of energy, but mostly tired.",
-      "3. 🙂 I have enough energy to get through the day.",
-      "4. 💪 I feel quite energetic and active.",
-      "5. ⚡ I'm full of energy and ready for anything!"
+      "1. 😴 Very sluggish",
+      "2. 😪 Mostly tired",
+      "3. 🙂 Enough energy",
+      "4. 💪 Quite active",
+      "5. ⚡ Full of energy"
     ]),
   ];
 
   late List<String> selectedAnswers;
+  late PageController _pageController;
+  int _currentPage = 0;
 
   @override
   void initState() {
     super.initState();
     selectedAnswers = widget.initialAnswers ?? List.filled(questions.length, "");
+    _pageController = PageController();
   }
 
-  bool get isAllQuestionsAnswered {
-    return !selectedAnswers.any((answer) => answer.isEmpty);
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
-  void submitAnswers() {
+  bool get isAllQuestionsAnswered => !selectedAnswers.any((answer) => answer.isEmpty);
+
+  void _submitAnswers() {
     if (isAllQuestionsAnswered) {
       Navigator.push(
         context,
@@ -70,9 +75,126 @@ class _QuizScreenState extends State<QuizScreen> {
         SnackBar(
           content: Text('Please answer all questions before submitting'),
           backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
     }
+  }
+
+  Widget _buildProgressIndicator() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8),
+      child: LinearProgressIndicator(
+        value: (_currentPage + 1) / questions.length,
+        backgroundColor: Colors.grey.shade200,
+        valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+        minHeight: 8,
+      ),
+    );
+  }
+
+  Widget _buildQuestionCard(int questionIndex) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            questions[questionIndex].questionText,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 16),
+          ...questions[questionIndex].answers.map((answer) {
+            bool isSelected = selectedAnswers[questionIndex] == answer;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(12),
+                onTap: () {
+                  setState(() {
+                    selectedAnswers[questionIndex] = answer;
+                  });
+                  if (_currentPage < questions.length - 1) {
+                    _pageController.nextPage(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                  }
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? AppColors.primary.withOpacity(0.1)
+                        : Colors.grey.shade50,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isSelected
+                          ? AppColors.primary
+                          : Colors.grey.shade200,
+                      width: 1.5,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 24,
+                        height: 24,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: isSelected
+                                ? AppColors.primary
+                                : Colors.grey.shade400,
+                            width: 2,
+                          ),
+                        ),
+                        child: isSelected
+                            ? Icon(
+                          Icons.circle,
+                          size: 12,
+                          color: AppColors.primary,
+                        )
+                            : null,
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Text(
+                          answer,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey.shade800,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ],
+      ),
+    );
   }
 
   @override
@@ -80,135 +202,66 @@ class _QuizScreenState extends State<QuizScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Color(0xFF047857),
-        title: Text(
-          "Daily Assessment",
-          style: TextStyle(color: Colors.white),
+        backgroundColor: AppColors.primary,
+        title: const Text(
+          "Daily Check-In",
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         centerTitle: true,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+      body: Column(
+        children: [
+          _buildProgressIndicator(),
+          Expanded(
+            child: PageView.builder(
+              controller: _pageController,
+              physics: const ClampingScrollPhysics(),
+              itemCount: questions.length,
+              onPageChanged: (index) {
+                setState(() => _currentPage = index);
+              },
+              itemBuilder: (context, index) {
+                return SingleChildScrollView(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
                         child: Text(
-                          "Please take the assessment to see how many days you have to become stress-free",
+                          "Answer honestly to get the most accurate results",
                           style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black,
+                            fontSize: 16,
+                            color: Colors.grey.shade700,
                           ),
                           textAlign: TextAlign.center,
                         ),
                       ),
-                      ...List.generate(questions.length, (questionIndex) {
-                        return _buildQuestionCard(questionIndex);
-                      }),
-                      SizedBox(height: 80), // Space for the button
+                      _buildQuestionCard(index),
                     ],
                   ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-      bottomSheet: Container(
-        width: double.infinity,
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              spreadRadius: 1,
-              offset: Offset(0, -3),
-            ),
-          ],
-        ),
-        child: ElevatedButton(
-          onPressed: submitAnswers,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Color(0xFF047857),
-            foregroundColor: Colors.white,
-            padding: EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            elevation: 8,
-            shadowColor: Color(0xFF047857).withOpacity(0.4),
-          ),
-          child: Text(
-            'Submit Answers',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildQuestionCard(int questionIndex) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 24),
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            blurRadius: 10,
-            spreadRadius: 2,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(bottom: 16.0),
-            child: Text(
-              "Question ${questionIndex + 1}: ${questions[questionIndex].questionText}",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.secondary,
-              ),
-            ),
-          ),
-          ...questions[questionIndex].answers.map((answer) {
-            return RadioListTile<String>(
-              title: Text(
-                answer,
-                style: TextStyle(fontSize: 16),
-              ),
-              value: answer,
-              groupValue: selectedAnswers[questionIndex],
-              activeColor: Color(0xFF047857),
-              onChanged: (value) {
-                setState(() {
-                  selectedAnswers[questionIndex] = value!;
-                });
+                );
               },
-            );
-          }).toList(),
+            ),
+          ),
         ],
       ),
+      floatingActionButton: _currentPage == questions.length - 1
+          ? FloatingActionButton.extended(
+        onPressed: _submitAnswers,
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+        elevation: 4,
+        icon: const Icon(Icons.check),
+        label: const Text("Submit Answers"),
+      )
+          : null,
     );
   }
 }

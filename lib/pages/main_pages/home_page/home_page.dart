@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:stress_management/pages/auth/profile_page.dart';
 
-import 'package:stress_management/pages/main_pages/eye_analysis/eye_analysis_home_screen.dart';
-import 'package:stress_management/pages/main_pages/mandala_page/mandala_music_home_screen.dart';
-import 'package:stress_management/pages/main_pages/behaviors/chat_screen.dart';
-import 'package:stress_management/pages/main_pages/quiz_page/quiz_home_screen.dart';
-import 'package:stress_management/pages/main_pages/behaviors/behaviors_quiz_home_page.dart';
-
+import '../../../constants/colors.dart';
+import '../../auth/profile_page.dart';
+import '../behaviors/behaviors_quiz_home_page.dart';
+import '../behaviors/chat_screen.dart';
+import '../eye_analysis/eye_analysis_home_screen.dart';
+import '../mandala_page/mandala_music_home_screen.dart';
+import '../quiz_page/quiz_home_screen.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -19,6 +20,14 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
+  final List<String> _wellnessTips = [
+    "Practice deep breathing for 5 minutes daily to reduce stress",
+    "Aim for 7-9 hours of quality sleep each night",
+    "Take short breaks every hour when working or studying",
+    "Stay hydrated - drink at least 8 glasses of water daily",
+    "Connect with loved ones regularly for emotional support"
+  ];
+  int _currentTipIndex = 0;
 
   @override
   void initState() {
@@ -32,6 +41,18 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       curve: Curves.easeInOut,
     );
     _controller.forward();
+
+    // Rotate tips every 10 seconds
+    Future.delayed(const Duration(seconds: 10), _rotateTips);
+  }
+
+  void _rotateTips() {
+    if (mounted) {
+      setState(() {
+        _currentTipIndex = (_currentTipIndex + 1) % _wellnessTips.length;
+      });
+      Future.delayed(const Duration(seconds: 10), _rotateTips);
+    }
   }
 
   @override
@@ -49,13 +70,35 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           children: [
             FadeTransition(
               opacity: _animation,
-              child: Column(
-                children: [
-                  _buildHeader(context),
-                  Expanded(
-                    child: ListView(
-                      padding: const EdgeInsets.all(20),
-                      children: [
+              child: CustomScrollView(
+                slivers: [
+                  SliverToBoxAdapter(child: _buildHeader(context)),
+                  SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    sliver: SliverList(
+                      delegate: SliverChildListDelegate([
+                        _buildWellnessTipCard(),
+                        const SizedBox(height: 24),
+                        _buildSectionTitle("Evaluate Stress"),
+                        _buildFeatureCard(
+                          context,
+                          'Evaluate\nStress',
+                          'assets/home/check_stress.png',
+                          Icons.remove_red_eye,
+                          EyeAnalysisHomeScreen(),
+                          fullWidth: true,
+                        ),
+                        const SizedBox(height: 24),
+                        _buildSectionTitle("Relaxation Tools"),
+                        _buildFeatureCard(
+                          context,
+                          'Mandala Arts\n& Music',
+                          'assets/home/mandala.png',
+                          Icons.palette,
+                          MandalaMusicHomeScreen(),
+                          fullWidth: true,
+                        ),
+                        const SizedBox(height: 24),
                         _buildSectionTitle("Quick Access"),
                         Wrap(
                           spacing: 16,
@@ -67,7 +110,6 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                               'assets/home/behavior_quiz.png',
                               Icons.psychology,
                               BehaviorsQuizHomePage(),
-                              [Colors.green.shade500, Colors.green.shade300],
                             ),
                             _buildFeatureCard(
                               context,
@@ -75,36 +117,13 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                               'assets/home/mood_quiz.png',
                               Icons.quiz,
                               QuizHomeScreen(),
-                              [Colors.green.shade500, Colors.green.shade300],
                             ),
                           ],
                         ),
-                        const SizedBox(height: 30),
-                        _buildSectionTitle("Relaxation Tools"),
-                        _buildFeatureCard(
-                          context,
-                          'Mandala Arts\n& Music',
-                          'assets/home/mandala.png',
-                          Icons.palette,
-                          MandalaMusicHomeScreen(),
-                          [Colors.green.shade500, Colors.green.shade300],
-                          fullWidth: true,
-                        ),
-                        const SizedBox(height: 30),
-                        _buildSectionTitle("Evaluate Stress"),
-                        _buildFeatureCard(
-                          context,
-                          'Evaluate\nStress',
-                          'assets/home/check_stress.png',
-                          Icons.remove_red_eye,
-                          EyeAnalysisHomeScreen(),
-                          [Colors.green.shade500, Colors.green.shade300],
-                          fullWidth: true,
-                        ),
-                        const SizedBox(height: 30),
+                        const SizedBox(height: 24),
                         _buildFooter(),
-                        const SizedBox(height: 80), // for chatbot space
-                      ],
+                        const SizedBox(height: 80), // Space for chatbot button
+                      ]),
                     ),
                   ),
                 ],
@@ -117,74 +136,111 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
-    return Container(
-      height: 120,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Colors.green.shade800,
-            Colors.green.shade600,
+  Widget _buildWellnessTipCard() {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [kPrimaryGreen.withOpacity(0.8), kSecondaryGreen],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.lightbulb_outline, color: Colors.white, size: 24),
+                const SizedBox(width: 8),
+                Text(
+                  'Wellness Tip',
+                  style: GoogleFonts.inter(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              _wellnessTips[_currentTipIndex],
+              style: GoogleFonts.inter(
+                color: Colors.white,
+                fontSize: 16,
+              ),
+            ),
           ],
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 10,
-            offset: Offset(0, 2),
-          ),
-        ],
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+    );
+  }
+
+  Widget _buildHeader(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Welcome to',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white.withOpacity(0.8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Welcome to',
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        color: kPrimaryGreen,
+                      ),
                     ),
-                  ),
-                  const Text(
-                    'Ayuraura',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                    Text(
+                      'Ayuraura',
+                      style: GoogleFonts.inter(
+                        fontSize: 35,
+                        fontWeight: FontWeight.bold,
+                        color: kPrimaryGreen,
+                        letterSpacing: 1.2,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              IconButton(
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ProfilePage(),
-                  ),
+                  ],
                 ),
-                icon: const Icon(
-                  Icons.account_circle,
-                  size: 36,
-                  color: Colors.white,
+              ),
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ProfilePage()),
+                  );
+                },
+                borderRadius: BorderRadius.circular(30),
+                child: CircleAvatar(
+                  radius: 24,
+                  backgroundColor: kPrimaryGreen.withOpacity(0.2),
+                  child: Icon(
+                    Icons.account_circle,
+                    color: kPrimaryGreen,
+                    size: 30,
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 8),
           Text(
             'Your personal stress management companion',
-            style: TextStyle(
+            style: GoogleFonts.inter(
               fontSize: 14,
-              color: Colors.white.withOpacity(0.9),
+              color: Colors.grey.shade600,
+              fontWeight: FontWeight.w400,
             ),
           ),
         ],
@@ -194,13 +250,13 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   Widget _buildSectionTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: 8),
       child: Text(
         title,
-        style: const TextStyle(
+        style: GoogleFonts.inter(
           fontSize: 20,
           fontWeight: FontWeight.w700,
-          color: Color(0xFF424242),
+          color: Colors.grey.shade800,
         ),
       ),
     );
@@ -211,69 +267,81 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       String title,
       String imagePath,
       IconData icon,
-      Widget page,
-      List<Color> gradientColors, {
+      Widget page, {
         bool fullWidth = false,
       }) {
     return SizedBox(
-      width: fullWidth ? double.infinity : MediaQuery.of(context).size.width / 2 - 28,
+      width: fullWidth
+          ? double.infinity
+          : MediaQuery.of(context).size.width / 2 - 28,
       height: 160,
-      child: GestureDetector(
-        onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => page));
-        },
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            gradient: LinearGradient(
-              colors: gradientColors,
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: gradientColors.first.withOpacity(0.3),
-                blurRadius: 10,
-                offset: const Offset(0, 5),
-              )
-            ],
-          ),
-          child: Stack(
-            children: [
-              Positioned.fill(
-                child: Opacity(
-                  opacity: 0.15,
-                  child: Image.asset(imagePath, fit: BoxFit.cover),
-                ),
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (_) => page));
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              gradient: LinearGradient(
+                colors: [kBackground, Color(0xFFCDECE0)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: const BoxDecoration(
-                        color: Colors.white24,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(icon, color: Colors.white, size: 28),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      title,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        height: 1.3,
+            ),
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: Opacity(
+                    opacity: 0.15,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.asset(
+                        imagePath,
+                        fit: BoxFit.cover,
                       ),
                     ),
-                  ],
+                  ),
                 ),
-              )
-            ],
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: kPrimaryGreen.withOpacity(0.2),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          icon,
+                          color: kPrimaryGreen,
+                          size: 28,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        title,
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.inter(
+                          color: kPrimaryGreen,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          height: 1.3,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -281,12 +349,14 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
 
   Widget _buildFooter() {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      alignment: Alignment.center,
-      child: const Text(
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      child: Text(
         'Ayuraura Research Project 24-25J-180',
-        style: TextStyle(fontSize: 12, color: Colors.grey),
+        style: GoogleFonts.inter(
+          fontSize: 12,
+          color: Colors.grey.shade600,
+        ),
         textAlign: TextAlign.center,
       ),
     );
@@ -296,33 +366,21 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     return Positioned(
       bottom: 20,
       right: 20,
-      child: GestureDetector(
-        onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => ChatScreen()));
+      child: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => ChatScreen()),
+          );
         },
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(30),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 6,
-                offset: const Offset(0, 3),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              Image.asset('assets/home/panda.png', width: 36, height: 36),
-              const SizedBox(width: 8),
-              const Text(
-                'Chat with\nMochi',
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: Color(0xFF424242)),
-                textAlign: TextAlign.center,
-              )
-            ],
+        backgroundColor: Colors.white,
+        foregroundColor: kPrimaryGreen,
+        elevation: 4,
+        icon: Image.asset('assets/home/panda.png', width: 36, height: 36),
+        label: Text(
+          'Mochi',
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),

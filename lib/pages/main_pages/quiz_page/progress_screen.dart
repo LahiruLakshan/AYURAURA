@@ -116,41 +116,29 @@ class _ProgressScreenState extends State<ProgressScreen> {
   }
 
   Widget _buildHeader() {
-    return Container(
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 12,
-            offset: Offset(0, 4),
+    return Column(
+      children: [
+        Text(
+          "Emotional Progress 📈",
+          textAlign: TextAlign.left,
+
+          style: GoogleFonts.inter(
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+            color: AppColors.primary,
           ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Text(
-            "Emotional Progress 📈",
-            style: GoogleFonts.inter(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF047857),
-            ),
+        ),
+        SizedBox(height: 12),
+        Text(
+          "Track your journey to better mental well-being",
+          textAlign: TextAlign.left,
+          style: GoogleFonts.inter(
+            fontSize: 16,
+            color: Colors.black54,
+            height: 1.4,
           ),
-          SizedBox(height: 12),
-          Text(
-            "Track your journey to better mental well-being",
-            textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-              fontSize: 16,
-              color: Colors.black54,
-              height: 1.4,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -176,7 +164,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
             style: GoogleFonts.inter(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF047857),
+              color: AppColors.primary,
             ),
           ),
           SizedBox(height: 20),
@@ -202,7 +190,12 @@ class _ProgressScreenState extends State<ProgressScreen> {
                   isStressCard: false,
                 ),
               ),
-              SizedBox(width: 8),
+            ],
+          ),
+          SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
               Expanded(
                 child: _buildStatCard(
                   "Calmness",
@@ -232,9 +225,9 @@ class _ProgressScreenState extends State<ProgressScreen> {
   Widget _buildStatCard(String title, String value, IconData icon, bool isPositive, {bool isStressCard = false}) {
     Color getColor(bool positive) {
       if (isStressCard) {
-        return positive ? Color(0xFF047857) : Colors.red;
+        return positive ? AppColors.primary : Colors.red;
       }
-      return positive ? Color(0xFF047857) : Colors.red;
+      return positive ? AppColors.primary : Colors.red;
     }
 
     return Container(
@@ -243,7 +236,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
         color: Color(0xFFE8FFF5),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Color(0xFF047857).withOpacity(0.1),
+          color: AppColors.primary.withOpacity(0.1),
         ),
       ),
       child: Column(
@@ -298,7 +291,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
             style: GoogleFonts.inter(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF047857),
+              color: AppColors.primary,
             ),
           ),
           SizedBox(height: 20),
@@ -381,11 +374,11 @@ class _ProgressScreenState extends State<ProgressScreen> {
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Color(0xFF047857),
+        color: AppColors.primary,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Color(0xFF047857).withOpacity(0.3),
+            color: AppColors.primary.withOpacity(0.3),
             blurRadius: 12,
             offset: Offset(0, 4),
           ),
@@ -461,13 +454,13 @@ class _ProgressScreenState extends State<ProgressScreen> {
       child: ElevatedButton(
         onPressed: () => Navigator.pop(context),
         style: ElevatedButton.styleFrom(
-          backgroundColor: Color(0xFF047857),
+          backgroundColor: AppColors.primary,
           padding: EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
           elevation: 4,
-          shadowColor: Color(0xFF047857).withOpacity(0.3),
+          shadowColor: AppColors.primary.withOpacity(0.3),
         ),
         child: Text(
           'Back to Dashboard',
