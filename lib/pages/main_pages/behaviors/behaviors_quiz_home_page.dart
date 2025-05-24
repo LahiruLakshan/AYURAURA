@@ -36,7 +36,7 @@ class BehaviorsQuizHomePage extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Behavior Tracker',
+          'Stress Predictor',
           style: TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.bold,
@@ -46,7 +46,7 @@ class BehaviorsQuizHomePage extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Text(
-          'Monitor daily habits that impact your stress levels',
+          'Find out your stress probability based on your behaviors',
           style: TextStyle(
             fontSize: 16,
             color: Colors.grey.shade600,
