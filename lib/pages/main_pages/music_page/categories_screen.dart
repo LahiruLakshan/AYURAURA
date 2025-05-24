@@ -415,8 +415,12 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   }
 
   Future<void> _showCategoryDialog() async {
+    final now = DateTime.now();
+    final twoHoursAgo = now.subtract(Duration(hours: 2));
+
     final listeningSnapshot = await FirebaseFirestore.instance
         .collection('listening_logs')
+        .where('date_time_listened', isGreaterThanOrEqualTo: Timestamp.fromDate(twoHoursAgo))
         .orderBy('date_time_listened', descending: true)
         .get();
 
