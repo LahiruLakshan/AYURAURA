@@ -283,10 +283,11 @@ class _ChatScreenState extends State<ChatScreen> with SingleTickerProviderStateM
                 SizedBox(height: 70,),
                 Row(
                   children: [
-                    Icon(Icons.remove_red_eye, color: AppColors.primary, size: 32),
+                    SizedBox(width: 20,),
+                    Icon(Icons.chat, color: AppColors.primary, size: 32),
                     const SizedBox(width: 12),
                     Text(
-                      'Eye Stress Analysis',
+                      'Chat With Mochi',
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
