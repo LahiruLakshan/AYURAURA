@@ -567,7 +567,7 @@ class _StressScaleQuizState extends State<StressScaleQuiz> {
                 Icon(Icons.palette, color: Colors.green[700], size: 24),
                 SizedBox(width: 8),
                 Text(
-                  'Recommended Mandala Category',
+                  'Recommended Mandala \nCategory',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
