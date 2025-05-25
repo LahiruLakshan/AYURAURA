@@ -220,34 +220,34 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                           ),
                         ),
                       ),
-                      Positioned(
-                        left: 0,
-                        child: Visibility(
-                          visible: !disableButtons,
-                          child: StatefulBuilder(builder: (context, localSetState) {
-                            return GestureDetector(
-                              onTap: () {
-                                final List<int> time = [15, 30, 60, 90];
-                                int currentIndex = time.indexOf(cameraBloc.recordDurationLimit);
-                                localSetState(() {
-                                  cameraBloc.setRecordDurationLimit = time[(currentIndex + 1) % time.length];
-                                });
-                              },
-                              child: CircleAvatar(
-                                backgroundColor: Colors.white.withOpacity(0.5),
-                                radius: 25,
-                                child: FittedBox(
-                                    child: Text(
-                                  "${cameraBloc.recordDurationLimit}",
-                                  style: const TextStyle(
-                                    color: Colors.black,
-                                  ),
-                                )),
-                              ),
-                            );
-                          }),
-                        ),
-                      ),
+                      // Positioned(
+                      //   left: 0,
+                      //   child: Visibility(
+                      //     visible: !disableButtons,
+                      //     child: StatefulBuilder(builder: (context, localSetState) {
+                      //       return GestureDetector(
+                      //         onTap: () {
+                      //           final List<int> time = [15, 30, 60, 90];
+                      //           int currentIndex = time.indexOf(cameraBloc.recordDurationLimit);
+                      //           localSetState(() {
+                      //             cameraBloc.setRecordDurationLimit = time[(currentIndex + 1) % time.length];
+                      //           });
+                      //         },
+                      //         child: CircleAvatar(
+                      //           backgroundColor: Colors.white.withOpacity(0.5),
+                      //           radius: 25,
+                      //           child: FittedBox(
+                      //               child: Text(
+                      //             "${cameraBloc.recordDurationLimit}",
+                      //             style: const TextStyle(
+                      //               color: Colors.black,
+                      //             ),
+                      //           )),
+                      //         ),
+                      //       );
+                      //     }),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
